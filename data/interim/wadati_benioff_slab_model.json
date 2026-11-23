@@ -1,0 +1,188 @@
+{
+  "model": {
+    "mc_used": 4.7,
+    "n_events_fit": 10330,
+    "lat_knots_deg": [
+      -4.0,
+      -7.0,
+      -10.0,
+      -12.5,
+      -14.2,
+      -15.5,
+      -17.0,
+      -18.5
+    ],
+    "dist_knots_km": [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      250.0,
+      330.0,
+      420.0,
+      520.0,
+      650.0
+    ],
+    "slab_depth_grid_km": [
+      [
+        12.0,
+        27.31,
+        42.0,
+        56.93,
+        73.46,
+        89.77,
+        104.96,
+        119.62,
+        137.01
+      ],
+      [
+        12.0,
+        24.6,
+        37.23,
+        50.87,
+        67.32,
+        85.47,
+        105.2,
+        126.91,
+        156.96
+      ],
+      [
+        12.0,
+        26.85,
+        41.5,
+        57.04,
+        76.01,
+        96.37,
+        116.28,
+        135.54,
+        159.21
+      ],
+      [
+        12.0,
+        28.56,
+        45.51,
+        63.62,
+        84.11,
+        102.55,
+        118.35,
+        133.73,
+        152.69
+      ],
+      [
+        11.84,
+        30.38,
+        49.33,
+        68.7,
+        90.43,
+        111.98,
+        133.79,
+        156.79,
+        185.98
+      ],
+      [
+        11.28,
+        33.64,
+        58.09,
+        85.87,
+        121.55,
+        164.89,
+        215.22,
+        271.12,
+        343.78
+      ],
+      [
+        9.04,
+        31.31,
+        56.03,
+        85.45,
+        124.16,
+        170.46,
+        223.34,
+        282.08,
+        358.45
+      ],
+      [
+        5.0,
+        27.51,
+        52.75,
+        83.97,
+        125.78,
+        174.75,
+        229.64,
+        290.64,
+        369.93
+      ]
+    ],
+    "band_event_counts": [
+      1267,
+      1715,
+      2341,
+      1846,
+      1998,
+      2245,
+      3098,
+      1405
+    ]
+  },
+  "profile_diagnostics": {
+    "Norte (-3 a -9)": {
+      "lat_rep": -6.5,
+      "n_events_m_ge_mc": 3702,
+      "slab_depth_100km": 33.7,
+      "slab_depth_200km": 56.6,
+      "slab_depth_300km": 79.5,
+      "slab_depth_400km": 100.9,
+      "slab_depth_500km": 121.6,
+      "dip_deg_100_300km": 12.9,
+      "dip_deg_250_500km": 12.0,
+      "dip_deg_100_500km": 12.4,
+      "median_dist_to_slab_km": 17.6
+    },
+    "Centro / Lima (-9 a -15)": {
+      "lat_rep": -12.0,
+      "n_events_m_ge_mc": 4663,
+      "slab_depth_100km": 39.2,
+      "slab_depth_200km": 68.1,
+      "slab_depth_300km": 94.3,
+      "slab_depth_400km": 114.2,
+      "slab_depth_500km": 130.9,
+      "dip_deg_100_300km": 15.4,
+      "dip_deg_250_500km": 11.0,
+      "dip_deg_100_500km": 12.9,
+      "median_dist_to_slab_km": 15.7
+    },
+    "Sur (-15 a -18.5)": {
+      "lat_rep": -16.8,
+      "n_events_m_ge_mc": 3567,
+      "slab_depth_100km": 48.1,
+      "slab_depth_200km": 96.5,
+      "slab_depth_300km": 152.5,
+      "slab_depth_400km": 210.6,
+      "slab_depth_500km": 268.9,
+      "dip_deg_100_300km": 27.6,
+      "dip_deg_250_500km": 30.1,
+      "dip_deg_100_500km": 28.9,
+      "median_dist_to_slab_km": 15.0
+    }
+  },
+  "regimes_before_slab": {
+    "subduccion_interplaca": 10400,
+    "intramanto_intermedio": 9932,
+    "cortical_continental": 5400,
+    "intramanto_profundo": 146
+  },
+  "regimes_after_slab": {
+    "subduccion_interplaca": 10490,
+    "intramanto_intermedio": 9932,
+    "cortical_continental": 5310,
+    "intramanto_profundo": 146
+  },
+  "reclassified_events": 548,
+  "aceldat_regimes_after_slab": {
+    "subduccion_interplaca": 9060,
+    "intramanto_intermedio": 7377,
+    "cortical_continental": 1288,
+    "intramanto_profundo": 69
+  },
+  "figure_path": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\reports\\figures\\wadati_benioff_3d.html"
+}

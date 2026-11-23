@@ -1,0 +1,46 @@
+{
+  "h3_resolution": 5,
+  "n_cells": 8205,
+  "n_active_cells_with_events": 4212,
+  "n_cuts_monthly": 323,
+  "cut_min_utc": "2000-01-01T00:00:00+00:00",
+  "cut_max_utc": "2026-11-01T00:00:00+00:00",
+  "total_rows": 2650215,
+  "total_cols": 53,
+  "parquet_size_mb": 12.4184,
+  "complete_cuts_30d": 322,
+  "complete_cuts_90d": 320,
+  "complete_cuts_365d": 311,
+  "target_class_balance": {
+    "target_m45_30d": {
+      "uncensored_rows": 2642010,
+      "positive_rows": 11444,
+      "positive_rate_pct": 0.4332,
+      "total_event_count_sum": 12277
+    },
+    "target_m45_90d": {
+      "uncensored_rows": 2625600,
+      "positive_rows": 33022,
+      "positive_rate_pct": 1.2577,
+      "total_event_count_sum": 36707
+    },
+    "target_m45_365d": {
+      "uncensored_rows": 2551755,
+      "positive_rows": 117921,
+      "positive_rate_pct": 4.6212,
+      "total_event_count_sum": 146215
+    },
+    "target_m50_90d": {
+      "uncensored_rows": 2625600,
+      "positive_rows": 6329,
+      "positive_rate_pct": 0.241,
+      "total_event_count_sum": 6804
+    },
+    "target_m50_365d": {
+      "uncensored_rows": 2551755,
+      "positive_rows": 24448,
+      "positive_rate_pct": 0.9581,
+      "total_event_count_sum": 27063
+    }
+  }
+}

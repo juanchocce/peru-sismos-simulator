@@ -1,0 +1,169 @@
+{
+  "unmatched_total_rows": 1319,
+  "unmatched_unique_timestamps": 72,
+  "unmatched_by_year": {
+    "2019": 60,
+    "2020": 7,
+    "2021": 2,
+    "2022": 225,
+    "2023": 1,
+    "2024": 10,
+    "2025": 1014
+  },
+  "unmatched_2025_rows": 1014,
+  "unmatched_2025_swappable_day_le_12_rows": 1014,
+  "unmatched_pga_h_geom_median_gal": 0.9118,
+  "unmatched_pga_h_geom_p95_gal": 9.161,
+  "unmatched_pga_h_geom_max_gal": 116.7294,
+  "unmatched_stations_per_event_median": 10.5,
+  "unmatched_stations_per_event_max": 69,
+  "hypotheses": {
+    "swap_2025_utc5": {
+      "hypothesis": "2025_swap_DM_UTC-5 (+5h)",
+      "tested_rows": 1014,
+      "matched_rows_120s": 1014,
+      "unique_events_120s": 43,
+      "abs_dt_median_sec": 0.0,
+      "abs_dt_p95_sec": 0.0,
+      "dist_epi_median_km": 215.66,
+      "strict_consistent_rows_10s": 1014,
+      "strict_consistent_events_10s": 43,
+      "sample_matches": [
+        {
+          "fecha_evento_raw": "20250304",
+          "hora_evento_str": "203705",
+          "event_id": "IGP_INST_24456",
+          "event_mag": 4.5,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 97.19545629034101
+        },
+        {
+          "fecha_evento_raw": "20250804",
+          "hora_evento_str": "034327",
+          "event_id": "IGP_INST_24464",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 234.92577937874137
+        },
+        {
+          "fecha_evento_raw": "20250804",
+          "hora_evento_str": "052841",
+          "event_id": "IGP_INST_24465",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 72.52761552979717
+        },
+        {
+          "fecha_evento_raw": "20250904",
+          "hora_evento_str": "024037",
+          "event_id": "IGP_INST_24467",
+          "event_mag": 4.5,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 119.33171765800876
+        },
+        {
+          "fecha_evento_raw": "20250205",
+          "hora_evento_str": "100652",
+          "event_id": "IGP_INST_24516",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 270.30905665549955
+        }
+      ]
+    },
+    "swap_all_utc5": {
+      "hypothesis": "All_years_swap_DM_UTC-5 (+5h)",
+      "tested_rows": 1166,
+      "matched_rows_120s": 1014,
+      "unique_events_120s": 43,
+      "abs_dt_median_sec": 0.0,
+      "abs_dt_p95_sec": 0.0,
+      "dist_epi_median_km": 215.66,
+      "strict_consistent_rows_10s": 1014,
+      "strict_consistent_events_10s": 43,
+      "sample_matches": [
+        {
+          "fecha_evento_raw": "20250304",
+          "hora_evento_str": "203705",
+          "event_id": "IGP_INST_24456",
+          "event_mag": 4.5,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 97.19545629034101
+        },
+        {
+          "fecha_evento_raw": "20250804",
+          "hora_evento_str": "034327",
+          "event_id": "IGP_INST_24464",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 112.3411277786905
+        },
+        {
+          "fecha_evento_raw": "20250804",
+          "hora_evento_str": "052841",
+          "event_id": "IGP_INST_24465",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 252.7235739664059
+        },
+        {
+          "fecha_evento_raw": "20250904",
+          "hora_evento_str": "024037",
+          "event_id": "IGP_INST_24467",
+          "event_mag": 4.5,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 119.33171765800876
+        },
+        {
+          "fecha_evento_raw": "20250205",
+          "hora_evento_str": "100652",
+          "event_id": "IGP_INST_24516",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 251.35660410567158
+        }
+      ]
+    },
+    "swap_2025_utc0": {
+      "hypothesis": "2025_swap_DM_UTC (0h)",
+      "tested_rows": 1014,
+      "matched_rows_120s": 0,
+      "unique_events_120s": 0,
+      "abs_dt_median_sec": null,
+      "abs_dt_p95_sec": null,
+      "dist_epi_median_km": null,
+      "strict_consistent_rows_10s": 0,
+      "strict_consistent_events_10s": 0,
+      "sample_matches": []
+    },
+    "noswap_utc0": {
+      "hypothesis": "No_swap_already_UTC (0h)",
+      "tested_rows": 1319,
+      "matched_rows_120s": 52,
+      "unique_events_120s": 1,
+      "abs_dt_median_sec": 0.0,
+      "abs_dt_p95_sec": 0.0,
+      "dist_epi_median_km": 284.29,
+      "strict_consistent_rows_10s": 52,
+      "strict_consistent_events_10s": 1,
+      "sample_matches": [
+        {
+          "fecha_evento_raw": "20221028",
+          "hora_evento_str": "041656",
+          "event_id": "IGP_INST_23081",
+          "event_mag": 4.6,
+          "abs_dt_seconds": 0.0,
+          "dist_epicentral_km": 291.89338625629864
+        }
+      ]
+    }
+  },
+  "updated_aceldat_merged": true,
+  "recovered_rows": 1014,
+  "recovered_events": 43,
+  "remaining_unmatched_rows": 305,
+  "final_aceldat_merged_rows": 17794,
+  "final_aceldat_merged_events": 956,
+  "final_match_rate_pct": 97.1659,
+  "conclusion": "Recuperados 1014 registros (43 eventos) por swap D/M en 2025 (UTC-5); tasa final ACELDAT-IGP sube a 17794/18313 (97.17%, 956 eventos unicos)."
+}

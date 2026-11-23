@@ -1,0 +1,254 @@
+{
+  "total_segments": 30,
+  "segments_with_recorded_m78": 11,
+  "segments_without_recorded_m78": 19,
+  "top10_documented_rupture": [
+    {
+      "segment_id": "SEG_29_17.5S_18.0S",
+      "coastal_zone": "Ilo / Moquegua",
+      "lat_center": -17.75,
+      "last_major_rupture_year": 1604.9,
+      "last_major_rupture_mw": 9.39,
+      "years_since_major_rupture": 421.99,
+      "m0_deficit_chi065_nm": 4.874433124575938e+21,
+      "mw_pot_chi050": 8.314,
+      "mw_pot_chi065": 8.392,
+      "mw_pot_chi080": 8.453
+    },
+    {
+      "segment_id": "SEG_20_13.0S_13.5S",
+      "coastal_zone": "Chincha / Pisco Norte",
+      "lat_center": -13.25,
+      "last_major_rupture_year": 1687.8,
+      "last_major_rupture_mw": 8.6,
+      "years_since_major_rupture": 339.09,
+      "m0_deficit_chi065_nm": 3.3907005263944624e+21,
+      "mw_pot_chi050": 8.209,
+      "mw_pot_chi065": 8.287,
+      "mw_pot_chi080": 8.348
+    },
+    {
+      "segment_id": "SEG_17_11.5S_12.0S",
+      "coastal_zone": "Lima / Callao Norte",
+      "lat_center": -11.75,
+      "last_major_rupture_year": 1746.8,
+      "last_major_rupture_mw": 8.8,
+      "years_since_major_rupture": 280.07,
+      "m0_deficit_chi065_nm": 2.796929168347265e+21,
+      "mw_pot_chi050": 8.154,
+      "mw_pot_chi065": 8.231,
+      "mw_pot_chi080": 8.292
+    },
+    {
+      "segment_id": "SEG_18_12.0S_12.5S",
+      "coastal_zone": "Lima / Callao Sur - Lurin",
+      "lat_center": -12.25,
+      "last_major_rupture_year": 1655.9,
+      "last_major_rupture_mw": 8.79,
+      "years_since_major_rupture": 371.03,
+      "m0_deficit_chi065_nm": 2.5715540584183397e+21,
+      "mw_pot_chi050": 8.095,
+      "mw_pot_chi065": 8.207,
+      "mw_pot_chi080": 8.287
+    },
+    {
+      "segment_id": "SEG_28_17.0S_17.5S",
+      "coastal_zone": "Mollendo / Islay",
+      "lat_center": -17.25,
+      "last_major_rupture_year": 1869.6,
+      "last_major_rupture_mw": 8.4,
+      "years_since_major_rupture": 157.25,
+      "m0_deficit_chi065_nm": 1.7310003144046572e+21,
+      "mw_pot_chi050": 8.015,
+      "mw_pot_chi065": 8.092,
+      "mw_pot_chi080": 8.153
+    },
+    {
+      "segment_id": "SEG_30_18.0S_18.5S",
+      "coastal_zone": "Tacna / Arica Norte",
+      "lat_center": -18.25,
+      "last_major_rupture_year": 1868.6,
+      "last_major_rupture_mw": 8.59,
+      "years_since_major_rupture": 158.28,
+      "m0_deficit_chi065_nm": 1.3454123288709612e+21,
+      "mw_pot_chi050": 7.921,
+      "mw_pot_chi065": 8.019,
+      "mw_pot_chi080": 8.093
+    },
+    {
+      "segment_id": "SEG_16_11.0S_11.5S",
+      "coastal_zone": "Huacho / Chancay",
+      "lat_center": -11.25,
+      "last_major_rupture_year": 1940.4,
+      "last_major_rupture_mw": 7.9,
+      "years_since_major_rupture": 86.5,
+      "m0_deficit_chi065_nm": 8.10517489833254e+20,
+      "mw_pot_chi050": 7.796,
+      "mw_pot_chi065": 7.873,
+      "mw_pot_chi080": 7.933
+    },
+    {
+      "segment_id": "SEG_01_3.5S_4.0S",
+      "coastal_zone": "Tumbes / Talara Norte",
+      "lat_center": -3.75,
+      "last_major_rupture_year": 1953.9,
+      "last_major_rupture_mw": 7.8,
+      "years_since_major_rupture": 72.95,
+      "m0_deficit_chi065_nm": 5.850554378408826e+20,
+      "mw_pot_chi050": 7.699,
+      "mw_pot_chi065": 7.778,
+      "mw_pot_chi080": 7.84
+    },
+    {
+      "segment_id": "SEG_15_10.5S_11.0S",
+      "coastal_zone": "Supe / Huacho Norte",
+      "lat_center": -10.75,
+      "last_major_rupture_year": 1966.8,
+      "last_major_rupture_mw": 8.0,
+      "years_since_major_rupture": 60.1,
+      "m0_deficit_chi065_nm": 5.125577974511585e+20,
+      "mw_pot_chi050": 7.657,
+      "mw_pot_chi065": 7.74,
+      "mw_pot_chi080": 7.804
+    },
+    {
+      "segment_id": "SEG_21_13.5S_14.0S",
+      "coastal_zone": "Pisco / Paracas",
+      "lat_center": -13.75,
+      "last_major_rupture_year": 2007.6,
+      "last_major_rupture_mw": 8.0,
+      "years_since_major_rupture": 19.27,
+      "m0_deficit_chi065_nm": 2.0000683310000393e+20,
+      "mw_pot_chi050": 7.383,
+      "mw_pot_chi065": 7.467,
+      "mw_pot_chi080": 7.532
+    }
+  ],
+  "top10_all_segments": [
+    {
+      "segment_id": "SEG_27_16.5S_17.0S",
+      "coastal_zone": "Ocona / Camana",
+      "lat_center": -16.75,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 5.349065259955488e+21,
+      "mw_pot_chi065": 8.419
+    },
+    {
+      "segment_id": "SEG_23_14.5S_15.0S",
+      "coastal_zone": "Nasca / Marcona Norte",
+      "lat_center": -14.75,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 5.324817916487241e+21,
+      "mw_pot_chi065": 8.418
+    },
+    {
+      "segment_id": "SEG_25_15.5S_16.0S",
+      "coastal_zone": "Lomas / Chala",
+      "lat_center": -15.75,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 5.067344774123684e+21,
+      "mw_pot_chi065": 8.403
+    },
+    {
+      "segment_id": "SEG_22_14.0S_14.5S",
+      "coastal_zone": "Ica / Bahía Independencia",
+      "lat_center": -14.25,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 5.044394086262339e+21,
+      "mw_pot_chi065": 8.402
+    },
+    {
+      "segment_id": "SEG_29_17.5S_18.0S",
+      "coastal_zone": "Ilo / Moquegua",
+      "lat_center": -17.75,
+      "has_recorded_m78_in_segment": true,
+      "last_major_rupture_year": 1604.9,
+      "years_since_major_rupture": 421.99,
+      "m0_deficit_chi065_nm": 4.874433124575938e+21,
+      "mw_pot_chi065": 8.392
+    },
+    {
+      "segment_id": "SEG_24_15.0S_15.5S",
+      "coastal_zone": "San Juan de Marcona",
+      "lat_center": -15.25,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 4.806588274900881e+21,
+      "mw_pot_chi065": 8.388
+    },
+    {
+      "segment_id": "SEG_19_12.5S_13.0S",
+      "coastal_zone": "Canete / Mala",
+      "lat_center": -12.75,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 4.429979305427417e+21,
+      "mw_pot_chi065": 8.364
+    },
+    {
+      "segment_id": "SEG_14_10.0S_10.5S",
+      "coastal_zone": "Paramonga / Barranca",
+      "lat_center": -10.25,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 4.353711242839228e+21,
+      "mw_pot_chi065": 8.359
+    },
+    {
+      "segment_id": "SEG_13_9.5S_10.0S",
+      "coastal_zone": "Huarmey",
+      "lat_center": -9.75,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 4.2685195687588334e+21,
+      "mw_pot_chi065": 8.354
+    },
+    {
+      "segment_id": "SEG_12_9.0S_9.5S",
+      "coastal_zone": "Casma / Ancash",
+      "lat_center": -9.25,
+      "has_recorded_m78_in_segment": false,
+      "last_major_rupture_year": NaN,
+      "years_since_major_rupture": 474.39,
+      "m0_deficit_chi065_nm": 4.1239837639425524e+21,
+      "mw_pot_chi065": 8.344
+    }
+  ],
+  "lima_segment": [
+    {
+      "segment_id": "SEG_17_11.5S_12.0S",
+      "coastal_zone": "Lima / Callao Norte",
+      "last_major_rupture_year": 1746.8,
+      "last_major_rupture_mw": 8.8,
+      "years_since_major_rupture": 280.07,
+      "m0_deficit_chi065_nm": 2.796929168347265e+21,
+      "mw_pot_chi050": 8.154,
+      "mw_pot_chi065": 8.231,
+      "mw_pot_chi080": 8.292
+    },
+    {
+      "segment_id": "SEG_18_12.0S_12.5S",
+      "coastal_zone": "Lima / Callao Sur - Lurin",
+      "last_major_rupture_year": 1655.9,
+      "last_major_rupture_mw": 8.79,
+      "years_since_major_rupture": 371.03,
+      "m0_deficit_chi065_nm": 2.5715540584183397e+21,
+      "mw_pot_chi050": 8.095,
+      "mw_pot_chi065": 8.207,
+      "mw_pot_chi080": 8.287
+    }
+  ],
+  "map_path": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\reports\\figures\\seismic_gaps_map.html"
+}

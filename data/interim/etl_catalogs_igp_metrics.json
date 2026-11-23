@@ -1,0 +1,29 @@
+{
+  "historico": {
+    "rows": 1098,
+    "cols": 12,
+    "min_utc": "1552-07-02T10:30:00+00:00",
+    "max_utc": "1959-12-02T07:02:52+00:00",
+    "depth_null_count": 59,
+    "mag_scale_source_counts": {
+      "mb_to_Mw_Scordilis2006": 892,
+      "Ms_to_Mw_Scordilis2006": 194,
+      "Mw_direct": 12
+    },
+    "mag_homog_min": 3.41,
+    "mag_homog_max": 9.386,
+    "output_path": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\data\\interim\\catalog_igp_historico.parquet"
+  },
+  "instrumental": {
+    "rows": 25878,
+    "cols": 8,
+    "min_utc": "1960-01-13T15:40:34+00:00",
+    "max_utc": "2026-11-22T05:51:57+00:00",
+    "depth_min_km": 5.0,
+    "depth_max_km": 743.0,
+    "mag_min": 3.0,
+    "mag_max": 8.4,
+    "events_m45_plus": 21186,
+    "output_path": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\data\\interim\\catalog_igp_instrumental_base.parquet"
+  }
+}

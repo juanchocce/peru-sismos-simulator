@@ -1,0 +1,393 @@
+{
+  "n_rows": 17794,
+  "n_events": 956,
+  "n_stations": 277,
+  "n_train_2019_2024": 14718,
+  "n_test_2025": 3076,
+  "cv_5fold_group_h": {
+    "baseline_huber": {
+      "rmse_log10": 0.381,
+      "mae_log10": 0.3001,
+      "r2_log10": 0.6498,
+      "tau_between_event": 0.2901,
+      "phi_within_event": 0.3004,
+      "mdape_linear_pct": 53.19,
+      "geom_factor_mae": 1.996,
+      "mae_gal": 2.3527
+    },
+    "lgbm_no_site": {
+      "rmse_log10": 0.287,
+      "mae_log10": 0.2211,
+      "r2_log10": 0.8014,
+      "tau_between_event": 0.2361,
+      "phi_within_event": 0.1949,
+      "mdape_linear_pct": 39.41,
+      "geom_factor_mae": 1.664,
+      "mae_gal": 1.7486
+    },
+    "xgb_no_site": {
+      "rmse_log10": 0.2897,
+      "mae_log10": 0.2236,
+      "r2_log10": 0.7975,
+      "tau_between_event": 0.2386,
+      "phi_within_event": 0.1976,
+      "mdape_linear_pct": 39.86,
+      "geom_factor_mae": 1.673,
+      "mae_gal": 1.7851
+    },
+    "lgbm_with_site_oof": {
+      "rmse_log10": 0.2829,
+      "mae_log10": 0.2183,
+      "r2_log10": 0.807,
+      "tau_between_event": 0.2349,
+      "phi_within_event": 0.1929,
+      "mdape_linear_pct": 39.07,
+      "geom_factor_mae": 1.653,
+      "mae_gal": 1.7539
+    },
+    "xgb_with_site_oof": {
+      "rmse_log10": 0.2865,
+      "mae_log10": 0.2211,
+      "r2_log10": 0.802,
+      "tau_between_event": 0.2373,
+      "phi_within_event": 0.1945,
+      "mdape_linear_pct": 39.45,
+      "geom_factor_mae": 1.664,
+      "mae_gal": 1.778
+    }
+  },
+  "holdout_2025_h": {
+    "baseline_huber": {
+      "rmse_log10": 0.3894,
+      "mae_log10": 0.3068,
+      "r2_log10": 0.616,
+      "tau_between_event": 0.2787,
+      "phi_within_event": 0.3046,
+      "mdape_linear_pct": 54.25,
+      "geom_factor_mae": 2.027,
+      "mae_gal": 2.262
+    },
+    "lgbm_no_site": {
+      "rmse_log10": 0.2994,
+      "mae_log10": 0.2346,
+      "r2_log10": 0.7729,
+      "tau_between_event": 0.2266,
+      "phi_within_event": 0.213,
+      "mdape_linear_pct": 42.13,
+      "geom_factor_mae": 1.716,
+      "mae_gal": 1.7074
+    },
+    "xgb_no_site": {
+      "rmse_log10": 0.2993,
+      "mae_log10": 0.2357,
+      "r2_log10": 0.7732,
+      "tau_between_event": 0.2235,
+      "phi_within_event": 0.215,
+      "mdape_linear_pct": 43.53,
+      "geom_factor_mae": 1.721,
+      "mae_gal": 1.6952
+    },
+    "lgbm_with_site_oof": {
+      "rmse_log10": 0.2943,
+      "mae_log10": 0.2311,
+      "r2_log10": 0.7806,
+      "tau_between_event": 0.2251,
+      "phi_within_event": 0.2066,
+      "mdape_linear_pct": 42.21,
+      "geom_factor_mae": 1.702,
+      "mae_gal": 1.6851
+    },
+    "xgb_with_site_oof": {
+      "rmse_log10": 0.2958,
+      "mae_log10": 0.2313,
+      "r2_log10": 0.7785,
+      "tau_between_event": 0.2222,
+      "phi_within_event": 0.2091,
+      "mdape_linear_pct": 41.4,
+      "geom_factor_mae": 1.703,
+      "mae_gal": 1.6471
+    }
+  },
+  "cv_5fold_group_v": {
+    "baseline_huber": {
+      "rmse_log10": 0.378,
+      "mae_log10": 0.2989,
+      "r2_log10": 0.6549,
+      "tau_between_event": 0.2863,
+      "phi_within_event": 0.2945,
+      "mdape_linear_pct": 53.07,
+      "geom_factor_mae": 1.99,
+      "mae_gal": 1.5308
+    },
+    "lgbm_no_site": {
+      "rmse_log10": 0.2857,
+      "mae_log10": 0.2201,
+      "r2_log10": 0.8029,
+      "tau_between_event": 0.2388,
+      "phi_within_event": 0.1914,
+      "mdape_linear_pct": 39.12,
+      "geom_factor_mae": 1.66,
+      "mae_gal": 1.1058
+    },
+    "xgb_no_site": {
+      "rmse_log10": 0.2891,
+      "mae_log10": 0.2229,
+      "r2_log10": 0.7982,
+      "tau_between_event": 0.2397,
+      "phi_within_event": 0.1953,
+      "mdape_linear_pct": 39.7,
+      "geom_factor_mae": 1.671,
+      "mae_gal": 1.1295
+    },
+    "lgbm_with_site_oof": {
+      "rmse_log10": 0.2831,
+      "mae_log10": 0.2184,
+      "r2_log10": 0.8065,
+      "tau_between_event": 0.236,
+      "phi_within_event": 0.1911,
+      "mdape_linear_pct": 38.94,
+      "geom_factor_mae": 1.653,
+      "mae_gal": 1.1067
+    },
+    "xgb_with_site_oof": {
+      "rmse_log10": 0.2868,
+      "mae_log10": 0.2211,
+      "r2_log10": 0.8013,
+      "tau_between_event": 0.2388,
+      "phi_within_event": 0.1935,
+      "mdape_linear_pct": 39.63,
+      "geom_factor_mae": 1.664,
+      "mae_gal": 1.1254
+    }
+  },
+  "holdout_2025_v": {
+    "baseline_huber": {
+      "rmse_log10": 0.3922,
+      "mae_log10": 0.3089,
+      "r2_log10": 0.6197,
+      "tau_between_event": 0.3038,
+      "phi_within_event": 0.2973,
+      "mdape_linear_pct": 55.14,
+      "geom_factor_mae": 2.037,
+      "mae_gal": 1.4118
+    },
+    "lgbm_no_site": {
+      "rmse_log10": 0.2983,
+      "mae_log10": 0.2335,
+      "r2_log10": 0.7799,
+      "tau_between_event": 0.2368,
+      "phi_within_event": 0.2064,
+      "mdape_linear_pct": 42.82,
+      "geom_factor_mae": 1.712,
+      "mae_gal": 1.0559
+    },
+    "xgb_no_site": {
+      "rmse_log10": 0.2981,
+      "mae_log10": 0.2336,
+      "r2_log10": 0.7802,
+      "tau_between_event": 0.2325,
+      "phi_within_event": 0.209,
+      "mdape_linear_pct": 42.06,
+      "geom_factor_mae": 1.712,
+      "mae_gal": 1.0058
+    },
+    "lgbm_with_site_oof": {
+      "rmse_log10": 0.2945,
+      "mae_log10": 0.2301,
+      "r2_log10": 0.7855,
+      "tau_between_event": 0.2348,
+      "phi_within_event": 0.2022,
+      "mdape_linear_pct": 41.48,
+      "geom_factor_mae": 1.699,
+      "mae_gal": 1.0773
+    },
+    "xgb_with_site_oof": {
+      "rmse_log10": 0.2943,
+      "mae_log10": 0.2303,
+      "r2_log10": 0.7857,
+      "tau_between_event": 0.2293,
+      "phi_within_event": 0.2046,
+      "mdape_linear_pct": 42.24,
+      "geom_factor_mae": 1.699,
+      "mae_gal": 1.007
+    }
+  },
+  "lima_benchmark_stations": [
+    {
+      "cod_estacion": "OLIV",
+      "distrito": "LOS OLIVOS",
+      "n_records": 9,
+      "delta_s2s_log10": 0.1444608893474096,
+      "delta_s2s_rel_msol": 0.1623089540662503,
+      "amp_factor_rel_msol": 1.4531450071969538
+    },
+    {
+      "cod_estacion": "RINC",
+      "distrito": "LA MOLINA",
+      "n_records": 138,
+      "delta_s2s_log10": 0.13382396178246195,
+      "delta_s2s_rel_msol": 0.15167202650130263,
+      "amp_factor_rel_msol": 1.4179862726015238
+    },
+    {
+      "cod_estacion": "PAVE",
+      "distrito": "VENTANILLA",
+      "n_records": 202,
+      "delta_s2s_log10": 0.07935728843999197,
+      "delta_s2s_rel_msol": 0.09720535315883264,
+      "amp_factor_rel_msol": 1.2508503463901615
+    },
+    {
+      "cod_estacion": "MSOL",
+      "distrito": "CHORRILLOS",
+      "n_records": 181,
+      "delta_s2s_log10": -0.017848064718840664,
+      "delta_s2s_rel_msol": 0.0,
+      "amp_factor_rel_msol": 1.0
+    }
+  ],
+  "top10_amplification_stations_n10": [
+    {
+      "cod_estacion": "PIDR",
+      "departamento": "LIMA",
+      "distrito": "PUENTE PIEDRA",
+      "n_records": 31,
+      "delta_s2s_log10": 0.3182373812246306,
+      "amp_factor_rel_msol": 2.1681306350938865
+    },
+    {
+      "cod_estacion": "HCOA",
+      "departamento": "HUANUCO",
+      "distrito": "PILLCO MARCA",
+      "n_records": 19,
+      "delta_s2s_log10": 0.25216759418497275,
+      "amp_factor_rel_msol": 1.8621542772097792
+    },
+    {
+      "cod_estacion": "SCTRU",
+      "departamento": "LA LIBERTAD",
+      "distrito": "TRUJILLO",
+      "n_records": 17,
+      "delta_s2s_log10": 0.23851634953853057,
+      "amp_factor_rel_msol": 1.8045312786484657
+    },
+    {
+      "cod_estacion": "MARQ",
+      "departamento": "CALLAO",
+      "distrito": "CALLAO",
+      "n_records": 76,
+      "delta_s2s_log10": 0.1734368711685053,
+      "amp_factor_rel_msol": 1.5534058483835465
+    },
+    {
+      "cod_estacion": "URCO",
+      "departamento": "CUSCO",
+      "distrito": "URCOS",
+      "n_records": 12,
+      "delta_s2s_log10": 0.16451223854575014,
+      "amp_factor_rel_msol": 1.5218095433756518
+    },
+    {
+      "cod_estacion": "CITY",
+      "departamento": "LIMA",
+      "distrito": "LURIN",
+      "n_records": 41,
+      "delta_s2s_log10": 0.16154579199579466,
+      "amp_factor_rel_msol": 1.5114502498090454
+    },
+    {
+      "cod_estacion": "AMOT",
+      "departamento": "PIURA",
+      "distrito": "AMOTAPE",
+      "n_records": 18,
+      "delta_s2s_log10": 0.15802279055470594,
+      "amp_factor_rel_msol": 1.4992389454385706
+    },
+    {
+      "cod_estacion": "CASM",
+      "departamento": "ANCASH",
+      "distrito": "CASMA",
+      "n_records": 39,
+      "delta_s2s_log10": 0.13830746300793384,
+      "amp_factor_rel_msol": 1.4327008802727839
+    },
+    {
+      "cod_estacion": "CARA",
+      "departamento": "LIMA",
+      "distrito": "CARABAYLLO",
+      "n_records": 19,
+      "delta_s2s_log10": 0.1355365909250969,
+      "amp_factor_rel_msol": 1.4235891051253369
+    },
+    {
+      "cod_estacion": "CMNA",
+      "departamento": "AREQUIPA",
+      "distrito": "SAMUEL PASTOR",
+      "n_records": 31,
+      "delta_s2s_log10": 0.1349303291142515,
+      "amp_factor_rel_msol": 1.4216032047354663
+    }
+  ],
+  "top15_shap_features": [
+    {
+      "feature": "event_mag",
+      "mean_abs_shap": 0.2532241033404084
+    },
+    {
+      "feature": "dist_epicentral_km",
+      "mean_abs_shap": 0.23228908043265145
+    },
+    {
+      "feature": "station_dist_trench_km",
+      "mean_abs_shap": 0.08254850854429836
+    },
+    {
+      "feature": "dist_hypocentral_km",
+      "mean_abs_shap": 0.06725073605166254
+    },
+    {
+      "feature": "station_site_term_oof",
+      "mean_abs_shap": 0.06295013765903111
+    },
+    {
+      "feature": "log10_r_epi",
+      "mean_abs_shap": 0.06022766401035602
+    },
+    {
+      "feature": "event_slab_depth_est_km",
+      "mean_abs_shap": 0.043265926281437266
+    },
+    {
+      "feature": "event_depth_km",
+      "mean_abs_shap": 0.04109467284566447
+    },
+    {
+      "feature": "station_dist_lat_15s_km",
+      "mean_abs_shap": 0.04083243601874567
+    },
+    {
+      "feature": "log10_r_hyp",
+      "mean_abs_shap": 0.038597814133187226
+    },
+    {
+      "feature": "event_dist_trench_km",
+      "mean_abs_shap": 0.03490633415233162
+    },
+    {
+      "feature": "dist_lat_15s_km",
+      "mean_abs_shap": 0.023331780884705316
+    },
+    {
+      "feature": "event_dist_to_slab_km",
+      "mean_abs_shap": 0.020706468991929357
+    },
+    {
+      "feature": "n_peligros_caida",
+      "mean_abs_shap": 0.013555709795110605
+    },
+    {
+      "feature": "n_peligros_flujo",
+      "mean_abs_shap": 0.01142918806116536
+    }
+  ]
+}

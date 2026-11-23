@@ -1,0 +1,58 @@
+{
+  "trench_boundaries_included": [
+    "NZ\\AP",
+    "NZ\\ND",
+    "NZ\\SA"
+  ],
+  "densified_boundary_points": 3210,
+  "densified_steps_points": 6455,
+  "instrumental_rows": 25878,
+  "instrumental_regimes": {
+    "subduccion_interplaca": 10400,
+    "intramanto_intermedio": 9932,
+    "cortical_continental": 5400,
+    "intramanto_profundo": 146
+  },
+  "instrumental_subduction_lat": {
+    "flat_slab_norte_centro": 18324,
+    "normal_sur": 7554
+  },
+  "instrumental_regime_x_lat": {
+    "flat_slab_norte_centro": {
+      "cortical_continental": 4235,
+      "intramanto_intermedio": 6812,
+      "intramanto_profundo": 146,
+      "subduccion_interplaca": 7131
+    },
+    "normal_sur": {
+      "cortical_continental": 1165,
+      "intramanto_intermedio": 3120,
+      "intramanto_profundo": 0,
+      "subduccion_interplaca": 3269
+    }
+  },
+  "instrumental_trench_bound_counts": {
+    "NZ\\SA": 17148,
+    "NZ\\AP": 8195,
+    "NZ\\ND": 535
+  },
+  "instrumental_dist_trench_median_km": 204.78,
+  "instrumental_dist_trench_max_km": 1163.14,
+  "historico_rows": 1098,
+  "historico_regimes": {
+    "cortical_continental": 470,
+    "subduccion_interplaca": 344,
+    "intramanto_intermedio": 211,
+    "indeterminado_sin_profundidad": 59,
+    "intramanto_profundo": 14
+  },
+  "aceldat_rows": 16994,
+  "aceldat_regimes": {
+    "subduccion_interplaca": 8619,
+    "intramanto_intermedio": 7060,
+    "cortical_continental": 1249,
+    "intramanto_profundo": 66
+  },
+  "aceldat_unique_events": 913,
+  "aceldat_usgs_enriched_rows": 13032
+}

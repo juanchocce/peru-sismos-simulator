@@ -1,0 +1,54 @@
+{
+  "input_rows": 18313,
+  "dropped_unnamed_cols": 10,
+  "timezone_comparison": {
+    "offset_0h_utc": {
+      "offset_hours": 0,
+      "label": "UTC (offset 0h)",
+      "total_rows": 18313,
+      "matched_rows": 92,
+      "unmatched_rows": 18221,
+      "match_rate_pct": 0.5024,
+      "unique_events_matched": 6,
+      "abs_dt_median_sec": 0.0,
+      "abs_dt_p95_sec": 119.0,
+      "abs_dt_max_sec": 119.0
+    },
+    "offset_5h_local": {
+      "offset_hours": 5,
+      "label": "UTC-5->UTC (offset +5h)",
+      "total_rows": 18313,
+      "matched_rows": 16994,
+      "unmatched_rows": 1319,
+      "match_rate_pct": 92.7975,
+      "unique_events_matched": 913,
+      "abs_dt_median_sec": 0.0,
+      "abs_dt_p95_sec": 2.0,
+      "abs_dt_max_sec": 42.0
+    }
+  },
+  "selected_alignment": {
+    "offset_hours": 5,
+    "label": "UTC-5->UTC (offset +5h)",
+    "total_rows": 18313,
+    "matched_rows": 16994,
+    "unmatched_rows": 1319,
+    "match_rate_pct": 92.7975,
+    "unique_events_matched": 913,
+    "abs_dt_median_sec": 0.0,
+    "abs_dt_p95_sec": 2.0,
+    "abs_dt_max_sec": 42.0
+  },
+  "valid_rows": 16994,
+  "unmatched_rows": 1319,
+  "unique_event_ids": 913,
+  "unique_stations": 276,
+  "unique_ubigeos": 232,
+  "unmatched_unique_timestamps": 72,
+  "dist_epicentral_median_km": 253.87,
+  "dist_epicentral_p95_km": 557.42,
+  "pga_h_geom_median_gal": 0.6425,
+  "pga_h_geom_max_gal": 352.506,
+  "output_merged_path": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\data\\interim\\aceldat_merged_base.parquet",
+  "output_unmatched_path": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\data\\interim\\aceldat_unmatched.parquet"
+}

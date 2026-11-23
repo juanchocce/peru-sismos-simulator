@@ -1,0 +1,24 @@
+{
+  "fondes_districts": 1893,
+  "sigrid_risk_distribution": {
+    "Alto": 839,
+    "Muy Bajo": 504,
+    "Muy Alto": 295,
+    "Bajo": 134,
+    "Medio": 121
+  },
+  "peligros_total_points": 37023,
+  "peligros_with_ubigeo": 35687,
+  "peligros_missing_ubigeo": 1336,
+  "peligros_ubigeos_not_in_fondes": 5,
+  "districts_with_peligros": 1712,
+  "districts_with_peligros_pct": 90.44,
+  "zonas_criticas_total_points": 2177,
+  "zonas_criticas_ubigeos_not_in_fondes": 0,
+  "districts_with_zonas_criticas": 918,
+  "districts_with_zonas_criticas_pct": 48.49,
+  "sum_peligros_assigned_to_fondes": 35673,
+  "sum_zonas_criticas_assigned_to_fondes": 2177,
+  "sum_zonas_criticas_activas_fondes": 2175,
+  "fondes_overflow_cells_repaired": 5
+}

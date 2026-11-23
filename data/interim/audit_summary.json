@@ -1,0 +1,3069 @@
+{
+  "base_dir": "C:\\Users\\usuario\\Desktop\\yo\\proyecto\\terremotos\\base_informativa",
+  "file_inventory": [
+    {
+      "relative_path": "Amb-27.pdf",
+      "name": "Amb-27.pdf",
+      "extension": ".pdf",
+      "size_bytes": 1577729,
+      "size_mb": 1.5046
+    },
+    {
+      "relative_path": "api usgs.txt",
+      "name": "api usgs.txt",
+      "extension": ".txt",
+      "size_bytes": 13617,
+      "size_mb": 0.013
+    },
+    {
+      "relative_path": "datos-sismicos_Historico_1471-01-01_1959-12-31.xlsx",
+      "name": "datos-sismicos_Historico_1471-01-01_1959-12-31.xlsx",
+      "extension": ".xlsx",
+      "size_bytes": 63525,
+      "size_mb": 0.0606
+    },
+    {
+      "relative_path": "datos-sismicos_Instrumental_1960-01-01_2026-11-22.xlsx",
+      "name": "datos-sismicos_Instrumental_1960-01-01_2026-11-22.xlsx",
+      "extension": ".xlsx",
+      "size_bytes": 1258112,
+      "size_mb": 1.1998
+    },
+    {
+      "relative_path": "FONDES_relacion_distritos_nov26.pdf",
+      "name": "FONDES_relacion_distritos_nov26.pdf",
+      "extension": ".pdf",
+      "size_bytes": 533103,
+      "size_mb": 0.5084
+    },
+    {
+      "relative_path": "IGP_ACELDAT_Peru_2019-2025_Dataset_0.csv",
+      "name": "IGP_ACELDAT_Peru_2019-2025_Dataset_0.csv",
+      "extension": ".csv",
+      "size_bytes": 1995480,
+      "size_mb": 1.903
+    },
+    {
+      "relative_path": "IGP_ACELDAT_Peru_2019-2025_DiccionarioDatos.txt",
+      "name": "IGP_ACELDAT_Peru_2019-2025_DiccionarioDatos.txt",
+      "extension": ".txt",
+      "size_bytes": 2036,
+      "size_mb": 0.0019
+    },
+    {
+      "relative_path": "IGP_catalogo_sismicos_desde_1960_ DiccionarioDatos.txt",
+      "name": "IGP_catalogo_sismicos_desde_1960_ DiccionarioDatos.txt",
+      "extension": ".txt",
+      "size_bytes": 1113,
+      "size_mb": 0.0011
+    },
+    {
+      "relative_path": "Microzonificacion-sismica-CISMID-.pdf",
+      "name": "Microzonificacion-sismica-CISMID-.pdf",
+      "extension": ".pdf",
+      "size_bytes": 3046615,
+      "size_mb": 2.9055
+    },
+    {
+      "relative_path": "mp-2025.webp",
+      "name": "mp-2025.webp",
+      "extension": ".webp",
+      "size_bytes": 1174106,
+      "size_mb": 1.1197
+    },
+    {
+      "relative_path": "pagina web geocatmin/geocatmin_datos.zip",
+      "name": "geocatmin_datos.zip",
+      "extension": ".zip",
+      "size_bytes": 3760371,
+      "size_mb": 3.5862
+    },
+    {
+      "relative_path": "R01_RIESGO_SISMICO_LIMA_A0-ultimo.pdf",
+      "name": "R01_RIESGO_SISMICO_LIMA_A0-ultimo.pdf",
+      "extension": ".pdf",
+      "size_bytes": 5765885,
+      "size_mb": 5.4988
+    },
+    {
+      "relative_path": "red sistemica nacional peru.webp",
+      "name": "red sistemica nacional peru.webp",
+      "extension": ".webp",
+      "size_bytes": 387920,
+      "size_mb": 0.3699
+    },
+    {
+      "relative_path": "Red_CIP.jpg",
+      "name": "Red_CIP.jpg",
+      "extension": ".jpg",
+      "size_bytes": 1013673,
+      "size_mb": 0.9667
+    },
+    {
+      "relative_path": "Red_IGP.jpg",
+      "name": "Red_IGP.jpg",
+      "extension": ".jpg",
+      "size_bytes": 1069817,
+      "size_mb": 1.0203
+    },
+    {
+      "relative_path": "Red_SENCICO.jpg",
+      "name": "Red_SENCICO.jpg",
+      "extension": ".jpg",
+      "size_bytes": 1003748,
+      "size_mb": 0.9572
+    },
+    {
+      "relative_path": "reporte red acelerometrica 20260825_20261122.pdf",
+      "name": "reporte red acelerometrica 20260825_20261122.pdf",
+      "extension": ".pdf",
+      "size_bytes": 1532879,
+      "size_mb": 1.4619
+    },
+    {
+      "relative_path": "tectonicplates/tectonicplates-master.zip",
+      "name": "tectonicplates-master.zip",
+      "extension": ".zip",
+      "size_bytes": 7596103,
+      "size_mb": 7.2442
+    }
+  ],
+  "zip_archives": [
+    {
+      "zip_relative_path": "pagina web geocatmin/geocatmin_datos.zip",
+      "extracted_to": "data/raw/geocatmin",
+      "internal_file_count": 53,
+      "internal_files": [
+        {
+          "filename": "zipfolder/data.gdb/a00000001.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 110,
+          "compress_size_bytes": 80
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000001.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 375,
+          "compress_size_bytes": 227
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000001.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 72
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000001.TablesByName.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 222
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000002.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 2055,
+          "compress_size_bytes": 641
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000002.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 133
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000003.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 42,
+          "compress_size_bytes": 33
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000003.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 991,
+          "compress_size_bytes": 348
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000003.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 45
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.CatItemsByPhysicalName.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 138
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.CatItemsByType.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 140
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.FDO_UUID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 182
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.freelist",
+          "is_dir": false,
+          "file_size_bytes": 8536,
+          "compress_size_bytes": 72
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 310,
+          "compress_size_bytes": 131
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 219289,
+          "compress_size_bytes": 29901
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 57
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000004.spx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 35
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000005.CatItemTypesByName.atx",
+          "is_dir": false,
+          "file_size_bytes": 12310,
+          "compress_size_bytes": 529
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000005.CatItemTypesByParentTypeID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 281
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000005.CatItemTypesByUUID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 871
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000005.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 296,
+          "compress_size_bytes": 114
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000005.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 1803,
+          "compress_size_bytes": 1123
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000005.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 130
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.CatRelsByDestinationID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 132
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.CatRelsByOriginID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 89
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.CatRelsByType.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 87
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.FDO_UUID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 132
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 318,
+          "compress_size_bytes": 128
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 409,
+          "compress_size_bytes": 279
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000006.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 43
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.CatRelTypesByBackwardLabel.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 323
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.CatRelTypesByDestItemTypeID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 308
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.CatRelTypesByForwardLabel.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 261
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.CatRelTypesByName.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 321
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.CatRelTypesByOriginItemTypeID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 387
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.CatRelTypesByUUID.atx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 490
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 602,
+          "compress_size_bytes": 173
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 2504,
+          "compress_size_bytes": 1316
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000007.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 93
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000009.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 116,
+          "compress_size_bytes": 66
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000009.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 15297465,
+          "compress_size_bytes": 3218135
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000009.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 189472,
+          "compress_size_bytes": 103328
+        },
+        {
+          "filename": "zipfolder/data.gdb/a00000009.spx",
+          "is_dir": false,
+          "file_size_bytes": 450582,
+          "compress_size_bytes": 97601
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000a.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 116,
+          "compress_size_bytes": 66
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000a.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 972262,
+          "compress_size_bytes": 273011
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000a.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 15392,
+          "compress_size_bytes": 6036
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000a.spx",
+          "is_dir": false,
+          "file_size_bytes": 32790,
+          "compress_size_bytes": 6223
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000b.gdbindexes",
+          "is_dir": false,
+          "file_size_bytes": 116,
+          "compress_size_bytes": 66
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000b.gdbtable",
+          "is_dir": false,
+          "file_size_bytes": 8455,
+          "compress_size_bytes": 7216
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000b.gdbtablx",
+          "is_dir": false,
+          "file_size_bytes": 5152,
+          "compress_size_bytes": 38
+        },
+        {
+          "filename": "zipfolder/data.gdb/a0000000b.spx",
+          "is_dir": false,
+          "file_size_bytes": 4118,
+          "compress_size_bytes": 60
+        },
+        {
+          "filename": "zipfolder/data.gdb/gdb",
+          "is_dir": false,
+          "file_size_bytes": 4,
+          "compress_size_bytes": 6
+        },
+        {
+          "filename": "zipfolder/data.gdb/timestamps",
+          "is_dir": false,
+          "file_size_bytes": 400,
+          "compress_size_bytes": 28
+        }
+      ],
+      "spatial_layers": [
+        {
+          "layer": "Peligros_Geologicos",
+          "driver": "OpenFileGDB",
+          "feature_count": 37023,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "Point": 37023
+          },
+          "bounds": [
+            -81.306584,
+            -18.298849,
+            -68.798164,
+            -1.56015
+          ],
+          "columns": [
+            {
+              "column": "MUESTRA",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Peligros",
+                "Peligros",
+                "Peligros"
+              ]
+            },
+            {
+              "column": "PROYECTO",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Riesgos Geológicos en la Regiones Piura y Tumbes",
+                "Riesgos Geológicos en la Regiones Piura y Tumbes",
+                "Riesgos Geológicos en la Regiones Piura y Tumbes"
+              ]
+            },
+            {
+              "column": "PROYECTO_C",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "GA-32",
+                "GA-32",
+                "GA-32"
+              ]
+            },
+            {
+              "column": "CODIGO_INV",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "066141075",
+                "066011013",
+                "066221051"
+              ]
+            },
+            {
+              "column": "NORTE",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "9481103.0",
+                "9425050.0",
+                "9506282.0"
+              ]
+            },
+            {
+              "column": "ESTE",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "470370.0",
+                "479284.0",
+                "477958.0"
+              ]
+            },
+            {
+              "column": "LONGITUD",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-81.2671666667",
+                "-81.1869338261",
+                "-81.1986849268"
+              ]
+            },
+            {
+              "column": "LATITUD",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-4.6944674356",
+                "-5.2015820248",
+                "-4.466703938"
+              ]
+            },
+            {
+              "column": "FRANJA",
+              "dtype": "str",
+              "null_count": 2324,
+              "sample_values": [
+                "7",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "CUADRANGUL",
+              "dtype": "str",
+              "null_count": 1102,
+              "sample_values": [
+                "10-a",
+                "11-a",
+                "9-a"
+              ]
+            },
+            {
+              "column": "DPTO",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                "PIURA",
+                "PIURA",
+                "PIURA"
+              ]
+            },
+            {
+              "column": "PROV",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                "TALARA",
+                "PAITA",
+                "TALARA"
+              ]
+            },
+            {
+              "column": "DIST",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                "LA BREA",
+                "PAITA",
+                "PARIÑAS"
+              ]
+            },
+            {
+              "column": "CUENCA",
+              "dtype": "str",
+              "null_count": 1585,
+              "sample_values": [
+                " ",
+                "Chira",
+                " "
+              ]
+            },
+            {
+              "column": "FECHA_MUES",
+              "dtype": "datetime64[ms, UTC]",
+              "null_count": 35334,
+              "sample_values": [
+                "2020-11-05 00:00:00+00:00",
+                "2022-05-19 00:00:00+00:00",
+                "2019-06-10 00:00:00+00:00"
+              ]
+            },
+            {
+              "column": "TIPO_PELIG",
+              "dtype": "str",
+              "null_count": 4,
+              "sample_values": [
+                "Flujo",
+                "Flujo",
+                "Flujo"
+              ]
+            },
+            {
+              "column": "PELIGRO_ES",
+              "dtype": "str",
+              "null_count": 217,
+              "sample_values": [
+                "Flujo de Lodo",
+                "Flujo de Detrito",
+                "Flujo de Lodo"
+              ]
+            },
+            {
+              "column": "PENDIENTE",
+              "dtype": "str",
+              "null_count": 1141,
+              "sample_values": [
+                "Media (20 - 35º)",
+                "Media (20 - 35º)",
+                "Baja (5 - 20º)"
+              ]
+            },
+            {
+              "column": "GRADO_ALTE",
+              "dtype": "str",
+              "null_count": 2178,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "GRADO_PELI",
+              "dtype": "str",
+              "null_count": 733,
+              "sample_values": [
+                "Medio",
+                "Medio",
+                "Medio"
+              ]
+            },
+            {
+              "column": "GRADO_VULN",
+              "dtype": "str",
+              "null_count": 735,
+              "sample_values": [
+                "Medio",
+                "Medio",
+                "Medio"
+              ]
+            },
+            {
+              "column": "RIESGO_EST",
+              "dtype": "str",
+              "null_count": 2382,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "MEDIDAS_PR",
+              "dtype": "str",
+              "null_count": 2336,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "RECOMENDAC",
+              "dtype": "str",
+              "null_count": 2188,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "FECHA_REGI",
+              "dtype": "datetime64[ms, UTC]",
+              "null_count": 35818,
+              "sample_values": [
+                "2010-01-14 08:52:12+00:00",
+                "2008-02-18 08:25:09+00:00",
+                "2008-02-18 08:25:09+00:00"
+              ]
+            },
+            {
+              "column": "DANHOS",
+              "dtype": "str",
+              "null_count": 1463,
+              "sample_values": [
+                "Ocasionados",
+                " ",
+                "Ocasionados"
+              ]
+            },
+            {
+              "column": "AUTOR",
+              "dtype": "str",
+              "null_count": 924,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "TITULO_EST",
+              "dtype": "str",
+              "null_count": 896,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "FECHA",
+              "dtype": "str",
+              "null_count": 837,
+              "sample_values": [
+                "04/10/09",
+                "06/06/09",
+                "20/10/09"
+              ]
+            },
+            {
+              "column": "RUTA_FOTO",
+              "dtype": "str",
+              "null_count": 2307,
+              "sample_values": [
+                " ",
+                "\\\\srvfile01\\bdgeocientifica$\\geofotos\\peligros\\00015121700001.jpg",
+                "\\\\srvfile01\\bdgeocientifica$\\geofotos\\peligros\\00015244500001.jpg"
+              ]
+            },
+            {
+              "column": "ZONA",
+              "dtype": "float64",
+              "null_count": 3,
+              "sample_values": [
+                "17.0",
+                "17.0",
+                "17.0"
+              ]
+            },
+            {
+              "column": "COD_INT_MU",
+              "dtype": "int32",
+              "null_count": 0,
+              "sample_values": [
+                "0",
+                "0",
+                "0"
+              ]
+            },
+            {
+              "column": "CD_DEPA",
+              "dtype": "str",
+              "null_count": 1336,
+              "sample_values": [
+                "20",
+                "20",
+                "20"
+              ]
+            },
+            {
+              "column": "CD_PROV",
+              "dtype": "str",
+              "null_count": 1336,
+              "sample_values": [
+                "2007",
+                "2005",
+                "2007"
+              ]
+            },
+            {
+              "column": "CD_DIST",
+              "dtype": "str",
+              "null_count": 1336,
+              "sample_values": [
+                "200703",
+                "200501",
+                "200701"
+              ]
+            },
+            {
+              "column": "NM_DEPA",
+              "dtype": "str",
+              "null_count": 414,
+              "sample_values": [
+                "PIURA",
+                "PIURA",
+                "PIURA"
+              ]
+            },
+            {
+              "column": "NM_PROV",
+              "dtype": "str",
+              "null_count": 414,
+              "sample_values": [
+                "TALARA",
+                "PAITA",
+                "TALARA"
+              ]
+            },
+            {
+              "column": "NM_DIST",
+              "dtype": "str",
+              "null_count": 414,
+              "sample_values": [
+                "LA BREA",
+                "PAITA",
+                "PARIÑAS"
+              ]
+            },
+            {
+              "column": "PARAJE",
+              "dtype": "str",
+              "null_count": 1066,
+              "sample_values": [
+                "Qda. Acholada",
+                "La Islilla",
+                "Km. 1107+233"
+              ]
+            }
+          ],
+          "source_subpath": "zipfolder/data.gdb",
+          "declared_geom_type": "Point"
+        },
+        {
+          "layer": "Zonas_Criticas",
+          "driver": "OpenFileGDB",
+          "feature_count": 2177,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "Point": 2177
+          },
+          "bounds": [
+            -81.304684,
+            -18.06737,
+            -68.963376,
+            -2.48732
+          ],
+          "columns": [
+            {
+              "column": "NUM",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "1836.0",
+                "1824.0",
+                "1825.0"
+              ]
+            },
+            {
+              "column": "PELIGROS_G",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Flujo de detritos y erosión de laderas",
+                "Flujo de lodo, flujo de detritos, erosión de laderas",
+                "Flujo de lodo"
+              ]
+            },
+            {
+              "column": "ZONA",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "17.0",
+                "17.0",
+                "17.0"
+              ]
+            },
+            {
+              "column": "REGION",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Piura",
+                "Piura",
+                "Piura"
+              ]
+            },
+            {
+              "column": "PARAJE",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Carretera Paita-La Islilla",
+                "Talara",
+                "Panamericana entre las quebradas Pariñas y Honda"
+              ]
+            },
+            {
+              "column": "PROVINCIA",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Paita",
+                "Talara",
+                "Talara"
+              ]
+            },
+            {
+              "column": "X",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "486436.0",
+                "469658.0",
+                "477200.0"
+              ]
+            },
+            {
+              "column": "X_GEO",
+              "dtype": "float64",
+              "null_count": 1,
+              "sample_values": [
+                "-81.12239317",
+                "-81.27353685",
+                "-81.20553541"
+              ]
+            },
+            {
+              "column": "Y_GEO",
+              "dtype": "float64",
+              "null_count": 1,
+              "sample_values": [
+                "-5.18253678",
+                "-4.56505308",
+                "-4.53077076"
+              ]
+            },
+            {
+              "column": "DISTRITO",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Paita",
+                "Pariñas",
+                "Pariñas"
+              ]
+            },
+            {
+              "column": "Y",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "9427157.0",
+                "9495408.0",
+                "9499200.0"
+              ]
+            },
+            {
+              "column": "BOLETIN",
+              "dtype": "str",
+              "null_count": 1,
+              "sample_values": [
+                "Riesgo geológico en la región Piura [Boletín C 52]",
+                "Riesgo geológico en la región Piura [Boletín C 52]",
+                "Riesgo geológico en la región Piura [Boletín C 52]"
+              ]
+            },
+            {
+              "column": "PROYECTO",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "GA-32: Riesgo geológico en las regiones Piura y Tumbes",
+                "GA-32: Riesgo geológico en las regiones Piura y Tumbes",
+                "GA-32: Riesgo geológico en las regiones Piura y Tumbes"
+              ]
+            },
+            {
+              "column": "ELEMENTO",
+              "dtype": "str",
+              "null_count": 1,
+              "sample_values": [
+                "Afecta la carretera Paita -La Islilla, en varios tramos.",
+                "Los flujos pueden interrumpir el tránsito y afectar las viviendas ubicadas cerca del cauce de las torrenteras. Pueden ser afectadas viviendas que se ubiquen cerca y debajo de las zonas de derrumbe.",
+                "Los flujos cortaron la carretera Panamericana Norte durante el fenómeno de El Niño."
+              ]
+            },
+            {
+              "column": "RECOMEND",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            },
+            {
+              "column": "COD_PELIGRO",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                "t,x",
+                "t,x",
+                "t"
+              ]
+            },
+            {
+              "column": "COD_REGION",
+              "dtype": "float64",
+              "null_count": 3,
+              "sample_values": [
+                "42.0",
+                "30.0",
+                "31.0"
+              ]
+            },
+            {
+              "column": "COD_PELIGRO_NUM",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                "20,24",
+                "20,24",
+                "20"
+              ]
+            },
+            {
+              "column": "URL_BOLETIN",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "https://hdl.handle.net/20.500.12544/294",
+                "https://hdl.handle.net/20.500.12544/294",
+                "https://hdl.handle.net/20.500.12544/294"
+              ]
+            },
+            {
+              "column": "FOTO",
+              "dtype": "object",
+              "null_count": 2177,
+              "sample_values": []
+            },
+            {
+              "column": "CD_DEPA",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "20",
+                "20",
+                "20"
+              ]
+            },
+            {
+              "column": "CD_PROV",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "2005",
+                "2007",
+                "2007"
+              ]
+            },
+            {
+              "column": "CD_DIST",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "200501",
+                "200701",
+                "200701"
+              ]
+            },
+            {
+              "column": "NM_DIST",
+              "dtype": "str",
+              "null_count": 2,
+              "sample_values": [
+                "PAITA",
+                "PARIÑAS",
+                "PARIÑAS"
+              ]
+            },
+            {
+              "column": "NM_PROV",
+              "dtype": "str",
+              "null_count": 2,
+              "sample_values": [
+                "PAITA",
+                "TALARA",
+                "TALARA"
+              ]
+            },
+            {
+              "column": "NM_DEPA",
+              "dtype": "str",
+              "null_count": 2,
+              "sample_values": [
+                "PIURA",
+                "PIURA",
+                "PIURA"
+              ]
+            },
+            {
+              "column": "INDICADORACTIVO",
+              "dtype": "str",
+              "null_count": 2,
+              "sample_values": [
+                "A",
+                "A",
+                "A"
+              ]
+            },
+            {
+              "column": "ANIO",
+              "dtype": "object",
+              "null_count": 2177,
+              "sample_values": []
+            },
+            {
+              "column": "RECOMEND_1",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                " ",
+                " ",
+                " "
+              ]
+            }
+          ],
+          "source_subpath": "zipfolder/data.gdb",
+          "declared_geom_type": "Point"
+        },
+        {
+          "layer": "Limite_Paises",
+          "driver": "OpenFileGDB",
+          "feature_count": 1,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "MultiPolygon": 1
+          },
+          "bounds": [
+            -81.355148,
+            -18.348545,
+            -68.673904,
+            -0.036875
+          ],
+          "columns": [
+            {
+              "column": "PLACENAME",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Peru"
+              ]
+            },
+            {
+              "column": "SHAPE_Length",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "68.28538168501271"
+              ]
+            },
+            {
+              "column": "SHAPE_Area",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "106.50085728407451"
+              ]
+            }
+          ],
+          "source_subpath": "zipfolder/data.gdb",
+          "declared_geom_type": "MultiPolygon"
+        }
+      ],
+      "text_docs": []
+    },
+    {
+      "zip_relative_path": "tectonicplates/tectonicplates-master.zip",
+      "extracted_to": "data/raw/tectonic_plates",
+      "internal_file_count": 50,
+      "internal_files": [
+        {
+          "filename": "tectonicplates-master/",
+          "is_dir": true,
+          "file_size_bytes": 0,
+          "compress_size_bytes": 0
+        },
+        {
+          "filename": "tectonicplates-master/.gitignore",
+          "is_dir": false,
+          "file_size_bytes": 13,
+          "compress_size_bytes": 13
+        },
+        {
+          "filename": "tectonicplates-master/GeoJSON/",
+          "is_dir": true,
+          "file_size_bytes": 0,
+          "compress_size_bytes": 0
+        },
+        {
+          "filename": "tectonicplates-master/GeoJSON/PB2002_boundaries.json",
+          "is_dir": false,
+          "file_size_bytes": 226378,
+          "compress_size_bytes": 54564
+        },
+        {
+          "filename": "tectonicplates-master/GeoJSON/PB2002_orogens.json",
+          "is_dir": false,
+          "file_size_bytes": 33209,
+          "compress_size_bytes": 10337
+        },
+        {
+          "filename": "tectonicplates-master/GeoJSON/PB2002_plates.json",
+          "is_dir": false,
+          "file_size_bytes": 327718,
+          "compress_size_bytes": 89763
+        },
+        {
+          "filename": "tectonicplates-master/GeoJSON/PB2002_steps.json",
+          "is_dir": false,
+          "file_size_bytes": 10371475,
+          "compress_size_bytes": 2633851
+        },
+        {
+          "filename": "tectonicplates-master/LICENSE.md",
+          "is_dir": false,
+          "file_size_bytes": 186,
+          "compress_size_bytes": 124
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.dbf",
+          "is_dir": false,
+          "file_size_bytes": 53969,
+          "compress_size_bytes": 3127
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.prj",
+          "is_dir": false,
+          "file_size_bytes": 145,
+          "compress_size_bytes": 121
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.sbn",
+          "is_dir": false,
+          "file_size_bytes": 2476,
+          "compress_size_bytes": 1631
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.sbx",
+          "is_dir": false,
+          "file_size_bytes": 300,
+          "compress_size_bytes": 162
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.shp",
+          "is_dir": false,
+          "file_size_bytes": 114268,
+          "compress_size_bytes": 60532
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.shp.xml",
+          "is_dir": false,
+          "file_size_bytes": 19872,
+          "compress_size_bytes": 8665
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_boundaries.shx",
+          "is_dir": false,
+          "file_size_bytes": 2028,
+          "compress_size_bytes": 1086
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.cpg",
+          "is_dir": false,
+          "file_size_bytes": 5,
+          "compress_size_bytes": 5
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.dbf",
+          "is_dir": false,
+          "file_size_bytes": 1209,
+          "compress_size_bytes": 353
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.prj",
+          "is_dir": false,
+          "file_size_bytes": 145,
+          "compress_size_bytes": 121
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.sbn",
+          "is_dir": false,
+          "file_size_bytes": 260,
+          "compress_size_bytes": 153
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.sbx",
+          "is_dir": false,
+          "file_size_bytes": 132,
+          "compress_size_bytes": 61
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.shp",
+          "is_dir": false,
+          "file_size_bytes": 19024,
+          "compress_size_bytes": 13396
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.shp.xml",
+          "is_dir": false,
+          "file_size_bytes": 14285,
+          "compress_size_bytes": 5647
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_orogens.shx",
+          "is_dir": false,
+          "file_size_bytes": 204,
+          "compress_size_bytes": 130
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.dbf",
+          "is_dir": false,
+          "file_size_bytes": 8662,
+          "compress_size_bytes": 653
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.prj",
+          "is_dir": false,
+          "file_size_bytes": 143,
+          "compress_size_bytes": 121
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.sbn",
+          "is_dir": false,
+          "file_size_bytes": 652,
+          "compress_size_bytes": 443
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.sbx",
+          "is_dir": false,
+          "file_size_bytes": 164,
+          "compress_size_bytes": 75
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.shp",
+          "is_dir": false,
+          "file_size_bytes": 190944,
+          "compress_size_bytes": 104955
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.shp.xml",
+          "is_dir": false,
+          "file_size_bytes": 17119,
+          "compress_size_bytes": 7736
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_plates.shx",
+          "is_dir": false,
+          "file_size_bytes": 532,
+          "compress_size_bytes": 353
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_poles.xls",
+          "is_dir": false,
+          "file_size_bytes": 22528,
+          "compress_size_bytes": 6458
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.cpg",
+          "is_dir": false,
+          "file_size_bytes": 5,
+          "compress_size_bytes": 5
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.dbf",
+          "is_dir": false,
+          "file_size_bytes": 8602658,
+          "compress_size_bytes": 283291
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.prj",
+          "is_dir": false,
+          "file_size_bytes": 145,
+          "compress_size_bytes": 121
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.sbn",
+          "is_dir": false,
+          "file_size_bytes": 58044,
+          "compress_size_bytes": 29827
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.sbx",
+          "is_dir": false,
+          "file_size_bytes": 3268,
+          "compress_size_bytes": 1497
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.shp",
+          "is_dir": false,
+          "file_size_bytes": 4632692,
+          "compress_size_bytes": 3718427
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.shp.xml",
+          "is_dir": false,
+          "file_size_bytes": 25943,
+          "compress_size_bytes": 9837
+        },
+        {
+          "filename": "tectonicplates-master/PB2002_steps.shx",
+          "is_dir": false,
+          "file_size_bytes": 46692,
+          "compress_size_bytes": 24535
+        },
+        {
+          "filename": "tectonicplates-master/README.md",
+          "is_dir": false,
+          "file_size_bytes": 2871,
+          "compress_size_bytes": 1403
+        },
+        {
+          "filename": "tectonicplates-master/example_plates.png",
+          "is_dir": false,
+          "file_size_bytes": 38338,
+          "compress_size_bytes": 37732
+        },
+        {
+          "filename": "tectonicplates-master/original/",
+          "is_dir": true,
+          "file_size_bytes": 0,
+          "compress_size_bytes": 0
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_boundaries.dig.txt",
+          "is_dir": false,
+          "file_size_bytes": 181502,
+          "compress_size_bytes": 50958
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_orogens.dig.txt",
+          "is_dir": false,
+          "file_size_bytes": 31662,
+          "compress_size_bytes": 9776
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_plates.dig.txt",
+          "is_dir": false,
+          "file_size_bytes": 329608,
+          "compress_size_bytes": 85239
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_poles.dat.txt",
+          "is_dir": false,
+          "file_size_bytes": 2802,
+          "compress_size_bytes": 1272
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_steps.csv",
+          "is_dir": false,
+          "file_size_bytes": 558825,
+          "compress_size_bytes": 158962
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_steps.dat.txt",
+          "is_dir": false,
+          "file_size_bytes": 564443,
+          "compress_size_bytes": 165578
+        },
+        {
+          "filename": "tectonicplates-master/original/PB2002_steps_desc.txt",
+          "is_dir": false,
+          "file_size_bytes": 1528,
+          "compress_size_bytes": 754
+        },
+        {
+          "filename": "tectonicplates-master/original/README.md",
+          "is_dir": false,
+          "file_size_bytes": 8019,
+          "compress_size_bytes": 3355
+        }
+      ],
+      "spatial_layers": [
+        {
+          "layer": "PB2002_boundaries.json",
+          "driver": "GeoJSON",
+          "feature_count": 241,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "LineString": 241
+          },
+          "bounds": [
+            -180.0,
+            -66.1632,
+            180.0,
+            86.8049
+          ],
+          "columns": [
+            {
+              "column": "LAYER",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "plate boundary",
+                "plate boundary",
+                "plate boundary"
+              ]
+            },
+            {
+              "column": "Name",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF-AN",
+                "AF-AN",
+                "AN-AF"
+              ]
+            },
+            {
+              "column": "Source",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Mueller et al. [1987]",
+                "by Peter Bird, October 2001",
+                "Lemaux et al. [2002]"
+              ]
+            },
+            {
+              "column": "PlateA",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF",
+                "AF",
+                "AN"
+              ]
+            },
+            {
+              "column": "PlateB",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AN",
+                "AN",
+                "AF"
+              ]
+            },
+            {
+              "column": "Type",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "",
+                "",
+                ""
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/GeoJSON/PB2002_boundaries.json"
+        },
+        {
+          "layer": "PB2002_orogens.json",
+          "driver": "GeoJSON",
+          "feature_count": 13,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "Polygon": 12,
+            "MultiPolygon": 1
+          },
+          "bounds": [
+            -180.0,
+            -36.5722,
+            180.0,
+            76.9245
+          ],
+          "columns": [
+            {
+              "column": "LAYER",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "orogen",
+                "orogen",
+                "orogen"
+              ]
+            },
+            {
+              "column": "Name",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Puna-Sierras Pampeanas",
+                "New Hebrides-Fiji",
+                "Peru"
+              ]
+            },
+            {
+              "column": "Source",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "by Peter Bird, September 2001",
+                "by Peter Bird, December 2001",
+                "Peter Bird, June 2002"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/GeoJSON/PB2002_orogens.json"
+        },
+        {
+          "layer": "PB2002_plates.json",
+          "driver": "GeoJSON",
+          "feature_count": 54,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "Polygon": 52,
+            "MultiPolygon": 2
+          },
+          "bounds": [
+            -180.0,
+            -90.0,
+            180.0,
+            90.0
+          ],
+          "columns": [
+            {
+              "column": "LAYER",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "plate",
+                "plate",
+                "plate"
+              ]
+            },
+            {
+              "column": "Code",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF",
+                "AN",
+                "SO"
+              ]
+            },
+            {
+              "column": "PlateName",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Africa",
+                "Antarctica",
+                "Somalia"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/GeoJSON/PB2002_plates.json"
+        },
+        {
+          "layer": "PB2002_steps.json",
+          "driver": "GeoJSON",
+          "feature_count": 5824,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "LineString": 5824
+          },
+          "bounds": [
+            -179.999999,
+            -66.163,
+            179.999999,
+            86.805
+          ],
+          "columns": [
+            {
+              "column": "SEQNUM",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "1.0",
+                "2.0",
+                "3.0"
+              ]
+            },
+            {
+              "column": "STARTLONG",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-0.438",
+                "-0.039",
+                "0.443"
+              ]
+            },
+            {
+              "column": "STARTLAT",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-54.852",
+                "-54.677",
+                "-54.451"
+              ]
+            },
+            {
+              "column": "FINALLONG",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-0.039",
+                "0.443",
+                "0.965"
+              ]
+            },
+            {
+              "column": "FINALLAT",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-54.677",
+                "-54.451",
+                "-54.832"
+              ]
+            },
+            {
+              "column": "PLATEBOUND",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF-AN",
+                "AF-AN",
+                "AF-AN"
+              ]
+            },
+            {
+              "column": "BOUNDCONT",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "FALSE",
+                "TRUE",
+                "TRUE"
+              ]
+            },
+            {
+              "column": "STEPLENGTH",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "32.1",
+                "40.0",
+                "54.0"
+              ]
+            },
+            {
+              "column": "AZIMUTHCEN",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "53.0",
+                "51.0",
+                "142.0"
+              ]
+            },
+            {
+              "column": "VELOCITYLE",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "13.2",
+                "13.2",
+                "13.2"
+              ]
+            },
+            {
+              "column": "VELOCITYAZ",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "48.0",
+                "47.0",
+                "47.0"
+              ]
+            },
+            {
+              "column": "VELOCITYDI",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "1.2",
+                "0.9",
+                "13.1"
+              ]
+            },
+            {
+              "column": "VELOCITYRI",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "13.1",
+                "13.1",
+                "-1.1"
+              ]
+            },
+            {
+              "column": "ELEVATION",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-1584.0",
+                "-1639.0",
+                "-1687.0"
+              ]
+            },
+            {
+              "column": "SEAFLOORAG",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "2.0",
+                "5.0",
+                "4.0"
+              ]
+            },
+            {
+              "column": "STEPCLASS",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "OTF",
+                "OTF",
+                "OSR"
+              ]
+            },
+            {
+              "column": "STEPCONTIN",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "FALSE",
+                "TRUE",
+                "FALSE"
+              ]
+            },
+            {
+              "column": "OROGEN",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "FALSE",
+                "FALSE",
+                "FALSE"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/GeoJSON/PB2002_steps.json"
+        },
+        {
+          "layer": "PB2002_boundaries.shp",
+          "driver": "ESRI Shapefile",
+          "feature_count": 241,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "LineString": 241
+          },
+          "bounds": [
+            -180.0,
+            -66.1632,
+            180.0,
+            86.8049
+          ],
+          "columns": [
+            {
+              "column": "LAYER",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "plate boundary",
+                "plate boundary",
+                "plate boundary"
+              ]
+            },
+            {
+              "column": "Name",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF-AN",
+                "AF-AN",
+                "AN-AF"
+              ]
+            },
+            {
+              "column": "Source",
+              "dtype": "str",
+              "null_count": 3,
+              "sample_values": [
+                "Mueller et al. [1987]",
+                "by Peter Bird, October 2001",
+                "Lemaux et al. [2002]"
+              ]
+            },
+            {
+              "column": "PlateA",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF",
+                "AF",
+                "AN"
+              ]
+            },
+            {
+              "column": "PlateB",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AN",
+                "AN",
+                "AF"
+              ]
+            },
+            {
+              "column": "Type",
+              "dtype": "str",
+              "null_count": 176,
+              "sample_values": [
+                "subduction",
+                "subduction",
+                "subduction"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/PB2002_boundaries.shp"
+        },
+        {
+          "layer": "PB2002_orogens.shp",
+          "driver": "ESRI Shapefile",
+          "feature_count": 13,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "Polygon": 12,
+            "MultiPolygon": 1
+          },
+          "bounds": [
+            -180.0,
+            -36.5722,
+            180.0,
+            76.9245
+          ],
+          "columns": [
+            {
+              "column": "LAYER",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "orogen",
+                "orogen",
+                "orogen"
+              ]
+            },
+            {
+              "column": "Name",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Puna-Sierras Pampeanas",
+                "New Hebrides-Fiji",
+                "Peru"
+              ]
+            },
+            {
+              "column": "Source",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "by Peter Bird, September 2001",
+                "by Peter Bird, December 2001",
+                "Peter Bird, June 2002"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/PB2002_orogens.shp"
+        },
+        {
+          "layer": "PB2002_plates.shp",
+          "driver": "ESRI Shapefile",
+          "feature_count": 54,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "Polygon": 52,
+            "MultiPolygon": 2
+          },
+          "bounds": [
+            -180.0,
+            -90.0,
+            180.0,
+            90.0
+          ],
+          "columns": [
+            {
+              "column": "LAYER",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "plate",
+                "plate",
+                "plate"
+              ]
+            },
+            {
+              "column": "Code",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF",
+                "AN",
+                "SO"
+              ]
+            },
+            {
+              "column": "PlateName",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "Africa",
+                "Antarctica",
+                "Somalia"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/PB2002_plates.shp"
+        },
+        {
+          "layer": "PB2002_steps.shp",
+          "driver": "ESRI Shapefile",
+          "feature_count": 5824,
+          "crs": "EPSG:4326",
+          "geometry_types": {
+            "LineString": 5824
+          },
+          "bounds": [
+            -179.999999,
+            -66.163,
+            179.999999,
+            86.805
+          ],
+          "columns": [
+            {
+              "column": "SEQNUM",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "1.0",
+                "2.0",
+                "3.0"
+              ]
+            },
+            {
+              "column": "STARTLONG",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-0.438",
+                "-0.039",
+                "0.443"
+              ]
+            },
+            {
+              "column": "STARTLAT",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-54.852",
+                "-54.677",
+                "-54.451"
+              ]
+            },
+            {
+              "column": "FINALLONG",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-0.039",
+                "0.443",
+                "0.965"
+              ]
+            },
+            {
+              "column": "FINALLAT",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-54.677",
+                "-54.451",
+                "-54.832"
+              ]
+            },
+            {
+              "column": "PLATEBOUND",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "AF-AN",
+                "AF-AN",
+                "AF-AN"
+              ]
+            },
+            {
+              "column": "BOUNDCONT",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "FALSE",
+                "TRUE",
+                "TRUE"
+              ]
+            },
+            {
+              "column": "STEPLENGTH",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "32.1",
+                "40.0",
+                "54.0"
+              ]
+            },
+            {
+              "column": "AZIMUTHCEN",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "53.0",
+                "51.0",
+                "142.0"
+              ]
+            },
+            {
+              "column": "VELOCITYLE",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "13.2",
+                "13.2",
+                "13.2"
+              ]
+            },
+            {
+              "column": "VELOCITYAZ",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "48.0",
+                "47.0",
+                "47.0"
+              ]
+            },
+            {
+              "column": "VELOCITYDI",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "1.2",
+                "0.9",
+                "13.1"
+              ]
+            },
+            {
+              "column": "VELOCITYRI",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "13.1",
+                "13.1",
+                "-1.1"
+              ]
+            },
+            {
+              "column": "ELEVATION",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "-1584.0",
+                "-1639.0",
+                "-1687.0"
+              ]
+            },
+            {
+              "column": "SEAFLOORAG",
+              "dtype": "float64",
+              "null_count": 0,
+              "sample_values": [
+                "2.0",
+                "5.0",
+                "4.0"
+              ]
+            },
+            {
+              "column": "STEPCLASS",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "OTF",
+                "OTF",
+                "OSR"
+              ]
+            },
+            {
+              "column": "STEPCONTIN",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "FALSE",
+                "TRUE",
+                "FALSE"
+              ]
+            },
+            {
+              "column": "OROGEN",
+              "dtype": "str",
+              "null_count": 0,
+              "sample_values": [
+                "FALSE",
+                "FALSE",
+                "FALSE"
+              ]
+            }
+          ],
+          "source_subpath": "tectonicplates-master/PB2002_steps.shp"
+        }
+      ],
+      "text_docs": [
+        {
+          "subpath": "tectonicplates-master/LICENSE.md",
+          "lines": 1,
+          "preview": "**This collection of data is made available under the Open Data Commons Attribution License: [http://opendatacommons.org/licenses/by/1.0/](http://opendatacommons.org/licenses/by/1.0/)**"
+        },
+        {
+          "subpath": "tectonicplates-master/original/PB2002_boundaries.dig.txt",
+          "lines": 6506,
+          "preview": "AF-AN                      Mueller et al. [1987]\n -4.37900E-01,-5.48518E+01\n -3.88257E-02,-5.46772E+01\n +4.43182E-01,-5.44512E+01\n +9.64534E-01,-5.48322E+01\n +1.69481E+00,-5.43990E+01\n +2.35975E+00,-5.40374E+01\n +3.02542E+00,-5.36507E+01\n +3.36894E+00,-5.38341E+01\n +3.95638E+00,-5.41267E+01\n +4.41458E+00,-5.44303E+01\n +4.82661E+00,-5.41616E+01\n +5.08372E+00,-5.43093E+01\n +5.49469E+00,-5.45429E+01\n +6.18373E+00,-5.41145E+01"
+        },
+        {
+          "subpath": "tectonicplates-master/original/PB2002_orogens.dig.txt",
+          "lines": 1157,
+          "preview": "Alps                       by Peter Bird, September 2001\n +6.71754E+00,+3.72467E+01\n +7.29609E+00,+3.64716E+01\n +7.86316E+00,+3.56937E+01\n +8.41925E+00,+3.49132E+01\n +8.96486E+00,+3.41303E+01\n +9.96522E+00,+3.36789E+01\n +1.09550E+01,+3.32195E+01\n +1.19344E+01,+3.27524E+01\n +1.29035E+01,+3.22778E+01\n +1.38625E+01,+3.17958E+01\n +1.48114E+01,+3.13067E+01\n +1.57504E+01,+3.08107E+01\n +1.64075E+01,+3.14590E+01\n +1.70737E+01,+3.21039E+01"
+        },
+        {
+          "subpath": "tectonicplates-master/original/PB2002_plates.dig.txt",
+          "lines": 12252,
+          "preview": "AF\n -4.37900E-01,-5.48518E+01\n -3.88257E-02,-5.46772E+01\n +4.43182E-01,-5.44512E+01\n +9.64534E-01,-5.48322E+01\n +1.69481E+00,-5.43990E+01\n +2.35975E+00,-5.40374E+01\n +3.02542E+00,-5.36507E+01\n +3.36894E+00,-5.38341E+01\n +3.95638E+00,-5.41267E+01\n +4.41458E+00,-5.44303E+01\n +4.82661E+00,-5.41616E+01\n +5.08372E+00,-5.43093E+01\n +5.49469E+00,-5.45429E+01\n +6.18373E+00,-5.41145E+01"
+        },
+        {
+          "subpath": "tectonicplates-master/original/PB2002_poles.dat.txt",
+          "lines": 52,
+          "preview": "AF   59.160   -73.174   0.9270  DeMets et al. [1994]    PB2002_poles.dat:\nAM   57.645   -83.736   0.9309  Heki et al. [1999]      ID, NLat, ELon, Deg/Ma CCW\nAN   64.315   -83.984   0.8695  DeMets et al. [1994]    (A2,F9.3,F10.3,F9.4)\nAP   33.639   -81.177   0.9160  Lamb [2000]\nAR   59.658   -33.193   1.1616  DeMets et al. [1994]\nAS   74.275   -87.237   0.6497  McClusky et al. [2000]\nAT   56.283     8.932   1.6400  McClusky et al. [2000]\nAU   60.080     1.742   1.0744  DeMets et al. [1994]\nBH   12.559    87.957   0.3029  this paper\nBR   45.900  -111.000   0.2000  this paper\nBS   16.007   122.442   2.1250  Rangin et al. [1999]\nBU    8.894   -75.511   2.6670  Circum-Pacific Map Project, 1986\nCA   54.313   -79.431   0.9040  Weber et al. [2001]\nCL   10.130   -45.570   0.3090  Seno et al. [1993]\nCO   36.823  -108.629   1.9975  DeMets et al. [1994]"
+        },
+        {
+          "subpath": "tectonicplates-master/original/PB2002_steps.dat.txt",
+          "lines": 5819,
+          "preview": "   1  AF-AN   -0.438 -54.852   -0.039 -54.677  32.1  53  13.2  48    1.2   13.1  -1584   2  OTF \n   2 :AF-AN   -0.039 -54.677    0.443 -54.451  40.0  51  13.2  47    0.9   13.1  -1639   5 :OTF \n   3 :AF-AN    0.443 -54.451    0.965 -54.832  54.0 142  13.2  47   13.1   -1.1  -1687   4  OSR \n   4 :AF-AN    0.965 -54.832    1.695 -54.399  67.3  44  13.2  46   -0.4   13.2  -4289   1  OTF \n   5 :AF-AN    1.695 -54.399    2.360 -54.037  59.0  47  13.2  45    0.4   13.2  -4517   2 :OTF \n   6 :AF-AN    2.360 -54.037    3.025 -53.651  61.3  45  13.2  45    0.2   13.2  -3845   7 :OTF \n   7 :AF-AN    3.025 -53.651    3.369 -53.834  30.4 132  13.2  44   13.2    0.5  -3964   5  OSR \n   8 :AF-AN    3.369 -53.834    3.956 -54.127  50.3 130  13.2  44   13.2    0.8  -2073   0 :OSR \n   9 :AF-AN    3.956 -54.127    4.415 -54.430  45.0 139  13.3  43   13.2   -1.2  -2219   0 :OSR \n  10 :AF-AN    4.415 -54.430    4.827 -54.162  40.1  42  13.3  43   -0.2   13.3  -3360   1  OTF \n  11 :AF-AN    4.827 -54.162    5.084 -54.309  23.4 135  13.3  42   13.3   -0.5  -3233   0  OSR \n  12 :AF-AN    5.084 -54.309    5.495 -54.543  37.2 134  13.3  42   13.3   -0.5  -3095   0 :OSR \n  13 :AF-AN    5.495 -54.543    6.184 -54.114  65.3  43  13.3  42    0.3   13.3  -3907   1  OTF \n  14 :AF-AN    6.184 -54.114    6.625 -53.814  44.2  41  13.3  41    0.0   13.3  -3811   4 :OTF \n  15 :AF-AN    6.625 -53.814    7.237 -54.101  51.2 129  13.4  41   13.4    0.5  -3433   0  OSR "
+        },
+        {
+          "subpath": "tectonicplates-master/original/PB2002_steps_desc.txt",
+          "lines": 22,
+          "preview": "(This list was provided as \"supporting information\" with the published pape 2. Data for Each Plate Boundary Step in File PB2002_steps.dat\n\nBytes\tContain (all fields are right-justified)\n\n1-4\tSequence number (for tying to seismic catalogs).\n6\tContinuity?  \":\" appears if this step connects to previous step, in same segment.\n7-11\tPlate-boundary identifier (from PB2002_boundaries.dig; example: \"AF-AN\").\n13-20\tLongitude of initial point, degrees East, with precision 0.001°.\n22-28\tLatitude of initial point, degrees North, with precision 0.001°.\n30-37\tLongitude of final point, degrees East, with precision 0.001°.\n39-45\tLatitude of final point, degrees North, with precision 0.001°.\n47-51\tLength of step, km, with precision 0.1 km\n53-55\tAzimuth of step at center point, degrees clockwise from North, with precision 1°.\n57-61\tVelocity of left plate with respect to right plate, mm/a, precision 0.1 mm/a.\n63-65\tAzimuth of velocity (above), degrees clockwise from North, precision 1°."
+        },
+        {
+          "subpath": "tectonicplates-master/original/README.md",
+          "lines": 32,
+          "preview": "# Electronic Data Submission for Paper 2001GC000252\n## An updated digital model of plate boundaries\n_Peter Bird, Department of Earth and Space Sciences, University of California, Los Angeles, CA 90095-1567_ \n_Geochemistry Geophysics Geosystems, 4(3), 1027, [doi:10.1029/2001GC000252](http://scholar.google.se/scholar?cluster=1268723667321132798), 2003_\n\n##Introduction\nPlate boundary curves and the curves which outline orogens are approximated by sequences of discrete points. The intention is that adjacent points should be connected by short arcs of great circles. However, since no arc between adjacent points is longer than 111 km, it will not cause significant additional error if maps derived from this data set show the points as connected by straight lines, regardless of the map projection.\n\nEach point is given as a (longitude, latitude) pair, with coordinates in units of decimal degrees. Latitude is positive in the northern hemisphere and negative in the southern hemisphere. Longitude is generally positive to the east of the Greenwich meridian, and negative to the west, but some points in the western hemisphere are represented with positive longitudes in the range 180 to 360. All coordinates are given with 6 significant digits, so that round-off error in positions does not exceed 60 m; however, accuracy never equals precision.\n\nIn most of the digital files presenting model PB2002, sequences of points are grouped into \"segments\", whose ends are indicated by a marker record, \"*** end of line segment ***\". Preceding the list of sequential points is a title record for the segment; in these records, the essential information is contained in the first 2-8 bytes, and notations following byte 27 (if any) are to give attribution to the source of the information or opinion.\n\n##Data files\n1. **[PB2002_boundaries.dig.txt](PB2002_boundaries.dig.txt)** contains the plate boundary curves in the most compact form, and should be used to add plate boundaries to maps. It contains 6,048 points grouped into 229 segments.  The title record for each segment has 5 bytes, in which the first two bytes give the identifier of the plate on the left (as one travels along the segment, looking down from outside the Earth) and bytes 4-5 give the identifier of the plate on the right. In byte 3, the symbol \"/\" indicates that the right-hand plate subducts under the left-hand plate, while symbol \"\\\" indicates the opposite polarity of subduction. All non-subducting plate boundary segments have a hyphen \"-\" in byte 3. The number of segments exceeds the number of plate boundaries for several reasons: (i) because a single plate boundary may include both subduction and non-subduction segments, which require different titles; (ii) because different parts of a single plate boundary may be credited to different sources; (iii) for convenience in digitizing long plate boundaries which did not fit onto a single map.\n"
+        },
+        {
+          "subpath": "tectonicplates-master/README.md",
+          "lines": 35,
+          "preview": "World tectonic plates and boundaries\n======================\n<p align=\"center\"><img src=\"example_plates.png\" title=\"Example map using tectonic plates dataset\" alt=\"Example map using tectonic plates dataset\" /></p>\nThis is a conversion of the dataset originally published in the paper _An updated digital model of plate boundaries_ by Peter Bird (Geochemistry Geophysics Geosystems, 4(3), 1027, [doi:10.1029/2001GC000252](http://scholar.google.se/scholar?cluster=1268723667321132798), 2003).\nTo bring this dataset into the modern age, the original data has been parsed, cleaned and verified using ArcGIS 10.2 and converted to shape files.\nThe dataset presents tectonic plates and their boundaries, and in addition orogens and information about the boundaries.\nThe data is useful for geological applications, analysis and education, and should be easy to use in any modern GIS software application.\nFor information on the fields and values, please refer to the [original](original) documentation and the scientific article.\n\nNow with [GeoJSON](GeoJSON) data, courtesy of [csterling](https://github.com/csterling) - Thanks! (note that this data can be previewed directly in the github webinterface)\n\nDownload\n-----\nTo get access to the full database, [download the zip-archive of all the data (some 5 MB)](https://github.com/fraxen/tectonicplates/archive/master.zip), or clone this repo using your favorite git tool.\n"
+        }
+      ]
+    }
+  ],
+  "excel_datasets": [
+    {
+      "relative_path": "datos-sismicos_Historico_1471-01-01_1959-12-31.xlsx",
+      "sheets": [
+        {
+          "sheet_name": "IGP - Datos sísmicos",
+          "rows": 1098,
+          "cols": 8,
+          "columns": [
+            {
+              "column": "fecha UTC",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "1552-07-02"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "hora UTC",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "10:30:00.00"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "latitud (º)",
+              "inferred_dtype": "float64",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "-16.6"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "longitud (º)",
+              "inferred_dtype": "float64",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "-71.3"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "profundidad (km)",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "30"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 59,
+              "total_missing_count": 59,
+              "missing_pct": 5.3734
+            },
+            {
+              "column": "magnitud (mb)",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "7.6"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 123,
+              "total_missing_count": 123,
+              "missing_pct": 11.2022
+            },
+            {
+              "column": "magnitud (Ms)",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "-"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 894,
+              "total_missing_count": 894,
+              "missing_pct": 81.4208
+            },
+            {
+              "column": "magnitud (Mw)",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "-"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 1086,
+              "total_missing_count": 1086,
+              "missing_pct": 98.9071
+            }
+          ],
+          "date_range_utc": {
+            "valid_timestamps": 1098,
+            "invalid_timestamps": 0,
+            "slash_format_rows": 0,
+            "min_utc": "1552-07-02T10:30:00+00:00",
+            "max_utc": "1959-12-02T07:02:52+00:00"
+          },
+          "distributions": {
+            "latitud (º)": {
+              "valid_count": 1098,
+              "min": -20.05,
+              "p25": -15.5,
+              "median": -12.2,
+              "p75": -9.2,
+              "max": -1.75,
+              "mean": -11.9697
+            },
+            "longitud (º)": {
+              "valid_count": 1098,
+              "min": -84.0,
+              "p25": -77.6,
+              "median": -76.2,
+              "p75": -72.055,
+              "max": -68.0,
+              "mean": -75.546
+            },
+            "profundidad (km)": {
+              "valid_count": 1039,
+              "min": 5.0,
+              "p25": 30.0,
+              "median": 40.0,
+              "p75": 60.0,
+              "max": 700.0,
+              "mean": 57.0048
+            },
+            "magnitud (mb)": {
+              "valid_count": 975,
+              "min": 2.8,
+              "p25": 3.8,
+              "median": 4.3,
+              "p75": 4.7,
+              "max": 7.8,
+              "mean": 4.3357
+            },
+            "magnitud (Ms)": {
+              "valid_count": 204,
+              "min": 4.5,
+              "p25": 6.0,
+              "median": 6.5,
+              "p75": 7.025,
+              "max": 9.4,
+              "mean": 6.6363
+            },
+            "magnitud (Mw)": {
+              "valid_count": 12,
+              "min": 6.8,
+              "p25": 7.65,
+              "median": 8.1,
+              "p75": 8.625,
+              "max": 8.8,
+              "mean": 8.05
+            }
+          },
+          "leading_zero_checks": []
+        }
+      ]
+    },
+    {
+      "relative_path": "datos-sismicos_Instrumental_1960-01-01_2026-11-22.xlsx",
+      "sheets": [
+        {
+          "sheet_name": "IGP - Datos sísmicos",
+          "rows": 25878,
+          "cols": 6,
+          "columns": [
+            {
+              "column": "fecha UTC",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "1960-01-13"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "hora UTC",
+              "inferred_dtype": "str",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "15:40:34.00"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "latitud (º)",
+              "inferred_dtype": "float64",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "-16.145"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "longitud (º)",
+              "inferred_dtype": "float64",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "-72.144"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "profundidad (km)",
+              "inferred_dtype": "int64",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "60"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            },
+            {
+              "column": "magnitud (M)",
+              "inferred_dtype": "float64",
+              "openpyxl_sample": {
+                "openpyxl_data_type": "s",
+                "sample_value": "7.5"
+              },
+              "na_count": 0,
+              "pseudo_null_count": 0,
+              "total_missing_count": 0,
+              "missing_pct": 0.0
+            }
+          ],
+          "date_range_utc": {
+            "valid_timestamps": 25878,
+            "invalid_timestamps": 0,
+            "slash_format_rows": 0,
+            "min_utc": "1960-01-13T15:40:34+00:00",
+            "max_utc": "2026-11-22T05:51:57+00:00"
+          },
+          "distributions": {
+            "latitud (º)": {
+              "valid_count": 25878,
+              "min": -20.31,
+              "p25": -15.391,
+              "median": -11.7992,
+              "p75": -7.97,
+              "max": -1.07,
+              "mean": -11.3949
+            },
+            "longitud (º)": {
+              "valid_count": 25878,
+              "min": -82.8937,
+              "p25": -77.72995,
+              "median": -75.73,
+              "p75": -73.60655,
+              "max": -67.64,
+              "mean": -75.6925
+            },
+            "profundidad (km)": {
+              "valid_count": 25878,
+              "min": 5.0,
+              "p25": 29.0,
+              "median": 48.0,
+              "p75": 105.0,
+              "max": 743.0,
+              "mean": 70.2653
+            },
+            "magnitud (M)": {
+              "valid_count": 25878,
+              "min": 3.0,
+              "p25": 4.5,
+              "median": 4.6,
+              "p75": 4.9,
+              "max": 8.4,
+              "mean": 4.666
+            }
+          },
+          "leading_zero_checks": []
+        }
+      ]
+    }
+  ],
+  "csv_datasets": [
+    {
+      "relative_path": "IGP_ACELDAT_Peru_2019-2025_Dataset_0.csv",
+      "detected_encoding": "cp1252",
+      "detected_delimiter": ";",
+      "rows": 18313,
+      "cols": 23,
+      "columns": [
+        {
+          "column": "FECHA_CORTE",
+          "inferred_dtype": "int64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "UBIGEO",
+          "inferred_dtype": "int64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "DEPARTAMENTO",
+          "inferred_dtype": "str",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "PROVINCIA",
+          "inferred_dtype": "str",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "DISTRITO",
+          "inferred_dtype": "str",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "FECHA_EVENTO",
+          "inferred_dtype": "str",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "HORA_EVENTO",
+          "inferred_dtype": "int64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "COD_ESTACION",
+          "inferred_dtype": "str",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "LAT_ESTACION",
+          "inferred_dtype": "float64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "LON_ESTACION",
+          "inferred_dtype": "float64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "ACEL_MAX_VERTICAL",
+          "inferred_dtype": "float64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "ACEL_MAX_NORTE-SUR",
+          "inferred_dtype": "float64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "ACEL_MAX_ESTE-OESTE",
+          "inferred_dtype": "float64",
+          "na_count": 0,
+          "pseudo_null_count": 0,
+          "total_missing_count": 0,
+          "missing_pct": 0.0
+        },
+        {
+          "column": "Unnamed: 13",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 14",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 15",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 16",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 17",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 18",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 19",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 20",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 21",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        },
+        {
+          "column": "Unnamed: 22",
+          "inferred_dtype": "float64",
+          "na_count": 18313,
+          "pseudo_null_count": 0,
+          "total_missing_count": 18313,
+          "missing_pct": 100.0
+        }
+      ],
+      "date_range_utc": {
+        "valid_timestamps": 18313,
+        "invalid_timestamps": 0,
+        "slash_format_rows": 1271,
+        "min_utc": "2019-01-03T16:11:48+00:00",
+        "max_utc": "2025-12-28T18:19:55+00:00"
+      },
+      "distributions": {
+        "LAT_ESTACION": {
+          "valid_count": 18313,
+          "min": -18.1582,
+          "p25": -14.089,
+          "median": -12.103,
+          "p75": -11.486,
+          "max": -3.52344,
+          "mean": -12.3074
+        },
+        "LON_ESTACION": {
+          "valid_count": 18313,
+          "min": -81.273,
+          "p25": -77.072,
+          "median": -76.826,
+          "p75": -74.668,
+          "max": -69.183,
+          "mean": -75.932
+        },
+        "ACEL_MAX_VERTICAL": {
+          "valid_count": 18313,
+          "min": 0.0039,
+          "p25": 0.1785,
+          "median": 0.437,
+          "p75": 1.3491,
+          "max": 245.5761,
+          "mean": 2.2615
+        },
+        "ACEL_MAX_NORTE-SUR": {
+          "valid_count": 18313,
+          "min": 0.0047,
+          "p25": 0.2703,
+          "median": 0.6531,
+          "p75": 2.045,
+          "max": 320.8798,
+          "mean": 3.5388
+        },
+        "ACEL_MAX_ESTE-OESTE": {
+          "valid_count": 18313,
+          "min": 0.0028,
+          "p25": 0.27114,
+          "median": 0.6619,
+          "p75": 2.082,
+          "max": 387.2492,
+          "mean": 3.5839
+        }
+      },
+      "leading_zero_checks": [
+        {
+          "column": "UBIGEO",
+          "expected_length": 6,
+          "non_empty_count": 18313,
+          "length_distribution": {
+            "5": 5131,
+            "6": 13182
+          },
+          "shorter_than_expected_count": 5131,
+          "shorter_examples": [
+            "21801",
+            "50101",
+            "70105",
+            "70105",
+            "21809"
+          ],
+          "valid_examples": [
+            "250105",
+            "150118",
+            "150124",
+            "250105",
+            "150137"
+          ]
+        },
+        {
+          "column": "HORA_EVENTO",
+          "expected_length": 6,
+          "non_empty_count": 18313,
+          "length_distribution": {
+            "2": 4,
+            "3": 312,
+            "4": 611,
+            "5": 6268,
+            "6": 11118
+          },
+          "shorter_than_expected_count": 7195,
+          "shorter_examples": [
+            "34950",
+            "34950",
+            "34950",
+            "60613",
+            "60613"
+          ],
+          "valid_examples": [
+            "161148",
+            "142528",
+            "142528",
+            "142528",
+            "142528"
+          ]
+        },
+        {
+          "column": "FECHA_EVENTO",
+          "expected_length": 8,
+          "non_empty_count": 18313,
+          "length_distribution": {
+            "8": 17042,
+            "9": 856,
+            "10": 415
+          },
+          "shorter_than_expected_count": 0,
+          "shorter_examples": [],
+          "valid_examples": [
+            "20190103",
+            "20190104",
+            "20190104",
+            "20190104",
+            "20190105"
+          ]
+        }
+      ],
+      "extra_summary": {
+        "unique_stations": 277,
+        "unique_ubigeos_raw": 232,
+        "unique_event_timestamps": 1052
+      }
+    }
+  ],
+  "pdf_documents": [
+    {
+      "relative_path": "Amb-27.pdf",
+      "size_mb": 1.5046,
+      "page_count": 34,
+      "sample_pages_checked": 3,
+      "sample_extracted_chars": 4825,
+      "sample_tables_detected": 0,
+      "has_selectable_text": true,
+      "fondes_pages_with_text": null,
+      "fondes_total_chars": null,
+      "first_page_preview": "Físicadela Tiara ISSN:0214-4557 NOS,a.’ 10:187-219 Sismicidad y sismotectónica de Perú Hernando TAVERA y ElisaBUFORN Departamento deGeofísica. Universidad Complutense deMadrid RESUMEN En esteestudio se presentalas principalescaracterísticas de la sismicidad y sismotectónicadePerú. Seanalizaladistrib"
+    },
+    {
+      "relative_path": "FONDES_relacion_distritos_nov26.pdf",
+      "size_mb": 0.5084,
+      "page_count": 32,
+      "sample_pages_checked": 3,
+      "sample_extracted_chars": 14771,
+      "sample_tables_detected": 3,
+      "has_selectable_text": true,
+      "fondes_pages_with_text": 32,
+      "fondes_total_chars": 154159,
+      "first_page_preview": "Relación de distritos actualizados en peligro y/o riesgo alto y/o riesgo muy alto en el marco del FONDES Actualizado al 05 de noviembre del 2026 NIVEL DE PELIGRO Y/O N° DEPARTAMENTO PROVINCIA DISTRITO UBIGEO RIESGO SIGRID DOCUMENTO SUSTENTO (actualizado) 1 AMAZONAS CHACHAPOYAS CHACHAPOYAS 010101 Muy"
+    },
+    {
+      "relative_path": "Microzonificacion-sismica-CISMID-.pdf",
+      "size_mb": 2.9055,
+      "page_count": 1,
+      "sample_pages_checked": 1,
+      "sample_extracted_chars": 0,
+      "sample_tables_detected": 0,
+      "has_selectable_text": false,
+      "fondes_pages_with_text": null,
+      "fondes_total_chars": null,
+      "first_page_preview": ""
+    },
+    {
+      "relative_path": "R01_RIESGO_SISMICO_LIMA_A0-ultimo.pdf",
+      "size_mb": 5.4988,
+      "page_count": 1,
+      "sample_pages_checked": 1,
+      "sample_extracted_chars": 3315,
+      "sample_tables_detected": 2,
+      "has_selectable_text": true,
+      "fondes_pages_with_text": null,
+      "fondes_total_chars": null,
+      "first_page_preview": "250000 260000 270000 280000 290000 300000 310000 ANCON SANTA ROSA CARABAYLLO PUENTE PIEDRA VENTANILLA COMAS SAN JUAN DE LURIGANCHO LURIGANCHO LOS OLIVOS INDEPENDENCIA SAN MARTIN DE PORRES CHACLACAYO CALLAO RIMAC ATE VITARTE EL AGUSTINO CARMEN DE LA SANTA ANITA LEGUA REYNOSO LIMA BELLAVISTA BRENA LA "
+    },
+    {
+      "relative_path": "reporte red acelerometrica 20260825_20261122.pdf",
+      "size_mb": 1.4619,
+      "page_count": 10,
+      "sample_pages_checked": 3,
+      "sample_extracted_chars": 4028,
+      "sample_tables_detected": 3,
+      "has_selectable_text": true,
+      "fondes_pages_with_text": null,
+      "fondes_total_chars": null,
+      "first_page_preview": "´ RED ACELEROMETRICA NACIONAL CENSIS ´ Reporte IGP/ACELDAT-PERU 2026-0825 Par´ametros hipocentrales Fecha: 22/11/2026 Profundidad: 145 km Hora local: 16:35:27 Intensidad (MM): IV Jun´ın Magnitud: M5 Epicentro: -10.96◦/ -76.17◦ Referencia: 30 km al NO de Jun´ın, Jun´ın - Jun´ın Figura 1: Epicentro de"
+    }
+  ],
+  "images": [
+    {
+      "relative_path": "mp-2025.webp",
+      "size_mb": 1.1197,
+      "format": "WEBP",
+      "mode": "RGB",
+      "width_px": 2068,
+      "height_px": 2922
+    },
+    {
+      "relative_path": "red sistemica nacional peru.webp",
+      "size_mb": 0.3699,
+      "format": "WEBP",
+      "mode": "RGB",
+      "width_px": 1000,
+      "height_px": 1414
+    },
+    {
+      "relative_path": "Red_CIP.jpg",
+      "size_mb": 0.9667,
+      "format": "JPEG",
+      "mode": "RGB",
+      "width_px": 1530,
+      "height_px": 1980
+    },
+    {
+      "relative_path": "Red_IGP.jpg",
+      "size_mb": 1.0203,
+      "format": "JPEG",
+      "mode": "RGB",
+      "width_px": 1530,
+      "height_px": 1980
+    },
+    {
+      "relative_path": "Red_SENCICO.jpg",
+      "size_mb": 0.9572,
+      "format": "JPEG",
+      "mode": "RGB",
+      "width_px": 1530,
+      "height_px": 1980
+    }
+  ],
+  "text_files": [
+    {
+      "relative_path": "api usgs.txt",
+      "size_mb": 0.013,
+      "line_count": 206
+    },
+    {
+      "relative_path": "IGP_ACELDAT_Peru_2019-2025_DiccionarioDatos.txt",
+      "size_mb": 0.0019,
+      "line_count": 16
+    },
+    {
+      "relative_path": "IGP_catalogo_sismicos_desde_1960_ DiccionarioDatos.txt",
+      "size_mb": 0.0011,
+      "line_count": 10
+    }
+  ]
+}

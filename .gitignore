@@ -1,0 +1,32 @@
+# Byte-compiled / caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments & secrets
+.venv/
+venv/
+env/
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Notebooks / IDE / OS
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+nul
+
+# Immutable external sources & heavy raw extractions (except PB2002 GeoJSON needed by app)
+base_informativa/
+data/raw/*
+!data/raw/tectonic_plates/
+data/raw/tectonic_plates/*
+!data/raw/tectonic_plates/tectonicplates-master/
+data/raw/tectonic_plates/tectonicplates-master/*
+!data/raw/tectonic_plates/tectonicplates-master/GeoJSON/

@@ -1,12 +1,13 @@
-"""CivicTech / GovTech Editorial Visual Theme & Citizen-Language Dictionaries (Phase 5C).
+"""CivicTech / GovTech Editorial Visual Theme, Dual Light/Dark Mode & Citizen Glossaries (Phase 5D).
 
 Provides:
-  - Custom CSS for warm telluric institutional styling (cards, badges, sidebar nav, centered tables).
-  - `render_centered_table(df, ...)`: responsive 100%-centered HTML table renderer with zero
-    truncation, sticky header, clean hover highlight, and optional semantic pill badges.
-  - `FEATURE_LABELS_ES`, `REGIME_LABELS_ES`, `REGIME_SHORT_ES`, `MACRO_BLOCK_LABELS_ES`.
-  - `MERCALLI_DESC_ES` & `describe_mercalli(mmi)`: everyday physical impact descriptions.
-  - Reusable HTML KPI card & badge components that never truncate text.
+  - Dual Light (`Claro Editorial`) / Dark (`Oscuro Nocturno`) high-contrast CSS via CSS variables.
+  - `plotly_theme_kwargs(theme_mode)`: matching Plotly template/colors for light and dark modes.
+  - `MERCALLI_DESC_ES` & `MERCALLI_TO_MAG_RANGE_ES`: dual Mercalli + equivalent epicentral Mw scale.
+  - `render_centered_table(df, ...)`: 100%-centered responsive HTML table (`text-align: center !important`).
+  - `render_table_legend(items, ...)`: mandatory plain-Spanish column legend card placed under every table.
+  - `render_map_legend(items, ...)`: visual swatch legend panel placed under every map.
+  - `render_kpi_card(...)` & `render_badge(...)`: non-truncating cards and semantic color pills.
 """
 
 from __future__ import annotations
@@ -15,6 +16,9 @@ from html import escape
 from typing import Any
 
 import pandas as pd
+
+THEME_LIGHT = "Claro Editorial"
+THEME_DARK = "Oscuro Nocturno"
 
 FEATURE_LABELS_ES: dict[str, str] = {
     # Model A (GMPE) features
@@ -31,8 +35,8 @@ FEATURE_LABELS_ES: dict[str, str] = {
     "event_dist_trench_km": "Distancia del sismo a la fosa marina (km)",
     "dist_lat_15s_km": "Posición norte–sur respecto a Ica/Nasca (15°S)",
     "event_dist_to_slab_km": "Distancia del sismo al contacto entre placas (km)",
-    "n_peligros_caida": "Peligros de caída de rocas en el distrito (GEOCATMIN)",
-    "n_peligros_flujo": "Peligros de huaicos/flujos en el distrito (GEOCATMIN)",
+    "n_peligros_caida": "Peligros de derrumbes/caída de rocas en el distrito (GEOCATMIN)",
+    "n_peligros_flujo": "Peligros de huaicos/flujos de lodo en el distrito (GEOCATMIN)",
     "n_peligros_deslizamiento": "Peligros de deslizamientos en el distrito (GEOCATMIN)",
     "n_peligros_total": "Total de peligros geológicos en el distrito",
     "n_zonas_criticas_total": "Zonas críticas geológicas en el distrito",
@@ -91,7 +95,7 @@ RISK_LEVEL_COLORS: dict[str, str] = {
     "Alto": "#C2410C",
     "Medio": "#B45309",
     "Bajo": "#0F766E",
-    "Muy Bajo": "#475569",
+    "Muy Bajo": "#334155",
 }
 
 MERCALLI_DESC_ES: dict[int, tuple[str, str, str, str]] = {
@@ -105,6 +109,19 @@ MERCALLI_DESC_ES: dict[int, tuple[str, str, str, str]] = {
     8: ("VIII", "Severo", "Daño severo en muros débiles/adobe, caída de cornisas y daños moderados en concreto.", "#DC2626"),
     9: ("IX", "Violento", "Destrucción grave en construcciones no sismorresistentes y daños fuertes en infraestructura.", "#991B1B"),
     10: ("X", "Extremo", "Destrucción masiva de estructuras vulnerables, licuefacción y deslizamientos severos.", "#7F1D1D"),
+}
+
+MERCALLI_TO_MAG_RANGE_ES: dict[int, str] = {
+    1: "M < 2.5",
+    2: "M 2.5 – 3.0",
+    3: "M 3.0 – 3.4",
+    4: "M 3.5 – 4.2",
+    5: "M 4.3 – 4.8",
+    6: "M 4.9 – 5.4",
+    7: "M 5.5 – 6.1",
+    8: "M 6.2 – 6.9",
+    9: "M 7.0 – 7.9",
+    10: "M ≥ 8.0",
 }
 
 BADGE_AUTO_COLORS: dict[str, str] = {
@@ -135,235 +152,440 @@ def describe_mercalli(mmi_value: float) -> tuple[str, str, str, str]:
     return MERCALLI_DESC_ES[grade]
 
 
-def inject_custom_css() -> str:
-    """Return institutional warm telluric CSS including sidebar nav and 100%-centered tables."""
-    return """
+def describe_mercalli_dual(mmi_value: float) -> tuple[str, str, str, str, str]:
+    """Return (roman, short_name, everyday_desc, hex_color, equiv_epicentral_mw_range)."""
+    grade = int(min(max(round(float(mmi_value)), 1), 10))
+    rom, short, desc, col = MERCALLI_DESC_ES[grade]
+    return rom, short, desc, col, MERCALLI_TO_MAG_RANGE_ES[grade]
+
+
+def format_mercalli_with_mag(mmi_value: float) -> str:
+    """Format Mercalli Roman grade together with its approximate epicentral Mw range."""
+    rom, _, _, _, mag_rng = describe_mercalli_dual(mmi_value)
+    return f"Mercalli {rom} (eq. {mag_rng})"
+
+
+def plotly_theme_kwargs(theme_mode: str = THEME_LIGHT) -> dict[str, Any]:
+    """Return Plotly layout kwargs matching the active Light or Dark visual theme."""
+    if theme_mode == THEME_DARK:
+        return {
+            "template": "plotly_dark",
+            "paper_bgcolor": "#111827",
+            "plot_bgcolor": "#111827",
+            "font": {"color": "#F1F5F9"},
+        }
+    return {
+        "template": "plotly_white",
+        "paper_bgcolor": "#FFFFFF",
+        "plot_bgcolor": "#FFFFFF",
+        "font": {"color": "#1C1917"},
+    }
+
+
+def folium_tiles_for_theme(theme_mode: str = THEME_LIGHT) -> str:
+    """Return free, API-keyless Folium basemap tiles reliable in both Light and Dark modes."""
+    _ = theme_mode
+    return "OpenStreetMap"
+
+
+def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
+    """Return institutional CSS supporting both Claro Editorial and Oscuro Nocturno modes."""
+    is_dark = theme_mode == THEME_DARK
+
+    if is_dark:
+        v = {
+            "bg_app": "#0B1120",
+            "bg_header": "#0B1120",
+            "bg_sidebar": "#111827",
+            "bg_surface": "#1E293B",
+            "bg_surface_alt": "#162032",
+            "hero_grad": "linear-gradient(135deg, #1E293B 0%, #172033 100%)",
+            "text_primary": "#F8FAFC",
+            "text_secondary": "#CBD5E1",
+            "text_muted": "#94A3B8",
+            "border": "#334155",
+            "border_strong": "#475569",
+            "table_head_bg": "#0F172A",
+            "table_head_txt": "#F8FAFC",
+            "table_stripe": "#172033",
+            "table_hover": "#283548",
+            "table_hl": "#3B1D24",
+            "nav_bg": "#1E293B",
+            "nav_hover": "#283548",
+            "nav_txt": "#F1F5F9",
+            "legend_bg": "#162032",
+            "accent_title": "#FCA5A5",
+            "input_bg": "#1E293B",
+        }
+    else:
+        v = {
+            "bg_app": "#FAF8F5",
+            "bg_header": "#FAF8F5",
+            "bg_sidebar": "#F1ECE4",
+            "bg_surface": "#FFFFFF",
+            "bg_surface_alt": "#F7F3EC",
+            "hero_grad": "linear-gradient(135deg, #FFFFFF 0%, #F5EFE6 100%)",
+            "text_primary": "#1C1917",
+            "text_secondary": "#44403C",
+            "text_muted": "#78716C",
+            "border": "#E2D9CC",
+            "border_strong": "#D6CBB9",
+            "table_head_bg": "#F3EDE4",
+            "table_head_txt": "#292524",
+            "table_stripe": "#FCFBF9",
+            "table_hover": "#FEF3EC",
+            "table_hl": "#FEF2F2",
+            "nav_bg": "#FAF8F5",
+            "nav_hover": "#FFF7F5",
+            "nav_txt": "#292524",
+            "legend_bg": "#F8F5EF",
+            "accent_title": "#991B1B",
+            "input_bg": "#FFFFFF",
+        }
+
+    dark_extra = ""
+    if is_dark:
+        dark_extra = """
+      .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp p, .stApp li, .stApp label,
+      .stMarkdown, .stCaption, [data-testid="stWidgetLabel"] p {
+        color: #F1F5F9 !important;
+      }
+      div[data-baseweb="select"] > div,
+      div[data-baseweb="base-input"] > input {
+        background-color: #1E293B !important;
+        color: #F8FAFC !important;
+        border-color: #475569 !important;
+      }
+      div[data-testid="stExpander"] {
+        background-color: #1E293B !important;
+        border: 1px solid #334155 !important;
+        border-radius: 9px;
+      }
+      button[kind="secondary"] {
+        background-color: #1E293B !important;
+        color: #F8FAFC !important;
+        border-color: #475569 !important;
+      }
+      button[kind="secondary"]:hover {
+        border-color: #F87171 !important;
+        background-color: #283548 !important;
+      }
+        """
+
+    return f"""
     <style>
-      .stApp {
-        background-color: #FAF8F5;
-        color: #1C1917;
-      }
-      section[data-testid="stSidebar"] {
-        background-color: #F1ECE4;
-        border-right: 1px solid #DFD5C7;
-      }
-      section[data-testid="stSidebar"] .stRadio > div {
-        gap: 0.28rem;
-      }
-      section[data-testid="stSidebar"] .stRadio label {
-        background-color: #FAF8F5;
-        border: 1px solid #E5DDD0;
+      :root {{
+        --bg-app: {v['bg_app']};
+        --bg-sidebar: {v['bg_sidebar']};
+        --bg-surface: {v['bg_surface']};
+        --bg-surface-alt: {v['bg_surface_alt']};
+        --text-primary: {v['text_primary']};
+        --text-secondary: {v['text_secondary']};
+        --text-muted: {v['text_muted']};
+        --border-color: {v['border']};
+        --border-strong: {v['border_strong']};
+        --table-head-bg: {v['table_head_bg']};
+        --table-head-txt: {v['table_head_txt']};
+        --table-stripe: {v['table_stripe']};
+        --table-hover: {v['table_hover']};
+        --table-hl: {v['table_hl']};
+        --legend-bg: {v['legend_bg']};
+        --accent-title: {v['accent_title']};
+      }}
+      .stApp {{
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+      }}
+      header[data-testid="stHeader"] {{
+        background-color: {v['bg_header']};
+      }}
+      section[data-testid="stSidebar"] {{
+        background-color: var(--bg-sidebar);
+        border-right: 1px solid var(--border-color);
+      }}
+      section[data-testid="stSidebar"] .stRadio > div {{
+        gap: 0.24rem;
+      }}
+      section[data-testid="stSidebar"] .stRadio label {{
+        background-color: {v['nav_bg']};
+        border: 1px solid var(--border-color);
         border-radius: 8px;
-        padding: 0.48rem 0.7rem;
-        margin-bottom: 0.12rem;
+        padding: 0.44rem 0.68rem;
+        margin-bottom: 0.08rem;
         font-weight: 600;
-        font-size: 0.88rem;
-        color: #292524;
+        font-size: 0.86rem;
+        color: {v['nav_txt']} !important;
         transition: all 0.15s ease-in-out;
         width: 100%;
-      }
-      section[data-testid="stSidebar"] .stRadio label:hover {
+      }}
+      section[data-testid="stSidebar"] .stRadio label:hover {{
         border-color: #B91C1C;
-        background-color: #FFF7F5;
-      }
-      .sidebar-brand {
+        background-color: {v['nav_hover']};
+      }}
+      .sidebar-brand {{
         background: linear-gradient(135deg, #991B1B 0%, #B91C1C 100%);
         color: #FFFFFF;
         border-radius: 10px;
         padding: 0.85rem 1rem;
-        margin-bottom: 0.75rem;
-        box-shadow: 0 2px 6px rgba(153, 27, 27, 0.20);
-      }
-      .sidebar-brand h2 {
+        margin-bottom: 0.65rem;
+        box-shadow: 0 2px 6px rgba(153, 27, 27, 0.24);
+      }}
+      .sidebar-brand h2 {{
         margin: 0;
-        font-size: 1.05rem;
+        font-size: 1.03rem;
         font-weight: 800;
-        color: #FFFFFF;
+        color: #FFFFFF !important;
         line-height: 1.25;
-      }
-      .sidebar-brand p {
-        margin: 0.25rem 0 0 0;
-        font-size: 0.76rem;
-        color: #FEE2E2;
+      }}
+      .sidebar-brand p {{
+        margin: 0.22rem 0 0 0;
+        font-size: 0.75rem;
+        color: #FEE2E2 !important;
         line-height: 1.3;
-      }
-      .sidebar-data-card {
-        background: #FFFFFF;
-        border: 1px solid #E2D9CC;
+      }}
+      .sidebar-data-card {{
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
         border-left: 4px solid #0F766E;
         border-radius: 8px;
-        padding: 0.75rem 0.85rem;
-        font-size: 0.78rem;
-        color: #44403C;
-        line-height: 1.45;
-        margin-top: 0.65rem;
-      }
-      .sidebar-data-card h4 {
-        margin: 0 0 0.4rem 0;
-        font-size: 0.84rem;
+        padding: 0.72rem 0.82rem;
+        font-size: 0.77rem;
+        color: var(--text-secondary);
+        line-height: 1.44;
+        margin-top: 0.6rem;
+      }}
+      .sidebar-data-card h4 {{
+        margin: 0 0 0.38rem 0;
+        font-size: 0.83rem;
         font-weight: 800;
-        color: #1C1917;
-      }
-      .sidebar-data-card ul {
+        color: var(--text-primary) !important;
+      }}
+      .sidebar-data-card ul {{
         margin: 0;
         padding-left: 1.05rem;
-      }
-      .sidebar-data-card li {
-        margin-bottom: 0.25rem;
-      }
-      .civic-hero {
-        background: linear-gradient(135deg, #FFFFFF 0%, #F5EFE6 100%);
-        border: 1px solid #E5DDD0;
+      }}
+      .sidebar-data-card li {{
+        margin-bottom: 0.22rem;
+        color: var(--text-secondary) !important;
+      }}
+      .civic-hero {{
+        background: {v['hero_grad']};
+        border: 1px solid var(--border-color);
         border-left: 6px solid #B91C1C;
         border-radius: 10px;
-        padding: 1.1rem 1.4rem;
-        margin-bottom: 0.9rem;
-        box-shadow: 0 2px 8px rgba(28, 25, 23, 0.05);
-      }
-      .civic-hero h1 {
-        font-size: 1.65rem;
-        margin: 0 0 0.3rem 0;
-        color: #1C1917;
+        padding: 1.08rem 1.35rem;
+        margin-bottom: 0.88rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }}
+      .civic-hero h1 {{
+        font-size: 1.62rem;
+        margin: 0 0 0.28rem 0;
+        color: var(--text-primary) !important;
         font-weight: 800;
         letter-spacing: -0.02em;
-      }
-      .civic-hero p {
+      }}
+      .civic-hero p {{
         margin: 0;
-        color: #44403C;
-        font-size: 0.95rem;
+        color: var(--text-secondary) !important;
+        font-size: 0.94rem;
         line-height: 1.48;
-      }
-      .kpi-card {
-        background: #FFFFFF;
-        border: 1px solid #E7E0D6;
+      }}
+      .kpi-card {{
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
         border-top: 4px solid var(--accent, #B91C1C);
         border-radius: 9px;
-        padding: 0.82rem 0.95rem;
-        min-height: 102px;
-        box-shadow: 0 1px 4px rgba(28, 25, 23, 0.04);
-      }
-      .kpi-title {
-        font-size: 0.76rem;
+        padding: 0.80rem 0.92rem;
+        min-height: 106px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      }}
+      .kpi-title {{
+        font-size: 0.75rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.03em;
-        color: #57534E;
+        color: var(--text-muted);
         margin-bottom: 0.24rem;
-      }
-      .kpi-value {
-        font-size: 1.28rem;
+      }}
+      .kpi-value {{
+        font-size: 1.24rem;
         font-weight: 800;
-        color: #1C1917;
-        line-height: 1.2;
+        color: var(--text-primary);
+        line-height: 1.22;
         word-wrap: break-word;
-      }
-      .kpi-sub {
+      }}
+      .kpi-sub {{
         font-size: 0.78rem;
-        color: #78716C;
+        color: var(--text-muted);
         margin-top: 0.24rem;
-        line-height: 1.25;
-      }
-      .guide-card {
-        background: #FFFFFF;
-        border: 1px solid #E7E0D6;
+        line-height: 1.28;
+      }}
+      .guide-card {{
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-top: 4px solid var(--accent, #B91C1C);
         border-radius: 9px;
         padding: 0.92rem 1.02rem;
         height: 100%;
-      }
-      .guide-card h4 {
-        margin: 0 0 0.38rem 0;
-        font-size: 0.94rem;
-        color: #991B1B;
-      }
-      .guide-card p {
+        margin-bottom: 0.6rem;
+      }}
+      .guide-card h4 {{
+        margin: 0 0 0.36rem 0;
+        font-size: 0.95rem;
+        color: var(--accent-title) !important;
+      }}
+      .guide-card p {{
         margin: 0;
         font-size: 0.85rem;
-        color: #44403C;
-        line-height: 1.45;
-      }
-      .district-spotlight {
-        background: #FFFFFF;
-        border: 1px solid #E5DDD0;
+        color: var(--text-secondary) !important;
+        line-height: 1.46;
+      }}
+      .district-spotlight {{
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
         border-left: 6px solid var(--accent, #B91C1C);
         border-radius: 10px;
-        padding: 1rem 1.25rem;
-        margin: 0.6rem 0 1rem 0;
-        box-shadow: 0 2px 6px rgba(28, 25, 23, 0.05);
-      }
-      .civic-badge {
+        padding: 1rem 1.2rem;
+        margin: 0.55rem 0 0.95rem 0;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        color: var(--text-primary);
+      }}
+      .civic-badge {{
         display: inline-block;
         padding: 0.18rem 0.62rem;
         border-radius: 999px;
-        font-size: 0.78rem;
+        font-size: 0.77rem;
         font-weight: 700;
-        color: #FFFFFF;
+        color: #FFFFFF !important;
         vertical-align: middle;
         white-space: nowrap;
-      }
+      }}
       /* 100% Centered Responsive Civic Tables */
-      .civic-table-wrap {
+      .civic-table-wrap {{
         width: 100%;
         overflow-x: auto;
         overflow-y: auto;
-        border: 1px solid #E2D9CC;
+        border: 1px solid var(--border-color);
         border-radius: 10px;
-        background: #FFFFFF;
-        box-shadow: 0 1px 5px rgba(28, 25, 23, 0.05);
-        margin: 0.45rem 0 0.85rem 0;
-      }
-      table.civic-table {
+        background: var(--bg-surface);
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+        margin: 0.42rem 0 0.35rem 0;
+      }}
+      table.civic-table {{
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.85rem;
-        color: #1C1917;
-      }
-      table.civic-table thead th {
+        font-size: 0.84rem;
+        color: var(--text-primary);
+      }}
+      table.civic-table thead th {{
         position: sticky;
         top: 0;
         z-index: 2;
-        background: #F3EDE4;
-        color: #292524;
+        background: var(--table-head-bg);
+        color: var(--table-head-txt);
         font-weight: 800;
-        font-size: 0.80rem;
-        text-transform: none;
+        font-size: 0.79rem;
         letter-spacing: 0.01em;
-        padding: 0.68rem 0.72rem;
-        border-bottom: 2px solid #D6CBB9;
+        padding: 0.66rem 0.68rem;
+        border-bottom: 2px solid var(--border-strong);
         text-align: center !important;
         vertical-align: middle !important;
         white-space: normal;
         line-height: 1.25;
-      }
-      table.civic-table tbody td {
-        padding: 0.56rem 0.70rem;
-        border-bottom: 1px solid #EFEAE2;
+      }}
+      table.civic-table tbody td {{
+        padding: 0.54rem 0.66rem;
+        border-bottom: 1px solid var(--border-color);
         text-align: center !important;
         vertical-align: middle !important;
         white-space: normal;
         line-height: 1.32;
-      }
-      table.civic-table tbody tr:nth-child(even) {
-        background-color: #FCFBF9;
-      }
-      table.civic-table tbody tr:hover {
-        background-color: #FEF3EC;
+        color: var(--text-primary);
+      }}
+      table.civic-table tbody tr:nth-child(even) {{
+        background-color: var(--table-stripe);
+      }}
+      table.civic-table tbody tr:hover {{
+        background-color: var(--table-hover);
         transition: background-color 0.12s ease;
-      }
-      .civic-table-caption {
+      }}
+      table.civic-table tbody tr.civic-row-highlight {{
+        background-color: var(--table-hl) !important;
+        font-weight: 700;
+      }}
+      .civic-table-caption {{
         font-size: 0.78rem;
-        color: #78716C;
-        margin-top: -0.4rem;
-        margin-bottom: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+        margin-bottom: 0.45rem;
         text-align: center;
-      }
-      .school-callout {
-        background: #FFFFFF;
-        border: 1px solid #E5DDD0;
+      }}
+      .table-legend-box {{
+        background: var(--legend-bg);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #0F766E;
+        border-radius: 8px;
+        padding: 0.72rem 0.95rem;
+        margin: 0.25rem 0 1.05rem 0;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        line-height: 1.48;
+      }}
+      .table-legend-title {{
+        font-weight: 800;
+        font-size: 0.83rem;
+        color: var(--text-primary);
+        margin-bottom: 0.35rem;
+      }}
+      .table-legend-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 0.35rem 1.0rem;
+      }}
+      .table-legend-item strong {{
+        color: var(--text-primary);
+      }}
+      .map-legend-box {{
+        background: var(--legend-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.62rem 0.9rem;
+        margin: 0.35rem 0 0.85rem 0;
+        font-size: 0.81rem;
+        color: var(--text-secondary);
+      }}
+      .map-legend-items {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem 1.15rem;
+        align-items: center;
+      }}
+      .map-legend-swatch {{
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        margin-right: 0.38rem;
+        vertical-align: middle;
+        border: 1px solid rgba(0, 0, 0, 0.35);
+      }}
+      .map-legend-note {{
+        margin-top: 0.38rem;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }}
+      .school-callout {{
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
         border-left: 5px solid #0F766E;
         border-radius: 9px;
-        padding: 0.95rem 1.15rem;
-        margin: 0.6rem 0;
-      }
+        padding: 0.92rem 1.12rem;
+        margin: 0.55rem 0;
+        color: var(--text-secondary);
+        font-size: 0.90rem;
+        line-height: 1.5;
+      }}
+      {dark_extra}
     </style>
     """
 
@@ -376,7 +598,7 @@ def render_kpi_card(
     tooltip: str = "",
 ) -> str:
     """Render a non-truncating HTML KPI card with optional hover tooltip."""
-    tip_icon = f' <span title="{escape(tooltip)}" style="cursor:help;color:#991B1B;">ⓘ</span>' if tooltip else ""
+    tip_icon = f' <span title="{escape(tooltip)}" style="cursor:help;color:#DC2626;">ⓘ</span>' if tooltip else ""
     sub_html = f'<div class="kpi-sub">{escape(subtitle)}</div>' if subtitle else ""
     return (
         f'<div class="kpi-card" style="--accent:{accent};">'
@@ -397,7 +619,6 @@ def _badge_color_for_value(val: str, custom_map: dict[str, str] | None = None) -
         return custom_map[val]
     if val in BADGE_AUTO_COLORS:
         return BADGE_AUTO_COLORS[val]
-    # Support Mercalli Roman + description badges like "VIII — Severo" or "VII (7.4)"
     for key, col in BADGE_AUTO_COLORS.items():
         if key in val and len(key) >= 4:
             return col
@@ -414,11 +635,7 @@ def render_centered_table(
     caption: str = "",
     empty_message: str = "No hay registros disponibles para mostrar con los filtros actuales.",
 ) -> str:
-    """Render a 100%-centered responsive HTML/CSS table with zero column truncation.
-
-    Every `<th>` and `<td>` enforces `text-align: center !important`. Columns listed in
-    `badge_cols` automatically render semantic pill badges.
-    """
+    """Render a 100%-centered responsive HTML/CSS table with zero column truncation."""
     if df is None or df.empty:
         return f'<div class="school-callout" style="text-align:center;">{escape(empty_message)}</div>'
 
@@ -428,7 +645,7 @@ def render_centered_table(
     rows_html: list[str] = []
     for _, row in df.iterrows():
         is_hl = highlight_col is not None and highlight_col in df.columns and row[highlight_col] == highlight_value
-        tr_style = ' style="background-color:#FEF2F2;font-weight:700;"' if is_hl else ""
+        tr_cls = ' class="civic-row-highlight"' if is_hl else ""
         cells: list[str] = []
         for col in df.columns:
             raw_val = row[col]
@@ -442,7 +659,7 @@ def render_centered_table(
                 else:
                     cell_html = escape(txt)
             cells.append(f"<td>{cell_html}</td>")
-        rows_html.append(f"<tr{tr_style}>{''.join(cells)}</tr>")
+        rows_html.append(f"<tr{tr_cls}>{''.join(cells)}</tr>")
 
     max_h_style = f"max-height:{int(max_height_px)}px;" if max_height_px and max_height_px > 0 else ""
     cap_html = f'<div class="civic-table-caption">{escape(caption)}</div>' if caption else ""
@@ -454,4 +671,43 @@ def render_centered_table(
         f'</table>'
         f'</div>'
         f'{cap_html}'
+    )
+
+
+def render_table_legend(
+    items: list[tuple[str, str]],
+    title: str = "📖 ¿Cómo leer esta tabla? (Explicación en español sencillo)",
+) -> str:
+    """Render a clean explanatory legend card directly beneath every data table."""
+    items_html = "".join(
+        f'<div class="table-legend-item"><strong>{escape(k)}:</strong> {escape(v)}</div>'
+        for k, v in items
+    )
+    return (
+        f'<div class="table-legend-box">'
+        f'<div class="table-legend-title">{escape(title)}</div>'
+        f'<div class="table-legend-grid">{items_html}</div>'
+        f'</div>'
+    )
+
+
+def render_map_legend(
+    items: list[tuple[str, str, str]],
+    note: str = "💡 Usa el botón de pantalla completa (esquina superior izquierda del mapa) para explorar con mayor detalle.",
+) -> str:
+    """Render a visual swatch legend bar directly beneath a Folium or Plotly map.
+
+    Each item is `(hex_color, bold_label, description)`.
+    """
+    chips = "".join(
+        f'<span><span class="map-legend-swatch" style="background:{escape(col)};"></span>'
+        f'<strong>{escape(lbl)}:</strong> {escape(desc)}</span>'
+        for col, lbl, desc in items
+    )
+    note_html = f'<div class="map-legend-note">{escape(note)}</div>' if note else ""
+    return (
+        f'<div class="map-legend-box">'
+        f'<div class="map-legend-items">{chips}</div>'
+        f'{note_html}'
+        f'</div>'
     )

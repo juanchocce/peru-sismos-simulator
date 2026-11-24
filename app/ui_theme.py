@@ -1,17 +1,20 @@
-"""CivicTech / GovTech Editorial Visual Theme & Citizen-Language Dictionaries (Phase 5B).
+"""CivicTech / GovTech Editorial Visual Theme & Citizen-Language Dictionaries (Phase 5C).
 
 Provides:
-  - Custom CSS for warm telluric institutional styling (cards, badges, typography, tables).
-  - `FEATURE_LABELS_ES`: complete plain-Spanish translations for all technical ML features.
-  - `REGIME_LABELS_ES`: human-readable Spanish labels for Peru's 4 seismotectonic regimes.
-  - `MACRO_BLOCK_LABELS_ES`: clear geographic names for the 5 coastal tectonic macro-blocks.
+  - Custom CSS for warm telluric institutional styling (cards, badges, sidebar nav, centered tables).
+  - `render_centered_table(df, ...)`: responsive 100%-centered HTML table renderer with zero
+    truncation, sticky header, clean hover highlight, and optional semantic pill badges.
+  - `FEATURE_LABELS_ES`, `REGIME_LABELS_ES`, `REGIME_SHORT_ES`, `MACRO_BLOCK_LABELS_ES`.
   - `MERCALLI_DESC_ES` & `describe_mercalli(mmi)`: everyday physical impact descriptions.
-  - Reusable HTML card & badge components that never truncate text.
+  - Reusable HTML KPI card & badge components that never truncate text.
 """
 
 from __future__ import annotations
 
 from html import escape
+from typing import Any
+
+import pandas as pd
 
 FEATURE_LABELS_ES: dict[str, str] = {
     # Model A (GMPE) features
@@ -88,7 +91,7 @@ RISK_LEVEL_COLORS: dict[str, str] = {
     "Alto": "#C2410C",
     "Medio": "#B45309",
     "Bajo": "#0F766E",
-    "Muy Bajo": "#334155",
+    "Muy Bajo": "#475569",
 }
 
 MERCALLI_DESC_ES: dict[int, tuple[str, str, str, str]] = {
@@ -104,6 +107,22 @@ MERCALLI_DESC_ES: dict[int, tuple[str, str, str, str]] = {
     10: ("X", "Extremo", "Destrucción masiva de estructuras vulnerables, licuefacción y deslizamientos severos.", "#7F1D1D"),
 }
 
+BADGE_AUTO_COLORS: dict[str, str] = {
+    **RISK_LEVEL_COLORS,
+    "Imperceptible": "#64748B",
+    "Muy débil": "#475569",
+    "Débil": "#0284C7",
+    "Moderado leve": "#0D9488",
+    "Fuerte leve": "#CA8A04",
+    "Fuerte": "#D97706",
+    "Muy fuerte": "#EA580C",
+    "Severo": "#DC2626",
+    "Violento": "#991B1B",
+    "Extremo": "#7F1D1D",
+    "Subestimado": "#991B1B",
+    "Alineado": "#0F766E",
+}
+
 
 def translate_feature(name: str) -> str:
     """Translate any internal technical feature name into clear citizen Spanish."""
@@ -117,7 +136,7 @@ def describe_mercalli(mmi_value: float) -> tuple[str, str, str, str]:
 
 
 def inject_custom_css() -> str:
-    """Return institutional warm telluric CSS for the Streamlit app."""
+    """Return institutional warm telluric CSS including sidebar nav and 100%-centered tables."""
     return """
     <style>
       .stApp {
@@ -126,20 +145,84 @@ def inject_custom_css() -> str:
       }
       section[data-testid="stSidebar"] {
         background-color: #F1ECE4;
-        border-right: 1px solid #E2D9CC;
+        border-right: 1px solid #DFD5C7;
+      }
+      section[data-testid="stSidebar"] .stRadio > div {
+        gap: 0.28rem;
+      }
+      section[data-testid="stSidebar"] .stRadio label {
+        background-color: #FAF8F5;
+        border: 1px solid #E5DDD0;
+        border-radius: 8px;
+        padding: 0.48rem 0.7rem;
+        margin-bottom: 0.12rem;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: #292524;
+        transition: all 0.15s ease-in-out;
+        width: 100%;
+      }
+      section[data-testid="stSidebar"] .stRadio label:hover {
+        border-color: #B91C1C;
+        background-color: #FFF7F5;
+      }
+      .sidebar-brand {
+        background: linear-gradient(135deg, #991B1B 0%, #B91C1C 100%);
+        color: #FFFFFF;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 2px 6px rgba(153, 27, 27, 0.20);
+      }
+      .sidebar-brand h2 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        line-height: 1.25;
+      }
+      .sidebar-brand p {
+        margin: 0.25rem 0 0 0;
+        font-size: 0.76rem;
+        color: #FEE2E2;
+        line-height: 1.3;
+      }
+      .sidebar-data-card {
+        background: #FFFFFF;
+        border: 1px solid #E2D9CC;
+        border-left: 4px solid #0F766E;
+        border-radius: 8px;
+        padding: 0.75rem 0.85rem;
+        font-size: 0.78rem;
+        color: #44403C;
+        line-height: 1.45;
+        margin-top: 0.65rem;
+      }
+      .sidebar-data-card h4 {
+        margin: 0 0 0.4rem 0;
+        font-size: 0.84rem;
+        font-weight: 800;
+        color: #1C1917;
+      }
+      .sidebar-data-card ul {
+        margin: 0;
+        padding-left: 1.05rem;
+      }
+      .sidebar-data-card li {
+        margin-bottom: 0.25rem;
       }
       .civic-hero {
         background: linear-gradient(135deg, #FFFFFF 0%, #F5EFE6 100%);
         border: 1px solid #E5DDD0;
         border-left: 6px solid #B91C1C;
         border-radius: 10px;
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1rem;
+        padding: 1.1rem 1.4rem;
+        margin-bottom: 0.9rem;
         box-shadow: 0 2px 8px rgba(28, 25, 23, 0.05);
       }
       .civic-hero h1 {
-        font-size: 1.75rem;
-        margin: 0 0 0.35rem 0;
+        font-size: 1.65rem;
+        margin: 0 0 0.3rem 0;
         color: #1C1917;
         font-weight: 800;
         letter-spacing: -0.02em;
@@ -147,54 +230,54 @@ def inject_custom_css() -> str:
       .civic-hero p {
         margin: 0;
         color: #44403C;
-        font-size: 0.98rem;
-        line-height: 1.5;
+        font-size: 0.95rem;
+        line-height: 1.48;
       }
       .kpi-card {
         background: #FFFFFF;
         border: 1px solid #E7E0D6;
         border-top: 4px solid var(--accent, #B91C1C);
         border-radius: 9px;
-        padding: 0.85rem 1rem;
-        min-height: 104px;
+        padding: 0.82rem 0.95rem;
+        min-height: 102px;
         box-shadow: 0 1px 4px rgba(28, 25, 23, 0.04);
       }
       .kpi-title {
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.03em;
         color: #57534E;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.24rem;
       }
       .kpi-value {
-        font-size: 1.32rem;
+        font-size: 1.28rem;
         font-weight: 800;
         color: #1C1917;
         line-height: 1.2;
         word-wrap: break-word;
       }
       .kpi-sub {
-        font-size: 0.80rem;
+        font-size: 0.78rem;
         color: #78716C;
-        margin-top: 0.25rem;
+        margin-top: 0.24rem;
         line-height: 1.25;
       }
       .guide-card {
         background: #FFFFFF;
         border: 1px solid #E7E0D6;
         border-radius: 9px;
-        padding: 0.95rem 1.05rem;
+        padding: 0.92rem 1.02rem;
         height: 100%;
       }
       .guide-card h4 {
-        margin: 0 0 0.4rem 0;
-        font-size: 0.95rem;
+        margin: 0 0 0.38rem 0;
+        font-size: 0.94rem;
         color: #991B1B;
       }
       .guide-card p {
         margin: 0;
-        font-size: 0.86rem;
+        font-size: 0.85rem;
         color: #44403C;
         line-height: 1.45;
       }
@@ -209,29 +292,77 @@ def inject_custom_css() -> str:
       }
       .civic-badge {
         display: inline-block;
-        padding: 0.2rem 0.6rem;
+        padding: 0.18rem 0.62rem;
         border-radius: 999px;
-        font-size: 0.80rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: #FFFFFF;
         vertical-align: middle;
+        white-space: nowrap;
       }
-      .stTabs [data-baseweb="tab-list"] {
-        gap: 6px;
-        border-bottom: 2px solid #E5DDD0;
+      /* 100% Centered Responsive Civic Tables */
+      .civic-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: auto;
+        border: 1px solid #E2D9CC;
+        border-radius: 10px;
+        background: #FFFFFF;
+        box-shadow: 0 1px 5px rgba(28, 25, 23, 0.05);
+        margin: 0.45rem 0 0.85rem 0;
       }
-      .stTabs [data-baseweb="tab"] {
-        background-color: #F1ECE4;
-        border-radius: 8px 8px 0 0;
-        padding: 0.5rem 0.9rem;
-        font-weight: 600;
-        color: #44403C;
+      table.civic-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        color: #1C1917;
       }
-      .stTabs [aria-selected="true"] {
-        background-color: #FFFFFF !important;
-        color: #B91C1C !important;
+      table.civic-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #F3EDE4;
+        color: #292524;
+        font-weight: 800;
+        font-size: 0.80rem;
+        text-transform: none;
+        letter-spacing: 0.01em;
+        padding: 0.68rem 0.72rem;
+        border-bottom: 2px solid #D6CBB9;
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: normal;
+        line-height: 1.25;
+      }
+      table.civic-table tbody td {
+        padding: 0.56rem 0.70rem;
+        border-bottom: 1px solid #EFEAE2;
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: normal;
+        line-height: 1.32;
+      }
+      table.civic-table tbody tr:nth-child(even) {
+        background-color: #FCFBF9;
+      }
+      table.civic-table tbody tr:hover {
+        background-color: #FEF3EC;
+        transition: background-color 0.12s ease;
+      }
+      .civic-table-caption {
+        font-size: 0.78rem;
+        color: #78716C;
+        margin-top: -0.4rem;
+        margin-bottom: 0.75rem;
+        text-align: center;
+      }
+      .school-callout {
+        background: #FFFFFF;
         border: 1px solid #E5DDD0;
-        border-bottom: 2px solid #FFFFFF;
+        border-left: 5px solid #0F766E;
+        border-radius: 9px;
+        padding: 0.95rem 1.15rem;
+        margin: 0.6rem 0;
       }
     </style>
     """
@@ -259,3 +390,68 @@ def render_kpi_card(
 def render_badge(text: str, color: str) -> str:
     """Render a clean semantic pill badge."""
     return f'<span class="civic-badge" style="background:{color};">{escape(text)}</span>'
+
+
+def _badge_color_for_value(val: str, custom_map: dict[str, str] | None = None) -> str | None:
+    if custom_map and val in custom_map:
+        return custom_map[val]
+    if val in BADGE_AUTO_COLORS:
+        return BADGE_AUTO_COLORS[val]
+    # Support Mercalli Roman + description badges like "VIII — Severo" or "VII (7.4)"
+    for key, col in BADGE_AUTO_COLORS.items():
+        if key in val and len(key) >= 4:
+            return col
+    return None
+
+
+def render_centered_table(
+    df: pd.DataFrame,
+    badge_cols: set[str] | list[str] | tuple[str, ...] | None = None,
+    badge_color_map: dict[str, str] | None = None,
+    highlight_col: str | None = None,
+    highlight_value: Any = None,
+    max_height_px: int = 440,
+    caption: str = "",
+    empty_message: str = "No hay registros disponibles para mostrar con los filtros actuales.",
+) -> str:
+    """Render a 100%-centered responsive HTML/CSS table with zero column truncation.
+
+    Every `<th>` and `<td>` enforces `text-align: center !important`. Columns listed in
+    `badge_cols` automatically render semantic pill badges.
+    """
+    if df is None or df.empty:
+        return f'<div class="school-callout" style="text-align:center;">{escape(empty_message)}</div>'
+
+    badge_set = set(badge_cols or ())
+    headers_html = "".join(f"<th>{escape(str(col))}</th>" for col in df.columns)
+
+    rows_html: list[str] = []
+    for _, row in df.iterrows():
+        is_hl = highlight_col is not None and highlight_col in df.columns and row[highlight_col] == highlight_value
+        tr_style = ' style="background-color:#FEF2F2;font-weight:700;"' if is_hl else ""
+        cells: list[str] = []
+        for col in df.columns:
+            raw_val = row[col]
+            if pd.isna(raw_val):
+                cell_html = "—"
+            else:
+                txt = str(raw_val)
+                if col in badge_set:
+                    bcol = _badge_color_for_value(txt, badge_color_map) or "#475569"
+                    cell_html = render_badge(txt, bcol)
+                else:
+                    cell_html = escape(txt)
+            cells.append(f"<td>{cell_html}</td>")
+        rows_html.append(f"<tr{tr_style}>{''.join(cells)}</tr>")
+
+    max_h_style = f"max-height:{int(max_height_px)}px;" if max_height_px and max_height_px > 0 else ""
+    cap_html = f'<div class="civic-table-caption">{escape(caption)}</div>' if caption else ""
+    return (
+        f'<div class="civic-table-wrap" style="{max_h_style}">'
+        f'<table class="civic-table">'
+        f'<thead><tr>{headers_html}</tr></thead>'
+        f'<tbody>{"".join(rows_html)}</tbody>'
+        f'</table>'
+        f'</div>'
+        f'{cap_html}'
+    )

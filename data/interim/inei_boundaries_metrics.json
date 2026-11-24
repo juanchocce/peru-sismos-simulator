@@ -1,0 +1,81 @@
+{
+  "generated_utc": "2026-11-24T00:25:06.707765+00:00",
+  "simplify_tolerance_deg": 0.002,
+  "layers": {
+    "departamentos": {
+      "source_mode": "INEI_WFS",
+      "status": "ok",
+      "feature_count": 25,
+      "raw_columns": [
+        "fid",
+        "objectid",
+        "ccdd",
+        "nombdep",
+        "fuente",
+        "periodo",
+        "fec_reg"
+      ],
+      "normalized_columns": [
+        "ccdd",
+        "departamento",
+        "source_layer"
+      ],
+      "output_path": "data\\interim\\inei_departamentos.geojson",
+      "file_size_mb": 0.697
+    },
+    "provincias": {
+      "source_mode": "INEI_WFS",
+      "status": "ok",
+      "feature_count": 196,
+      "raw_columns": [
+        "fid",
+        "objectid",
+        "ccdd",
+        "ccpp",
+        "nombprov",
+        "fuente",
+        "periodo",
+        "fec_reg"
+      ],
+      "normalized_columns": [
+        "ccdd",
+        "ccpp",
+        "cod_prov",
+        "provincia",
+        "source_layer"
+      ],
+      "output_path": "data\\interim\\inei_provincias.geojson",
+      "file_size_mb": 1.62
+    },
+    "distritos": {
+      "source_mode": "INEI_WFS",
+      "status": "ok",
+      "feature_count": 1890,
+      "raw_columns": [
+        "fid",
+        "objectid",
+        "ccdd",
+        "ccpp",
+        "ccdi",
+        "ubigeo",
+        "nombdist",
+        "fuente",
+        "periodo",
+        "ccdd_c",
+        "ccpp_c",
+        "ccdi_c",
+        "fec_reg"
+      ],
+      "normalized_columns": [
+        "ubigeo",
+        "ccdd",
+        "ccpp",
+        "cod_prov",
+        "distrito",
+        "source_layer"
+      ],
+      "output_path": "data\\interim\\inei_distritos.geojson",
+      "file_size_mb": 4.171
+    }
+  }
+}

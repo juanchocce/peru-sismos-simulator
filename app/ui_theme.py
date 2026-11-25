@@ -452,15 +452,15 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
       }}
       .civic-badge {{
         display: inline-block;
-        padding: 0.18rem 0.62rem;
+        padding: 0.16rem 0.54rem;
         border-radius: 999px;
-        font-size: 0.77rem;
+        font-size: 0.74rem;
         font-weight: 700;
         color: #FFFFFF !important;
         vertical-align: middle;
         white-space: nowrap;
       }}
-      /* 100% Centered Responsive Civic Tables */
+      /* 100% Centered Responsive Civic Tables (Zero Clipping on 1366px Laptops) */
       .civic-table-wrap {{
         width: 100%;
         overflow-x: auto;
@@ -474,7 +474,7 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
       table.civic-table {{
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.84rem;
+        font-size: 0.80rem;
         color: var(--text-primary);
       }}
       table.civic-table thead th {{
@@ -484,22 +484,41 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
         background: var(--table-head-bg);
         color: var(--table-head-txt);
         font-weight: 800;
-        font-size: 0.79rem;
+        font-size: 0.76rem;
         letter-spacing: 0.01em;
-        padding: 0.66rem 0.68rem;
+        padding: 6px 8px;
         border-bottom: 2px solid var(--border-strong);
         text-align: center !important;
         vertical-align: middle !important;
         white-space: normal;
-        line-height: 1.25;
+        line-height: 1.22;
       }}
       table.civic-table tbody td {{
-        padding: 0.54rem 0.66rem;
+        padding: 6px 8px;
         border-bottom: 1px solid var(--border-color);
         text-align: center !important;
         vertical-align: middle !important;
         white-space: normal;
-        line-height: 1.32;
+        line-height: 1.28;
+        color: var(--text-primary);
+      }}
+      .vuln-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.65rem;
+        margin-top: 0.5rem;
+      }}
+      .vuln-item {{
+        background: var(--bg-surface-alt);
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--v-accent, #B91C1C);
+        border-radius: 8px;
+        padding: 0.68rem 0.82rem;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        line-height: 1.42;
+      }}
+      .vuln-item strong {{
         color: var(--text-primary);
       }}
       table.civic-table tbody tr:nth-child(even) {{

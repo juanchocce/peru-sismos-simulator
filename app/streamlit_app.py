@@ -1,12 +1,16 @@
-"""Phase 5D: CivicTech / GovTech Interactive Seismic & Multi-Hazard Platform for Peru (Streamlit).
+"""Phase 5E: CivicTech / GovTech Interactive Seismic & Multi-Hazard Platform for Peru (Streamlit).
 
-Self-contained Python + Streamlit web application ("12-year-old clarity test" + scientific rigor):
-  - Pedagogically ordered 9-section vertical sidebar navigation (from Seismic School to Technical Docs).
-  - Real Dual Light (`Claro Editorial`) / Dark (`Oscuro Nocturno`) visual theme switcher.
-  - Fullscreen button + visual legend panel on EVERY Folium and Plotly map (including 3D Peru contour).
-  - Dual Magnitude (Mw) + Mercalli scale everywhere, plain-Spanish `Gal`/`%g` & linear vs. nonlinear soil notes.
-  - 100%-centered responsive tables (`render_centered_table`) + mandatory explanatory legend below every table.
-  - Dedicated Lowest Seismic Hazard Zones territorial analysis (`🛡️ Zonas de Menor Peligro Sísmico`).
+Self-contained Python + Streamlit web application featuring:
+  - Compact single-button Light/Dark theme switcher (`🌙 Cambiar a Modo Oscuro` / `☀️ Cambiar a Modo Claro`).
+  - Pedagogically ordered 9-section vertical sidebar navigation.
+  - Animated 3D Seismic Wave Propagation Simulator (`Vs ≈ 3.8 km/s`, 12 frames `5s–120s`, underground
+    hypocenter, expanding 3D wavefront, Peru INEI surface contour at `z = 0 km`, and soil-amplified
+    3D district shaking columns) + 2D Cartographic view toggle.
+  - Magnitude-scaled 3D spheres + translucent outer aura (`M ≥ 7.0`) in the 3D Wadati–Benioff cutaway.
+  - District Consultant with 5 interactive scenario modes + Housing Vulnerability Guide (Norma E.030/CISMID).
+  - Dual Lowest & Highest Seismic Hazard Territorial Analysis (`🟢 Menor` / `🔴 Mayor`).
+  - Citizen Confidence Translator in Technical Documentation.
+  - 100%-centered zero-clipping tables (`render_centered_table`) + mandatory legend below every table.
 
 Reads exclusively from `data/processed/`, `data/interim/`, `models/`, and `docs/`
 (`base_informativa/` remains strictly read-only and untouched).
@@ -42,14 +46,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.ui_theme import (
     MACRO_BLOCK_LABELS_ES,
-    MERCALLI_DESC_ES,
-    MERCALLI_TO_MAG_RANGE_ES,
     REGIME_LABELS_ES,
     REGIME_SHORT_ES,
     RISK_LEVEL_COLORS,
     THEME_DARK,
     THEME_LIGHT,
-    describe_mercalli,
     describe_mercalli_dual,
     folium_tiles_for_theme,
     format_mercalli_with_mag,
@@ -63,7 +64,6 @@ from app.ui_theme import (
     translate_feature,
 )
 from src.models.nonlinear_site import (
-    apply_nonlinear_site_damping,
     latlon_to_unit_xyz,
     simulate_hybrid_nonlinear_pga,
 )
@@ -93,6 +93,8 @@ DOCS_COMPLETE_MD = DOCS_DIR / "DOCUMENTACION_TECNICA_COMPLETA.md"
 
 NAZCA_TRENCH_BOUNDS = {"NZ\\SA", "NZ\\AP", "NZ\\ND"}
 PLOTLY_CFG = {"displayModeBar": True, "displaylogo": False}
+WAVE_VS_KM_S = 3.8
+WAVE_FRAME_TIMES_S = [5, 10, 15, 22, 30, 40, 52, 65, 80, 95, 110, 120]
 
 # Pedagogically ordered from easiest citizen guide to deepest technical rigor (9 sections)
 NAV_SECTIONS = [
@@ -102,7 +104,7 @@ NAV_SECTIONS = [
     "⚡ Simulador de Terremotos en Vivo",
     "📜 Historia Sísmica (1552–2026) y Corte 3D",
     "🌊 Radar de Silencios Sísmicos en la Costa",
-    "🛡️ Zonas de Menor Peligro Sísmico (Análisis Territorial)",
+    "🛡️ Zonas de Menor y Mayor Peligro Sísmico",
     "🏛️ Auditoría vs. FONDES / SIGRID",
     "📚 Documentación Técnica y Rigor Estadístico",
 ]
@@ -133,6 +135,14 @@ PRESET_SCENARIOS = {
         "mw": 8.0,
     },
 }
+
+DISTRICT_SCENARIO_OPTIONS = [
+    "Peor escenario crítico para este distrito (automático)",
+    "Megaterremoto frente a Lima–Callao (M 8.6 — Brecha de 1746)",
+    "Terremoto en el Sur Ilo–Tacna (M 8.4 — Brecha de 1868)",
+    "Sismo profundo en Sierra Central (M 6.8 — Estilo Junín)",
+    "Simulación personalizada (elige magnitud M 5.0 a M 9.0)",
+]
 
 HISTORICAL_MILESTONES = [
     (1746, 8.8, "1746 Lima–Callao (M 8.8)"),
@@ -263,6 +273,7 @@ def load_simulation_assets() -> dict[str, Any]:
         "slab_model": slab_model,
         "c1_huber": c1_huber,
         "trench_tree": trench_tree,
+        "trench_pts": arr,
         "trench_vels": np.asarray(vels, dtype="float64"),
         "trench_ages": np.asarray(ages, dtype="float64"),
         "target_lats": df_u["dist_lat"].to_numpy(dtype="float64"),
@@ -325,6 +336,7 @@ def run_live_simulation(
             "site_delta_s2s_eff": np.round(sim["delta_s2s_eff"], 3),
             "site_amp_eff": np.round(np.power(10.0, sim["delta_s2s_eff"]), 2),
             "dist_epicentral_km": np.round(sim["dist_epicentral_km"], 1),
+            "dist_hypocentral_km": np.round(np.sqrt(sim["dist_epicentral_km"] ** 2 + ev_depth_km ** 2), 1),
             "pga_rock_gal": np.round(sim["pga_rock_gal"], 1),
             "pga_site_gal": np.round(sim["pga_site_gal"], 1),
             "pga_site_pct_g": np.round(sim["pga_site_gal"] / 9.81, 1),
@@ -351,6 +363,261 @@ def run_live_simulation(
         "exposed_zonas_criticas_mmi7": int(res_df.loc[res_df["mmi_est"] >= 7.0, "n_zonas_criticas_activas"].sum()),
     }
     return res_df, meta
+
+
+def _build_3d_animated_wave_figure(
+    res_df: pd.DataFrame,
+    ev_lat: float,
+    ev_lon: float,
+    ev_depth_km: float,
+    ev_mw: float,
+    inei: dict[str, Any],
+    theme_mode: str,
+) -> go.Figure:
+    """Build 12-frame Plotly 3D animated seismic wave propagation model (Vs ≈ 3.8 km/s)."""
+    cos_lat = max(float(np.cos(np.radians(ev_lat))), 0.25)
+    km_per_deg_lat = 111.0
+    km_per_deg_lon = 111.0 * cos_lat
+
+    vis = res_df[res_df["pga_site_gal"] >= 2.0].sort_values("pga_site_gal", ascending=False).head(260).copy()
+    if vis.empty:
+        vis = res_df.sort_values("pga_site_gal", ascending=False).head(80).copy()
+
+    vis["t_arrival_s"] = vis["dist_hypocentral_km"] / WAVE_VS_KM_S
+    vis["col_height_z"] = np.clip((vis["pga_site_gal"] / 981.0) * 145.0, 5.0, 165.0)
+
+    def _wavefront_lines(t_sec: float) -> tuple[list[float | None], list[float | None], list[float | None]]:
+        r_km = WAVE_VS_KM_S * t_sec
+        wx: list[float | None] = []
+        wy: list[float | None] = []
+        wz: list[float | None] = []
+
+        if r_km > ev_depth_km:
+            r_surf = float(np.sqrt(max(r_km ** 2 - ev_depth_km ** 2, 0.0)))
+            ang = np.linspace(0.0, 2.0 * np.pi, 52)
+            for a in ang:
+                wx.append(ev_lon + (r_surf * np.cos(a)) / km_per_deg_lon)
+                wy.append(ev_lat + (r_surf * np.sin(a)) / km_per_deg_lat)
+                wz.append(0.4)
+            wx.append(None)
+            wy.append(None)
+            wz.append(None)
+
+        phi = np.linspace(-np.pi / 2.0, np.pi / 2.0, 28)
+        for az_deg in (0.0, 45.0, 90.0, 135.0):
+            az = np.radians(az_deg)
+            seg_started = False
+            for p in phi:
+                z_val = -ev_depth_km + r_km * np.sin(p)
+                if z_val <= 0.0:
+                    rad_h = r_km * np.cos(p)
+                    wx.append(ev_lon + (rad_h * np.cos(az)) / km_per_deg_lon)
+                    wy.append(ev_lat + (rad_h * np.sin(az)) / km_per_deg_lat)
+                    wz.append(z_val)
+                    seg_started = True
+                elif seg_started:
+                    wx.append(None)
+                    wy.append(None)
+                    wz.append(None)
+                    seg_started = False
+            wx.append(None)
+            wy.append(None)
+            wz.append(None)
+
+        ang_u = np.linspace(0.0, 2.0 * np.pi, 36)
+        for a in ang_u:
+            wx.append(ev_lon + (r_km * np.cos(a)) / km_per_deg_lon)
+            wy.append(ev_lat + (r_km * np.sin(a)) / km_per_deg_lat)
+            wz.append(-ev_depth_km)
+        wx.append(None)
+        wy.append(None)
+        wz.append(None)
+        return wx, wy, wz
+
+    def _reached_columns_and_spheres(t_sec: float) -> tuple[go.Scatter3d, go.Scatter3d]:
+        reached = vis[vis["t_arrival_s"] <= t_sec]
+        cx: list[float | None] = []
+        cy: list[float | None] = []
+        cz: list[float | None] = []
+        if not reached.empty:
+            for lo, la, hz in zip(reached["dist_lon"], reached["dist_lat"], reached["col_height_z"]):
+                cx.extend([float(lo), float(lo), None])
+                cy.extend([float(la), float(la), None])
+                cz.extend([0.0, float(hz), None])
+            sp_x = reached["dist_lon"].tolist()
+            sp_y = reached["dist_lat"].tolist()
+            sp_z = reached["col_height_z"].tolist()
+            sp_c = reached["mmi_est"].tolist()
+            sp_s = np.clip(reached["mmi_est"] * 1.45, 4.5, 13.5).tolist()
+            sp_txt = [
+                f"<b>{r['distrito']} ({r['departamento']})</b><br>"
+                f"Llegada de onda S: <b>{r['t_arrival_s']:.1f} s</b><br>"
+                f"Sacudimiento real: <b>{r['pga_site_pct_g']:.1f}% g ({r['pga_site_gal']:.0f} Gal)</b><br>"
+                f"Intensidad: <b>Mercalli {r['mercalli_romano']} (eq. {r['mercalli_mag_eq']}) — {r['nivel_impacto']}</b><br>"
+                f"Suelo: {r['site_amp_normal']:.2f}× normal → {r['site_amp_eff']:.2f}× efectivo"
+                for _, r in reached.iterrows()
+            ]
+        else:
+            cx, cy, cz = [ev_lon], [ev_lat], [0.0]
+            sp_x, sp_y, sp_z, sp_c, sp_s, sp_txt = [ev_lon], [ev_lat], [0.0], [3.0], [1.0], ["Onda aún viajando bajo tierra..."]
+
+        col_trace = go.Scatter3d(
+            x=cx,
+            y=cy,
+            z=cz,
+            mode="lines",
+            name="Columnas de sacudimiento (suelo)",
+            line=dict(color="#EA580C", width=3.2),
+            hoverinfo="skip",
+        )
+        sphere_trace = go.Scatter3d(
+            x=sp_x,
+            y=sp_y,
+            z=sp_z,
+            mode="markers",
+            name="Impacto distrital (Mercalli)",
+            marker=dict(
+                size=sp_s,
+                color=sp_c,
+                colorscale="YlOrRd",
+                cmin=3.0,
+                cmax=9.5,
+                colorbar=dict(title=dict(text="Mercalli", side="right"), thickness=13, len=0.65),
+                opacity=0.92,
+                line=dict(color="#1C1917", width=0.5),
+            ),
+            text=sp_txt,
+            hoverinfo="text",
+        )
+        return col_trace, sphere_trace
+
+    outline_col = "#E2E8F0" if theme_mode == THEME_DARK else "#292524"
+    trace_peru = go.Scatter3d(
+        x=inei["peru_3d_x"],
+        y=inei["peru_3d_y"],
+        z=inei["peru_3d_z"],
+        mode="lines",
+        name="Superficie del Perú (0 km)",
+        line=dict(color=outline_col, width=2.0),
+        hoverinfo="skip",
+    )
+    trace_hypo = go.Scatter3d(
+        x=[ev_lon, ev_lon],
+        y=[ev_lat, ev_lat],
+        z=[-ev_depth_km, 0.0],
+        mode="lines+markers",
+        name=f"Hipocentro (-{ev_depth_km:.0f} km) → Epicentro",
+        line=dict(color="#EF4444", width=4.0, dash="dot"),
+        marker=dict(size=[13, 8], color=["#DC2626", "#F97316"], symbol=["circle", "diamond"]),
+        text=[
+            f"<b>Hipocentro real</b><br>Magnitud: Mw {ev_mw:.1f}<br>Profundidad: {ev_depth_km:.0f} km bajo tierra",
+            f"<b>Epicentro en superficie (0 km)</b><br>Lat {ev_lat:.2f}°, Lon {ev_lon:.2f}°",
+        ],
+        hoverinfo="text",
+    )
+
+    frames: list[go.Frame] = []
+    init_traces: list[go.Scatter3d] | None = None
+    init_idx = 5  # t = 40 s
+
+    for f_idx, t_sec in enumerate(WAVE_FRAME_TIMES_S):
+        wx, wy, wz = _wavefront_lines(float(t_sec))
+        tr_wave = go.Scatter3d(
+            x=wx,
+            y=wy,
+            z=wz,
+            mode="lines",
+            name="Frente de onda sísmica (3.8 km/s)",
+            line=dict(color="#F59E0B" if theme_mode == THEME_DARK else "#DC2626", width=3.0),
+            hoverinfo="skip",
+        )
+        tr_cols, tr_spheres = _reached_columns_and_spheres(float(t_sec))
+        n_hit = int((vis["t_arrival_s"] <= t_sec).sum())
+        frame = go.Frame(
+            name=f"{t_sec}s",
+            data=[tr_wave, tr_cols, tr_spheres],
+            traces=[2, 3, 4],
+            layout=go.Layout(
+                title=f"Propagación 3D de Ondas Sísmicas (Mw {ev_mw:.1f}, Prof. {ev_depth_km:.0f} km) — t = {t_sec} s · Radio {WAVE_VS_KM_S * t_sec:.0f} km · {n_hit} distritos alcanzados"
+            ),
+        )
+        frames.append(frame)
+        if f_idx == init_idx:
+            init_traces = [trace_peru, trace_hypo, tr_wave, tr_cols, tr_spheres]
+
+    assert init_traces is not None
+    t_init = WAVE_FRAME_TIMES_S[init_idx]
+    n_hit_init = int((vis["t_arrival_s"] <= t_init).sum())
+
+    z_min = min(-max(ev_depth_km + 55.0, 120.0), -120.0)
+    fig = go.Figure(data=init_traces, frames=frames)
+    fig.update_layout(
+        **plotly_theme_kwargs(theme_mode),
+        height=560,
+        title=f"Propagación 3D de Ondas Sísmicas (Mw {ev_mw:.1f}, Prof. {ev_depth_km:.0f} km) — t = {t_init} s · Radio {WAVE_VS_KM_S * t_init:.0f} km · {n_hit_init} distritos alcanzados",
+        scene=dict(
+            xaxis_title="Longitud (°W)",
+            yaxis_title="Latitud (°S)",
+            zaxis_title="Profundidad (-km) / Sacudimiento (+)",
+            xaxis=dict(range=[-82.2, -68.2]),
+            yaxis=dict(range=[-18.8, -0.2]),
+            zaxis=dict(range=[z_min, 175.0]),
+            aspectratio=dict(x=1.0, y=1.25, z=0.62),
+            camera=dict(eye=dict(x=-1.55, y=-1.30, z=0.85)),
+        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="center", x=0.5),
+        margin=dict(l=0, r=0, t=58, b=0),
+        updatemenus=[
+            dict(
+                type="buttons",
+                direction="left",
+                x=0.02,
+                y=0.04,
+                xanchor="left",
+                yanchor="bottom",
+                bgcolor="#1E293B" if theme_mode == THEME_DARK else "#F3EDE4",
+                font=dict(color="#F8FAFC" if theme_mode == THEME_DARK else "#1C1917", size=12),
+                buttons=[
+                    dict(
+                        label="▶ Reproducir Onda",
+                        method="animate",
+                        args=[
+                            None,
+                            {
+                                "frame": {"duration": 520, "redraw": True},
+                                "transition": {"duration": 180},
+                                "fromcurrent": False,
+                                "mode": "immediate",
+                            },
+                        ],
+                    ),
+                    dict(
+                        label="⏸ Pausar",
+                        method="animate",
+                        args=[[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate"}],
+                    ),
+                ],
+            )
+        ],
+        sliders=[
+            dict(
+                active=init_idx,
+                x=0.25,
+                y=0.03,
+                len=0.72,
+                currentvalue={"prefix": "Tiempo transcurrido: ", "visible": True, "font": {"size": 12}},
+                steps=[
+                    dict(
+                        label=f"{t_s}s",
+                        method="animate",
+                        args=[[f"{t_s}s"], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
+                    )
+                    for t_s in WAVE_FRAME_TIMES_S
+                ],
+            )
+        ],
+    )
+    return fig
 
 
 @st.cache_resource(show_spinner="Cargando motores geofísicos y de inteligencia artificial...")
@@ -465,14 +732,13 @@ def _build_dynamic_folium_html(
     m = folium.Map(location=[-10.2, -75.2], zoom_start=6, tiles=folium_tiles_for_theme(theme_mode), control_scale=True)
     _add_fullscreen(m)
 
-    dept_border = "#CBD5E1" if theme_mode == THEME_DARK else "#44403C"
     if show_inei_dept and inei["dept_geojson"] is not None:
         folium.GeoJson(
             inei["dept_geojson"],
             name="Límites Departamentales INEI",
             style_function=lambda _f: {
                 "fillColor": "#FFFFFF",
-                "color": dept_border,
+                "color": "#44403C",
                 "weight": 1.3,
                 "fillOpacity": 0.03,
             },
@@ -539,7 +805,7 @@ def _build_dynamic_folium_html(
             folium.CircleMarker(
                 location=[float(r["lat_center"]), float(r["trench_lon_mean"])],
                 radius=11 if is_crit else 7,
-                color="#F8FAFC" if (is_crit and theme_mode == THEME_DARK) else ("#1C1917" if is_crit else "#57534E"),
+                color="#1C1917" if is_crit else "#57534E",
                 weight=2.2 if is_crit else 1.0,
                 fill=True,
                 fill_color=color,
@@ -607,7 +873,6 @@ def _build_district_consultant_map(
     lon0 = float(dist_row["dist_lon"])
     nivel_seis = str(dist_row["nivel_peligro_sismico_puro"])
     poly_col = RISK_LEVEL_COLORS.get(nivel_seis, "#B91C1C")
-    poly_border = "#F8FAFC" if theme_mode == THEME_DARK else "#1C1917"
 
     m = folium.Map(location=[lat0, lon0], zoom_start=11, tiles=folium_tiles_for_theme(theme_mode), control_scale=True)
     _add_fullscreen(m)
@@ -617,7 +882,7 @@ def _build_district_consultant_map(
             {"type": "FeatureCollection", "features": [dist_feature]},
             style_function=lambda _f: {
                 "fillColor": poly_col,
-                "color": poly_border,
+                "color": "#1C1917",
                 "weight": 2.4,
                 "fillOpacity": 0.28,
             },
@@ -637,7 +902,7 @@ def _build_district_consultant_map(
         folium.Circle(
             location=[lat0, lon0],
             radius=4500,
-            color=poly_border,
+            color="#1C1917",
             weight=2.0,
             fill=True,
             fill_color=poly_col,
@@ -645,7 +910,6 @@ def _build_district_consultant_map(
             tooltip=f"Centroide distrital {dist_row['distrito']} (UBIGEO {dist_row['ubigeo']})",
         ).add_to(m)
 
-    # Nearby ACELDAT sensor stations (with sensor icon marker)
     st_d = np.sqrt(((df_site["station_lat"] - lat0) * 111.0) ** 2 + ((df_site["station_lon"] - lon0) * 111.0 * np.cos(np.radians(lat0))) ** 2)
     near_st = df_site[(df_site["ubigeo"] == str(dist_row["ubigeo"])) | (st_d <= 35.0)].copy()
     for _, s in near_st.iterrows():
@@ -662,7 +926,6 @@ def _build_district_consultant_map(
             ),
         ).add_to(m)
 
-    # Nearby GEOCATMIN critical zones (purple points)
     zc_d = np.sqrt(((df_zc["lat"] - lat0) * 111.0) ** 2 + ((df_zc["lon"] - lon0) * 111.0 * np.cos(np.radians(lat0))) ** 2)
     cond_ub = (df_zc["ubigeo"] == str(dist_row["ubigeo"])) if "ubigeo" in df_zc.columns else pd.Series(False, index=df_zc.index)
     near_zc = df_zc[cond_ub | (zc_d <= 25.0)].head(120)
@@ -683,52 +946,58 @@ def _build_district_consultant_map(
     return m._repr_html_()
 
 
-@st.cache_data(show_spinner="Generando mapa de zonas de menor peligro sísmico...")
-def _build_low_hazard_folium_html(theme_mode: str) -> str:
-    """Build Folium map with Fullscreen control highlighting Peru's Muy Bajo & Bajo seismic hazard districts."""
+@st.cache_data(show_spinner="Generando mapa territorial de peligro sísmico...")
+def _build_hazard_extremes_folium_html(mode: str, theme_mode: str) -> str:
+    """Build Folium map with Fullscreen control highlighting either lowest (Muy Bajo/Bajo) or highest (Alto/Muy Alto) districts."""
     assets = _cached_sim_assets()
     inei = _cached_inei_boundaries()
     df_u = assets["df_u"]
 
-    m = folium.Map(location=[-9.5, -74.0], zoom_start=6, tiles=folium_tiles_for_theme(theme_mode), control_scale=True)
+    m = folium.Map(location=[-9.8, -74.8], zoom_start=6, tiles=folium_tiles_for_theme(theme_mode), control_scale=True)
     _add_fullscreen(m)
 
-    dept_border = "#94A3B8" if theme_mode == THEME_DARK else "#57534E"
     if inei["dept_geojson"] is not None:
         folium.GeoJson(
             inei["dept_geojson"],
             style_function=lambda _f: {
                 "fillColor": "#FFFFFF",
-                "color": dept_border,
+                "color": "#57534E",
                 "weight": 1.1,
                 "fillOpacity": 0.03,
             },
             tooltip=folium.GeoJsonTooltip(fields=["departamento"], aliases=["Departamento:"]),
         ).add_to(m)
 
-    low_df = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Muy Bajo", "Bajo"])].copy()
-    for _, r in low_df.iterrows():
-        is_mb = r["nivel_peligro_sismico_puro"] == "Muy Bajo"
-        col = "#0F766E" if is_mb else "#0284C7"
-        folium.CircleMarker(
-            location=[float(r["dist_lat"]), float(r["dist_lon"])],
-            radius=5.0 if is_mb else 3.8,
-            color=col,
-            weight=0.8,
-            fill=True,
-            fill_color=col,
-            fill_opacity=0.80,
-            tooltip=(
-                f"{r['distrito']} ({r['departamento']}) · Nivel: {r['nivel_peligro_sismico_puro']} "
-                f"(Índice {r['seismic_hazard_index_0_100']:.1f}/100) · Sacudimiento máx.: {r['pga_escenario_max_gal']:.1f} Gal"
-            ),
-            popup=(
-                f"<b>{r['distrito']} ({r['provincia']}, {r['departamento']})</b><br>"
-                f"Peligro Sísmico: <b>{r['nivel_peligro_sismico_puro']}</b> ({r['seismic_hazard_index_0_100']:.1f}/100)<br>"
-                f"Sacudimiento máximo estimado: <b>{r['pga_escenario_max_gal']/9.81:.1f}% g ({r['pga_escenario_max_gal']:.1f} Gal)</b><br>"
-                f"Peligros geológicos (INGEMMET): <b>{int(r['n_peligros_total'])}</b> · FONDES: <b>{r['nivel_riesgo_multipeligro_sigrid']}</b>"
-            ),
-        ).add_to(m)
+    if mode == "low":
+        sub = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Muy Bajo", "Bajo"])].copy()
+        for _, r in sub.iterrows():
+            is_ext = r["nivel_peligro_sismico_puro"] == "Muy Bajo"
+            col = "#0F766E" if is_ext else "#0284C7"
+            folium.CircleMarker(
+                location=[float(r["dist_lat"]), float(r["dist_lon"])],
+                radius=5.0 if is_ext else 3.8,
+                color=col,
+                weight=0.8,
+                fill=True,
+                fill_color=col,
+                fill_opacity=0.80,
+                tooltip=f"{r['distrito']} ({r['departamento']}) · {r['nivel_peligro_sismico_puro']} ({r['seismic_hazard_index_0_100']:.1f}/100)",
+            ).add_to(m)
+    else:
+        sub = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Alto", "Muy Alto"])].copy()
+        for _, r in sub.iterrows():
+            is_ext = r["nivel_peligro_sismico_puro"] == "Muy Alto"
+            col = "#991B1B" if is_ext else "#EA580C"
+            folium.CircleMarker(
+                location=[float(r["dist_lat"]), float(r["dist_lon"])],
+                radius=5.4 if is_ext else 4.0,
+                color=col,
+                weight=0.8,
+                fill=True,
+                fill_color=col,
+                fill_opacity=0.82,
+                tooltip=f"{r['distrito']} ({r['departamento']}) · {r['nivel_peligro_sismico_puro']} ({r['seismic_hazard_index_0_100']:.1f}/100 · {r['pga_escenario_max_gal']:.0f} Gal)",
+            ).add_to(m)
 
     return m._repr_html_()
 
@@ -756,7 +1025,6 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
         "número que verás en la plataforma, con experimentos interactivos y datos reales del Perú."
     )
 
-    # 1. Visual Glossary of Observatory Units (6 Cards)
     st.markdown("#### 1. Glosario Visual: ¿Qué significan las palabras y números de esta plataforma?")
     g1, g2, g3 = st.columns(3)
     g1.markdown(
@@ -824,7 +1092,6 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
         unsafe_allow_html=True,
     )
 
-    # 2. Interactive Magnitude & Energy Comparator
     st.markdown("---")
     st.markdown("#### 2. Comparador Interactivo: ¿Por qué un sismo de 7 no es «un poquito» más fuerte que uno de 6?")
     st.markdown(
@@ -862,26 +1129,8 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
 
     mk1, mk2, mk3 = st.columns(3)
     mk1.markdown(render_kpi_card("Diferencia de Magnitud", f"+{dm:.1f} grados", f"De Mw {lo_m:.1f} a Mw {hi_m:.1f}", "#0F766E"), unsafe_allow_html=True)
-    mk2.markdown(
-        render_kpi_card(
-            "Tamaño de la Onda Sísmica",
-            f"{amp_ratio:,.1f}× veces" if amp_ratio < 100 else f"{amp_ratio:,.0f}× veces",
-            "Fórmula física: 10^(ΔM)",
-            "#D97706",
-            "Cuántas veces más grande se dibuja la onda en un sismógrafo a igual distancia.",
-        ),
-        unsafe_allow_html=True,
-    )
-    mk3.markdown(
-        render_kpi_card(
-            "Energía Total Liberada",
-            f"{energy_ratio:,.1f}× veces" if energy_ratio < 100 else f"{energy_ratio:,.0f}× veces",
-            "Fórmula física: 10^(1.5 · ΔM)",
-            "#B91C1C",
-            "Cuántos sismos del tamaño pequeño se necesitarían al mismo tiempo para igualar al grande.",
-        ),
-        unsafe_allow_html=True,
-    )
+    mk2.markdown(render_kpi_card("Tamaño de la Onda Sísmica", f"{amp_ratio:,.1f}× veces" if amp_ratio < 100 else f"{amp_ratio:,.0f}× veces", "Fórmula física: 10^(ΔM)", "#D97706"), unsafe_allow_html=True)
+    mk3.markdown(render_kpi_card("Energía Total Liberada", f"{energy_ratio:,.1f}× veces" if energy_ratio < 100 else f"{energy_ratio:,.0f}× veces", "Fórmula física: 10^(1.5 · ΔM)", "#B91C1C"), unsafe_allow_html=True)
 
     col_g, col_t = st.columns([1.0, 1.15])
     with col_g:
@@ -896,12 +1145,7 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
             )
         )
         fig_e.update_yaxes(type="log", title_text="Multiplicador (escala logarítmica)")
-        fig_e.update_layout(
-            **plotly_theme_kwargs(theme_mode),
-            height=330,
-            title=f"Comparación Mw {hi_m:.1f} frente a Mw {lo_m:.1f}",
-            margin=dict(l=45, r=20, t=48, b=35),
-        )
+        fig_e.update_layout(**plotly_theme_kwargs(theme_mode), height=330, title=f"Comparación Mw {hi_m:.1f} frente a Mw {lo_m:.1f}", margin=dict(l=45, r=20, t=48, b=35))
         st.plotly_chart(fig_e, width="stretch", config=PLOTLY_CFG)
 
     with col_t:
@@ -927,13 +1171,8 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
             unsafe_allow_html=True,
         )
 
-    # 3. Mercalli I-X + Equivalent Mw Range visual centered table
     st.markdown("---")
     st.markdown("#### 3. Escala Dual: Intensidad Mercalli (Grados I al X) y su Equivalencia en Magnitud (Mw)")
-    st.write(
-        "Esta tabla conecta lo que **sientes en tu casa (Mercalli)** con la **fuerza de sacudida (%g y Gal)** y el "
-        "**rango aproximado de Magnitud (Mw)** que suele producir ese nivel cerca del epicentro."
-    )
     mercalli_rows = []
     for grade in range(1, 11):
         rom, short, desc, _, mag_rng = describe_mercalli_dual(float(grade))
@@ -948,10 +1187,7 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
                 "¿Qué pasa con las viviendas?": house_hint,
             }
         )
-    st.markdown(
-        render_centered_table(pd.DataFrame(mercalli_rows), badge_cols={"Nivel"}, max_height_px=470),
-        unsafe_allow_html=True,
-    )
+    st.markdown(render_centered_table(pd.DataFrame(mercalli_rows), badge_cols={"Nivel"}, max_height_px=470), unsafe_allow_html=True)
     st.markdown(
         render_table_legend(
             [
@@ -963,7 +1199,6 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
         unsafe_allow_html=True,
     )
 
-    # 4. Soil Amplification Effect in Lima (Linear vs Nonlinear explanation)
     st.markdown("---")
     st.markdown("#### 4. El Efecto del Suelo de tu Barrio (Mediciones Reales del IGP en Lima y Callao)")
     df_site = data["df_site"]
@@ -979,14 +1214,7 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
         m_st = df_site[df_site["cod_estacion"] == code]
         if not m_st.empty:
             row_s = m_st.iloc[0]
-            soil_rows.append(
-                {
-                    "Estación": label_es,
-                    "Código": code,
-                    "Factor": round(float(row_s["amp_factor_rel_msol"]), 2),
-                    "Sismos": int(row_s["n_records"]),
-                }
-            )
+            soil_rows.append({"Estación": label_es, "Código": code, "Factor": round(float(row_s["amp_factor_rel_msol"]), 2), "Sismos": int(row_s["n_records"])})
     soil_df = pd.DataFrame(soil_rows)
 
     sc1, sc2 = st.columns([1.22, 0.98])
@@ -1026,7 +1254,6 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
             unsafe_allow_html=True,
         )
 
-    # 5. Historical Cadence — Debunking the 100-year clock myth
     st.markdown("---")
     st.markdown("#### 5. ¿Cada cuánto ocurren los grandes terremotos en el Perú?")
     st.info(
@@ -1034,7 +1261,6 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
         "En el Perú ocurrieron grandes terremotos separados por apenas **4 años** (1970 y 1974) o **6 años** (2001 y 2007), "
         "mientras Lima–Callao lleva **280 años** sin una ruptura total desde 1746. Lo único seguro es que las placas siguen chocando a **6–8 cm/año**."
     )
-
     hist_df = pd.DataFrame(SCHOOL_MAJOR_QUAKES)
     st.markdown(render_centered_table(hist_df, max_height_px=370), unsafe_allow_html=True)
     st.markdown(
@@ -1048,31 +1274,27 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
         unsafe_allow_html=True,
     )
 
-    # 6. Citizen FAQ (Expanders)
     st.markdown("---")
     st.markdown("#### 6. Preguntas Frecuentes Ciudadanas")
     with st.expander("❓ ¿Se puede predecir la fecha exacta de un terremoto?"):
         st.write(
             "**No.** Ninguna institución científica ni inteligencia artificial en el mundo puede predecir el día, la hora ni el minuto "
-            "de un terremoto. Esta plataforma calcula **probabilidades estadísticas** (por ejemplo, probabilidad en 12 meses o 30 años) "
-            "y **simulaciones de impacto** (*si ocurre un sismo aquí, cuánto se sacudiría mi distrito*) para preparar viviendas y planes de emergencia."
+            "de un terremoto. Esta plataforma calcula **probabilidades estadísticas** y **simulaciones de impacto** para prevención."
         )
     with st.expander("❓ ¿Por qué en mi distrito se siente más fuerte que en el distrito vecino?"):
         st.write(
             "Por dos razones: (1) **el tipo de suelo** —los suelos arenosos, humedales o rellenos amplifican la vibración hasta más del doble "
-            "comparados con la roca dura—, y (2) **el tipo de edificio** —pisos altos o viviendas sin columnas bien amarradas oscilan mucho más."
+            "comparados con la roca dura—, y (2) **el tipo de edificio** —viviendas sin columnas bien amarradas oscilan mucho más."
         )
     with st.expander("❓ ¿Es verdad que cada 100 años hay un terremoto fijo en Lima?"):
         st.write(
-            "**No es un reloj fijo.** Es cierto que el tramo Lima–Callao–Chincha no tiene un megaterremoto similar al de **1746 (M 8.8)** desde hace "
-            "**280 años**, y que la placa de Nazca acumula tensión constantemente; por eso la probabilidad a 30 años es alta (~36% a 63% según el modelo), "
-            "pero la ruptura puede ocurrir mañana o dentro de décadas."
+            "**No es un reloj fijo.** El tramo Lima–Callao–Chincha acumula tensión desde **1746 (280 años)**, por lo que la probabilidad a 30 años "
+            "es alta (~36% a 63% según el modelo), pero la ruptura puede ocurrir mañana o dentro de décadas."
         )
     with st.expander("❓ ¿Qué significa que mi distrito tenga Índice Sísmico 96/100?"):
         st.write(
-            "**NO significa 96% de probabilidad de terremoto.** Es un puntaje comparativo de **0 (mínimo del Perú)** a **100 (máximo del Perú)** "
-            "que combina tres factores físicos: (1) qué tan fuerte sería la sacudida en megaterremotos considerando tu suelo (45%), "
-            "(2) cercanía a una laguna sísmica costera con energía acumulada (30%) y (3) frecuencia anual de sismos sensibles en la zona (25%)."
+            "**NO significa 96% de probabilidad.** Es un puntaje comparativo de **0 (mínimo nacional)** a **100 (máximo nacional)** "
+            "que combina sacudimiento con suelo local (**45%**), cercanía a laguna costera BPT a 30 años (**30%**) y tasa anual H3 (**25%**)."
         )
 
 
@@ -1091,10 +1313,7 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
         show_gaps = st.checkbox("Lagunas Sísmicas Costeras (Energía acumulada)", value=True)
         show_stations = st.checkbox("Estaciones Acelerográficas IGP (Efecto de suelo)", value=True)
         show_geocatmin = st.checkbox("Zonas Críticas de Huaicos/Derrumbes (GEOCATMIN)", value=False)
-        st.info(
-            "💡 Haz clic en cualquier círculo del mar o estación en tierra para ver su detalle, o usa el botón de "
-            "**pantalla completa** en la esquina superior izquierda del mapa."
-        )
+        st.info("💡 Haz clic en cualquier círculo del mar o estación en tierra para ver su detalle, o usa el botón de **pantalla completa** arriba a la izquierda.")
 
     with map_col:
         html_map = _build_dynamic_folium_html(show_inei_dept, show_h3, show_gaps, show_stations, show_geocatmin, theme_mode)
@@ -1114,11 +1333,6 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
 
     st.markdown("---")
     st.markdown("#### 📊 Explorador de Pronóstico Probabilístico por Zonas (Próximos 3 y 12 Meses)")
-    st.write(
-        "Estima la **probabilidad estadística** de que ocurra al menos un sismo sensible (M ≥ 4.5) o fuerte (M ≥ 5.0) "
-        "por zona. *No predice fechas exactas.*"
-    )
-
     df_h3 = data["df_h3"].copy()
     h3_metrics = data["h3_metrics"]
 
@@ -1147,18 +1361,9 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
                     lat=vis["cell_lat"],
                     lon=vis["cell_lon"],
                     mode="markers",
-                    marker=dict(
-                        size=9,
-                        color=vis["prob_pct"],
-                        colorscale="YlOrRd",
-                        colorbar=dict(title=dict(text="Probabilidad (%)", side="right"), thickness=14),
-                        opacity=0.82,
-                    ),
+                    marker=dict(size=9, color=vis["prob_pct"], colorscale="YlOrRd", colorbar=dict(title=dict(text="Probabilidad (%)", side="right"), thickness=14), opacity=0.82),
                     text=[
-                        f"<b>{r['ubicacion_legible']}</b><br>"
-                        f"Probabilidad estimada: <b>{r['prob_pct']:.1f}%</b><br>"
-                        f"Distancia a la fosa marina: {r['dist_trench_km']:.0f} km<br>"
-                        f"Peligros geológicos cercanos: {int(r['n_geocatmin_peligros'])}"
+                        f"<b>{r['ubicacion_legible']}</b><br>Probabilidad estimada: <b>{r['prob_pct']:.1f}%</b><br>Distancia a la fosa: {r['dist_trench_km']:.0f} km<br>Peligros geológicos: {int(r['n_geocatmin_peligros'])}"
                         for _, r in vis.iterrows()
                     ],
                     hoverinfo="text",
@@ -1166,11 +1371,7 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
             )
             fig_f.update_layout(
                 **plotly_theme_kwargs(theme_mode),
-                map=dict(
-                    style="carto-darkmatter" if theme_mode == THEME_DARK else "open-street-map",
-                    center=dict(lat=float(vis["cell_lat"].mean()), lon=float(vis["cell_lon"].mean())),
-                    zoom=5.2 if sel_depa == "Todo el Perú" else 7.0,
-                ),
+                map=dict(style="carto-darkmatter" if theme_mode == THEME_DARK else "open-street-map", center=dict(lat=float(vis["cell_lat"].mean()), lon=float(vis["cell_lon"].mean())), zoom=5.2 if sel_depa == "Todo el Perú" else 7.0),
                 height=405,
                 margin=dict(l=0, r=0, t=8, b=0),
             )
@@ -1183,14 +1384,7 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
         st.markdown("**¿Qué factores explican este pronóstico?**")
         shap_raw = pd.DataFrame(h3_metrics["top15_shap_features_m45_90d"]).head(10).iloc[::-1]
         shap_raw["Factor"] = [translate_feature(f) for f in shap_raw["feature"]]
-        fig_sh = px.bar(
-            shap_raw,
-            x="mean_abs_shap",
-            y="Factor",
-            orientation="h",
-            color_discrete_sequence=["#B91C1C"],
-            labels={"mean_abs_shap": "Peso explicativo promedio", "Factor": ""},
-        )
+        fig_sh = px.bar(shap_raw, x="mean_abs_shap", y="Factor", orientation="h", color_discrete_sequence=["#B91C1C"], labels={"mean_abs_shap": "Peso explicativo promedio", "Factor": ""})
         fig_sh.update_layout(**plotly_theme_kwargs(theme_mode), height=405, margin=dict(l=10, r=15, t=10, b=35))
         st.plotly_chart(fig_sh, width="stretch", config=PLOTLY_CFG)
 
@@ -1210,10 +1404,10 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
     st.markdown(
         render_table_legend(
             [
-                ("Probabilidad Estimada (%)", "Probabilidad porcentual de que ocurra al menos un sismo del umbral elegido dentro de esa celda (~252 km²) en el periodo seleccionado."),
+                ("Probabilidad Estimada (%)", "Probabilidad porcentual de al menos un sismo del umbral elegido dentro de esa celda (~252 km²) en el periodo seleccionado."),
                 ("Distancia a la Fosa", "Kilómetros en línea recta hasta la fosa marina donde chocan las placas de Nazca y Sudamérica."),
                 ("Profundidad de Placa", "Profundidad estimada bajo tierra a la que pasa la placa oceánica de Nazca debajo de esa zona."),
-                ("Peligros Geológicos", "Cantidad de puntos de huaicos, deslizamientos o caída de rocas inventariados por INGEMMET/GEOCATMIN en la zona."),
+                ("Peligros Geológicos", "Cantidad de puntos de huaicos, deslizamientos o caída de rocas inventariados por INGEMMET/GEOCATMIN."),
             ]
         ),
         unsafe_allow_html=True,
@@ -1223,23 +1417,87 @@ def _render_sec2_national_map(assets: dict[str, Any], data: dict[str, Any], them
 def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any], theme_mode: str) -> None:
     st.markdown("### 🏘️ Consultor de Mi Distrito: Probabilidad Sísmica y Riesgo Local")
     st.write(
-        "Elige tu distrito para ver su **polígono oficial del INEI**, cuánta probabilidad estadística hay de sentir un sismo "
-        "en los próximos meses o años, cómo responde tu suelo en sismos normales vs. megaterremotos y cómo se compara con tus vecinos."
+        "Elige tu distrito y el **escenario sísmico que deseas evaluar** para ver su polígono oficial del INEI, "
+        "su probabilidad estadística, la respuesta de su suelo y una guía clara de resistencia de viviendas."
     )
 
     df_u = assets["df_u"].copy()
     inei = _cached_inei_boundaries()
-    df_u["etiqueta"] = (
-        df_u["distrito"] + " — " + df_u["provincia"] + ", " + df_u["departamento"] + " (" + df_u["ubigeo"] + ")"
-    )
+    df_u["etiqueta"] = df_u["distrito"] + " — " + df_u["provincia"] + ", " + df_u["departamento"] + " (" + df_u["ubigeo"] + ")"
 
     default_matches = df_u.index[df_u["ubigeo"] == "150125"].tolist()
     default_idx = int(default_matches[0]) if default_matches else 0
-    sel_lbl = st.selectbox("🔎 Selecciona tu distrito (1,893 distritos oficiales del Perú)", df_u["etiqueta"].tolist(), index=default_idx)
-    r = df_u[df_u["etiqueta"] == sel_lbl].iloc[0]
 
+    sel_c1, sel_c2 = st.columns([1.15, 1.05])
+    sel_lbl = sel_c1.selectbox("🔎 Selecciona tu distrito (1,893 distritos oficiales)", df_u["etiqueta"].tolist(), index=default_idx)
+    sel_scen = sel_c2.selectbox("⚡ Escenario a evaluar en este distrito", DISTRICT_SCENARIO_OPTIONS, index=0)
+
+    r = df_u[df_u["etiqueta"] == sel_lbl].iloc[0]
     ubigeo = str(r["ubigeo"])
     dist_feat = inei["dist_by_ubigeo"].get(ubigeo)
+
+    amp_normal = float(r["site_amp_factor_vs_msol"])
+    if sel_scen == DISTRICT_SCENARIO_OPTIONS[0]:
+        scen_pairs = [
+            ("Lima–Callao Mw 8.6", float(r["pga_escenario_lima_mw86_gal"]), float(r["pga_escenario_lima_mw86_rock_gal"]), float(r["mmi_escenario_lima_mw86"])),
+            ("Sur Ilo–Tacna Mw 8.4", float(r["pga_escenario_sur_mw84_gal"]), float(r["pga_escenario_sur_mw84_rock_gal"]), float(r["mmi_escenario_sur_mw84"])),
+            ("Sierra Central Mw 6.8", float(r["pga_escenario_intraplaca_mw68_gal"]), float(r["pga_escenario_intraplaca_mw68_rock_gal"]), float(r["mmi_escenario_intraplaca_mw68"])),
+        ]
+        active_scen_lbl, active_site_gal, active_rock_gal, active_mmi = max(scen_pairs, key=lambda t: t[1])
+        active_scen_lbl = f"Peor escenario ({active_scen_lbl})"
+    elif sel_scen == DISTRICT_SCENARIO_OPTIONS[1]:
+        active_scen_lbl = "Lima–Callao Mw 8.6 (Brecha de 1746)"
+        active_site_gal = float(r["pga_escenario_lima_mw86_gal"])
+        active_rock_gal = float(r["pga_escenario_lima_mw86_rock_gal"])
+        active_mmi = float(r["mmi_escenario_lima_mw86"])
+    elif sel_scen == DISTRICT_SCENARIO_OPTIONS[2]:
+        active_scen_lbl = "Sur Ilo–Tacna Mw 8.4 (Brecha de 1868)"
+        active_site_gal = float(r["pga_escenario_sur_mw84_gal"])
+        active_rock_gal = float(r["pga_escenario_sur_mw84_rock_gal"])
+        active_mmi = float(r["mmi_escenario_sur_mw84"])
+    elif sel_scen == DISTRICT_SCENARIO_OPTIONS[3]:
+        active_scen_lbl = "Sierra Central Mw 6.8 (Estilo Junín)"
+        active_site_gal = float(r["pga_escenario_intraplaca_mw68_gal"])
+        active_rock_gal = float(r["pga_escenario_intraplaca_mw68_rock_gal"])
+        active_mmi = float(r["mmi_escenario_intraplaca_mw68"])
+    else:
+        custom_mw = st.slider(
+            "🎛️ Elige la magnitud personalizada a simular cerca de este distrito (Mw)",
+            5.0,
+            9.0,
+            7.5,
+            0.1,
+            help="Simula un sismo superficial (25 km) ubicado en la fosa marina más cercana a tu distrito.",
+        )
+        d_xyz = latlon_to_unit_xyz(np.array([float(r["dist_lat"])]), np.array([float(r["dist_lon"])]))
+        _, t_idx = assets["trench_tree"].query(d_xyz, k=1)
+        ev_lon_c, ev_lat_c = assets["trench_pts"][int(t_idx[0])]
+        sim_one = simulate_hybrid_nonlinear_pga(
+            target_lats=np.array([float(r["dist_lat"])]),
+            target_lons=np.array([float(r["dist_lon"])]),
+            target_dist_trench_km=np.array([float(r["dist_trench_km"])]),
+            target_dist_lat_15s_km=np.array([float(r["dist_lat_15s_km"])]),
+            target_geocatmin_matrix={k: np.array([float(r[k])]) for k in ("n_peligros_total", "n_peligros_flujo", "n_peligros_caida", "n_peligros_deslizamiento", "n_zonas_criticas_total")},
+            target_delta_s2s=np.array([float(r["site_delta_s2s"])]),
+            ev_lat=float(ev_lat_c),
+            ev_lon=float(ev_lon_c),
+            ev_depth_km=25.0,
+            ev_mw=float(custom_mw),
+            ev_regime=None,
+            gmpe_bundle=assets["gmpe_bundle"],
+            c1_huber=assets["c1_huber"],
+            trench_tree=assets["trench_tree"],
+            trench_vels=assets["trench_vels"],
+            trench_ages=assets["trench_ages"],
+            slab_model=assets["slab_model"],
+            use_nonlinear_damping=True,
+        )
+        active_scen_lbl = f"Simulación personalizada Mw {custom_mw:.1f} (frente a la fosa más cercana)"
+        active_site_gal = float(sim_one["pga_site_gal"][0])
+        active_rock_gal = float(sim_one["pga_rock_gal"][0])
+        active_mmi = float(sim_one["mmi_site"][0])
+
+    amp_eff_active = active_site_gal / active_rock_gal if active_rock_gal > 0 else 1.0
 
     p3m_m45 = float(np.clip(r["prob_m45_90d_nbhd_max"], 0.0, 1.0))
     p12m_m45 = float(np.clip(r["prob_m45_365d_nbhd_max"], 0.0, 1.0))
@@ -1257,24 +1515,13 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
     nivel_fondes = str(r["nivel_riesgo_multipeligro_sigrid"])
     is_under = nivel_seis in ("Alto", "Muy Alto") and nivel_fondes in ("Muy Bajo", "Bajo")
 
-    # Compute BOTH normal (linear) and megathrust (nonlinear) soil amplification dynamically
-    amp_normal = float(r["site_amp_factor_vs_msol"])
-    # Determine rock PGA of the critical scenario
-    scen_pairs = [
-        (float(r["pga_escenario_lima_mw86_gal"]), float(r["pga_escenario_lima_mw86_rock_gal"])),
-        (float(r["pga_escenario_sur_mw84_gal"]), float(r["pga_escenario_sur_mw84_rock_gal"])),
-        (float(r["pga_escenario_intraplaca_mw68_gal"]), float(r["pga_escenario_intraplaca_mw68_rock_gal"])),
-    ]
-    crit_site_gal, crit_rock_gal = max(scen_pairs, key=lambda pair: pair[0])
-    amp_mega_eff = crit_site_gal / crit_rock_gal if crit_rock_gal > 0 else 1.0
-
     st.markdown("#### ¿Qué tan probable es un sismo en mi distrito?")
     h1, h2, h3, h4, h5 = st.columns(5)
-    h1.markdown(render_kpi_card("Próximos 3 Meses", f"{p3m_m45 * 100:.1f}%", "Prob. sismo sensible M ≥ 4.5", "#0F766E", "Probabilidad porcentual calibrada (Modelo C) de al menos un sismo M≥4.5 en los próximos 90 días cerca del distrito."), unsafe_allow_html=True)
-    h2.markdown(render_kpi_card("Próximos 6 Meses", f"{p6m_m45 * 100:.1f}%", "Proyección semestral (tasa anual)", "#0284C7", "Calculado desde la tasa anual calibrada: P(6m) = 1 - (1 - P12m)^0.5."), unsafe_allow_html=True)
-    h3.markdown(render_kpi_card("Próximos 12 Meses", f"{p12m_m45 * 100:.1f}%", f"M≥4.5 · Fuerte M≥5.0: {p12m_m50 * 100:.1f}%", "#D97706", "Probabilidad anual calibrada de sismo sensible M≥4.5 y proyección anual de sismo fuerte M≥5.0."), unsafe_allow_html=True)
-    h4.markdown(render_kpi_card("Próximos 5 Años", f"{p5y_m45 * 100:.1f}%", "M ≥ 4.5 (tasa moderna)", "#C2410C", "Proyección multianual P(5 años) = 1 - (1 - P12m)^5 asumiendo continuidad de la tasa 2000–2026."), unsafe_allow_html=True)
-    h5.markdown(render_kpi_card("Megaterremoto Mw ≥ 8.0", f"{bpt_30_raw:.0f}% (30a) · {bpt_50_raw:.0f}% (50a)", f"Tramo {gap_zone_lbl} (efecto {bpt_30_eff:.0f}%)", "#991B1B", "Probabilidad condicional BPT de gran ruptura en el tramo costero más cercano."), unsafe_allow_html=True)
+    h1.markdown(render_kpi_card("Próximos 3 Meses", f"{p3m_m45 * 100:.1f}%", "Prob. sismo sensible M ≥ 4.5", "#0F766E"), unsafe_allow_html=True)
+    h2.markdown(render_kpi_card("Próximos 6 Meses", f"{p6m_m45 * 100:.1f}%", "Proyección semestral (tasa anual)", "#0284C7"), unsafe_allow_html=True)
+    h3.markdown(render_kpi_card("Próximos 12 Meses", f"{p12m_m45 * 100:.1f}%", f"M≥4.5 · Fuerte M≥5.0: {p12m_m50 * 100:.1f}%", "#D97706"), unsafe_allow_html=True)
+    h4.markdown(render_kpi_card("Próximos 5 Años", f"{p5y_m45 * 100:.1f}%", "M ≥ 4.5 (tasa moderna)", "#C2410C"), unsafe_allow_html=True)
+    h5.markdown(render_kpi_card("Megaterremoto Mw ≥ 8.0", f"{bpt_30_raw:.0f}% (30a) · {bpt_50_raw:.0f}% (50a)", f"Tramo {gap_zone_lbl} (efecto {bpt_30_eff:.0f}%)", "#991B1B"), unsafe_allow_html=True)
 
     if is_under:
         st.warning(
@@ -1283,7 +1530,7 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
         )
 
     st.markdown("")
-    col_map, col_info = st.columns([1.12, 1.0])
+    col_map, col_info = st.columns([1.10, 1.02])
     with col_map:
         poly_status = "Polígono oficial INEI WFS" if dist_feat is not None else "Área referencial (centroide oficial)"
         st.markdown(f"**Mapa Distrital ({poly_status})**")
@@ -1293,38 +1540,33 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
             render_map_legend(
                 [
                     (RISK_LEVEL_COLORS.get(nivel_seis, "#B91C1C"), "Polígono sombreado INEI", f"Límite oficial de {r['distrito']} (color según nivel {nivel_seis})"),
-                    ("#D97706", "Marcador con ícono de onda", "Estaciones Acelerográficas del IGP cercanas (miden amplificación real del suelo)"),
-                    ("#7C3AED", "Puntos morados", "Puntos Críticos de deslizamientos, caída de rocas o huaicos (INGEMMET/GEOCATMIN)"),
+                    ("#D97706", "Marcador con ícono de onda", "Estaciones Acelerográficas del IGP cercanas"),
+                    ("#7C3AED", "Puntos morados", "Puntos Críticos de huaicos/derrumbes (INGEMMET)"),
                 ]
             ),
             unsafe_allow_html=True,
         )
 
     with col_info:
-        m_rom, m_short, m_desc, m_col, m_mag_rng = describe_mercalli_dual(float(r["mmi_escenario_max"]))
+        m_rom, m_short, m_desc, m_col, m_mag_rng = describe_mercalli_dual(active_mmi)
         st_code = str(r["primary_station_code"]) if pd.notna(r["primary_station_code"]) else "Sin estación directa (neutro)"
-        pga_max = float(r["pga_escenario_max_gal"])
-        pga_pct_g = pga_max / 9.81
+        active_pct_g = active_site_gal / 9.81
 
         st.markdown(
             f"""
             <div class="district-spotlight" style="--accent:{m_col};margin-top:0;">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-                <strong style="font-size:1.05rem;">Impacto si Ocurre el Escenario Crítico</strong>
+                <strong style="font-size:1.02rem;">Escenario Evaluado: {active_scen_lbl}</strong>
                 {render_badge(f"Mercalli {m_rom} ({m_mag_rng}) — {m_short}", m_col)}
               </div>
-              <p style="margin:0.42rem 0 0.65rem 0;font-size:0.88rem;color:var(--text-secondary);">
+              <p style="margin:0.40rem 0 0.60rem 0;font-size:0.87rem;color:var(--text-secondary);">
                 {m_desc}
               </p>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.84rem;">
-                <div><strong>Sacudimiento máximo:</strong><br>{pga_pct_g:.1f}% g ({pga_max:.0f} Gal)<br><span style="color:var(--text-muted);font-size:0.76rem;">100% g = 981 Gal (gravedad)</span></div>
-                <div><strong>Efecto del suelo local ({st_code}):</strong><br>Sismos normales: <strong>{amp_normal:.2f}×</strong><br>En megaterremoto: <strong>{amp_mega_eff:.2f}×</strong></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.83rem;">
+                <div><strong>Sacudimiento esperado:</strong><br>{active_pct_g:.1f}% g ({active_site_gal:.0f} Gal)<br><span style="color:var(--text-muted);font-size:0.75rem;">100% g = 981 Gal (gravedad)</span></div>
+                <div><strong>Efecto del suelo ({st_code}):</strong><br>Sismos normales: <strong>{amp_normal:.2f}×</strong><br>En este escenario: <strong>{amp_eff_active:.2f}×</strong></div>
                 <div><strong>Peligro Sísmico Puro:</strong><br>{render_badge(nivel_seis, RISK_LEVEL_COLORS.get(nivel_seis, '#B91C1C'))} ({r['seismic_hazard_index_0_100']:.1f}/100)</div>
                 <div><strong>Oficial FONDES / SIGRID:</strong><br>{render_badge(nivel_fondes, RISK_LEVEL_COLORS.get(nivel_fondes, '#475569'))}</div>
-              </div>
-              <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text-muted);">
-                ℹ️ <em>¿Por qué difieren los factores de suelo?</em> En temblores cotidianos el suelo blando amplifica de forma lineal ({amp_normal:.2f}×),
-                pero ante megaterremotos extremos se deforma y amortigua parte del golpe ({amp_mega_eff:.2f}× efectivo).
               </div>
             </div>
             """,
@@ -1336,26 +1578,76 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
                 {"Escenario / Amenaza": "Escenario Lima–Callao (Mw 8.6)", "Valor del Distrito": f"{r['pga_escenario_lima_mw86_gal']/9.81:.1f}% g ({r['pga_escenario_lima_mw86_gal']:.0f} Gal)", "Equivalencia": format_mercalli_with_mag(r["mmi_escenario_lima_mw86"])},
                 {"Escenario / Amenaza": "Escenario Sur Ilo–Tacna (Mw 8.4)", "Valor del Distrito": f"{r['pga_escenario_sur_mw84_gal']/9.81:.1f}% g ({r['pga_escenario_sur_mw84_gal']:.0f} Gal)", "Equivalencia": format_mercalli_with_mag(r["mmi_escenario_sur_mw84"])},
                 {"Escenario / Amenaza": "Escenario Sierra Central (Mw 6.8)", "Valor del Distrito": f"{r['pga_escenario_intraplaca_mw68_gal']/9.81:.1f}% g ({r['pga_escenario_intraplaca_mw68_gal']:.0f} Gal)", "Equivalencia": format_mercalli_with_mag(r["mmi_escenario_intraplaca_mw68"])},
-                {"Escenario / Amenaza": "Peligros Geológicos (INGEMMET)", "Valor del Distrito": f"{int(r['n_peligros_total'])} puntos", "Equivalencia": f"Flujos (huaicos): {int(r['n_peligros_flujo'])} · Caídas (rocas): {int(r['n_peligros_caida'])} · Desliz.: {int(r['n_peligros_deslizamiento'])}"},
-                {"Escenario / Amenaza": "Zonas Críticas Activas", "Valor del Distrito": f"{int(r['n_zonas_criticas_activas'])} sectores", "Equivalencia": f"Distancia a la fosa marina: {r['dist_trench_km']:.0f} km"},
+                {"Escenario / Amenaza": "Peligros Geológicos (INGEMMET)", "Valor del Distrito": f"{int(r['n_peligros_total'])} puntos", "Equivalencia": f"Flujos: {int(r['n_peligros_flujo'])} · Caídas: {int(r['n_peligros_caida'])} · Desliz.: {int(r['n_peligros_deslizamiento'])}"},
+                {"Escenario / Amenaza": "Zonas Críticas Activas", "Valor del Distrito": f"{int(r['n_zonas_criticas_activas'])} sectores", "Equivalencia": f"Distancia a la fosa: {r['dist_trench_km']:.0f} km"},
             ]
         )
-        st.markdown(render_centered_table(detail_df, max_height_px=265), unsafe_allow_html=True)
+        st.markdown(render_centered_table(detail_df, max_height_px=255), unsafe_allow_html=True)
         st.markdown(
             render_table_legend(
                 [
                     ("Valor del Distrito (%g y Gal)", "Aceleración esperada del suelo. 10% g (~98 Gal) dificulta mantenerse en pie; 50% g (~490 Gal) agrieta paredes."),
-                    ("Equivalencia Mercalli + Mw", "Grado de sacudida local (Mercalli) y rango aproximado de magnitud Mw que genera ese impacto en epicentro."),
-                    ("Flujos / Caídas / Zonas Críticas", "Inventario INGEMMET de huaicos (Flujos), derrumbes de rocas (Caídas) y áreas habitadas vulnerables (Zonas Críticas)."),
+                    ("Equivalencia Mercalli + Mw", "Grado de sacudida local (Mercalli) y rango aproximado de Magnitud Mw equivalente en epicentro."),
+                    ("Flujos / Caídas / Zonas Críticas", "Huaicos/lodo (Flujos), derrumbes de rocas (Caídas) y áreas habitadas vulnerables (INGEMMET)."),
                 ]
             ),
             unsafe_allow_html=True,
         )
 
-    prov_peers = df_u[
-        (df_u["departamento"] == r["departamento"]) & (df_u["provincia"] == r["provincia"])
-    ].sort_values("seismic_hazard_index_0_100", ascending=False).copy()
+    if active_mmi >= 8.5:
+        dist_verdict = (
+            f"En {r['distrito']} bajo {active_scen_lbl} ({active_pct_g:.1f}% g, Mercalli {m_rom}), "
+            f"las viviendas de adobe o autoconstrucción enfrentan riesgo severo de colapso; las casas formales de albañilería confinada "
+            f"requerirán inspección estructural inmediata y solo las edificaciones modernas Norma E.030 protegen contra el colapso."
+        )
+        verdict_col = "#991B1B"
+    elif active_mmi >= 6.5:
+        dist_verdict = (
+            f"En {r['distrito']} bajo {active_scen_lbl} ({active_pct_g:.1f}% g, Mercalli {m_rom}), "
+            f"las viviendas de adobe o sin columnas presentan riesgo alto de grietas y colapso parcial, mientras que las casas de ladrillo formal "
+            f"con columnas y vigas suelen resistir con daños menores o reparables."
+        )
+        verdict_col = "#EA580C"
+    elif active_mmi >= 5.0:
+        dist_verdict = (
+            f"En {r['distrito']} bajo {active_scen_lbl} ({active_pct_g:.1f}% g, Mercalli {m_rom}), "
+            f"las viviendas formales no sufren daño estructural, pero muros antiguos debilitados o de adobe pueden mostrar fisuras finas y caída de objetos."
+        )
+        verdict_col = "#D97706"
+    else:
+        dist_verdict = (
+            f"En {r['distrito']} bajo {active_scen_lbl} ({active_pct_g:.1f}% g, Mercalli {m_rom}), "
+            f"la sacudida esperada es leve o imperceptible y no compromete la estabilidad estructural de las viviendas."
+        )
+        verdict_col = "#0F766E"
 
+    st.markdown(
+        f"""
+        <div class="district-spotlight" style="--accent:{verdict_col};">
+          <strong style="font-size:1.02rem;">🏠 ¿Hasta qué intensidad resisten las viviendas de este distrito? (Guía de Vulnerabilidad · Ref. Norma E.030 / CISMID)</strong>
+          <div class="vuln-grid">
+            <div class="vuln-item" style="--v-accent:#DC2626;">
+              <strong>1. Adobe, quincha o autoconstrucción sin columnas</strong><br>
+              Empiezan a sufrir grietas y colapso parcial desde <strong>Mercalli VI–VII</strong> (<code>&gt; 10% g</code> / <code>~100 Gal</code>).
+            </div>
+            <div class="vuln-item" style="--v-accent:#D97706;">
+              <strong>2. Ladrillo formal con columnas y vigas (albañilería confinada)</strong><br>
+              Resisten bien hasta <strong>Mercalli VII–VIII</strong> (<code>20%–45% g</code>); requieren revisión estructural tras <strong>Mercalli IX</strong>.
+            </div>
+            <div class="vuln-item" style="--v-accent:#0F766E;">
+              <strong>3. Edificaciones modernas sismorresistentes (Norma E.030)</strong><br>
+              Diseñadas para evitar el colapso incluso en <strong>Mercalli IX</strong> (<code>&gt; 50% g</code>), aunque pueden dañar muros divisorios.
+            </div>
+          </div>
+          <p style="margin:0.65rem 0 0 0;font-size:0.86rem;color:var(--text-primary);">
+            <strong>Diagnóstico para {r['distrito']}:</strong> {dist_verdict}
+          </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    prov_peers = df_u[(df_u["departamento"] == r["departamento"]) & (df_u["provincia"] == r["provincia"])].sort_values("seismic_hazard_index_0_100", ascending=False).copy()
     st.markdown(f"#### Comparación con los Distritos Vecinos de la Provincia de {r['provincia']} ({len(prov_peers)} distritos)")
     peer_tbl = pd.DataFrame(
         {
@@ -1372,23 +1664,16 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
         }
     )
     st.markdown(
-        render_centered_table(
-            peer_tbl,
-            badge_cols={"Peligro Sísmico", "Oficial FONDES"},
-            highlight_col="UBIGEO",
-            highlight_value=ubigeo,
-            max_height_px=415,
-            caption=f"Fila resaltada: {r['distrito']} (UBIGEO {ubigeo}).",
-        ),
+        render_centered_table(peer_tbl, badge_cols={"Peligro Sísmico", "Oficial FONDES"}, highlight_col="UBIGEO", highlight_value=ubigeo, max_height_px=415, caption=f"Fila resaltada: {r['distrito']} (UBIGEO {ubigeo})."),
         unsafe_allow_html=True,
     )
     st.markdown(
         render_table_legend(
             [
-                ("Índice Sísmico (0–100)", "Puntaje relativo de peligro físico de 0 (mínimo nacional) a 100 (máximo); NO es un porcentaje de probabilidad."),
-                ("Prob. 12m (M≥4.5)", "Probabilidad porcentual de al menos un sismo sensible (M≥4.5) en los próximos 12 meses en el vecindario."),
-                ("Suelo Normal", "Cuántas veces amplifica el suelo local frente a roca firme en sismos cotidianos (en megaterremotos el amortiguamiento no lineal lo reduce)."),
-                ("Zonas Críticas", "Sectores críticos habitados registrados por INGEMMET susceptibles a derrumbes, deslizamientos o huaicos."),
+                ("Índice Sísmico (0–100)", "Puntaje relativo de peligro físico de 0 (mínimo nacional) a 100 (máximo); NO es porcentaje de probabilidad."),
+                ("Prob. 12m (M≥4.5)", "Probabilidad porcentual de al menos un sismo sensible (M≥4.5) en los próximos 12 meses."),
+                ("Suelo Normal", "Amplificación medida frente a roca firme en sismos cotidianos (en megaterremotos el amortiguamiento no lineal la reduce)."),
+                ("Zonas Críticas", "Sectores críticos habitados registrados por INGEMMET susceptibles a huaicos o derrumbes."),
             ]
         ),
         unsafe_allow_html=True,
@@ -1396,10 +1681,10 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
 
 
 def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
-    st.markdown("### ⚡ Simulador de Terremotos en Vivo: ¿Cómo Afectaría a Mi Distrito?")
+    st.markdown("### ⚡ Simulador de Terremotos en Vivo: Propagación 3D de Ondas y ShakeMap")
     st.write(
-        "Elige un escenario real o mueve el epicentro y la magnitud para calcular en milisegundos cómo se sacudirían "
-        "los 1,893 distritos del Perú. Recuerda: **100% g (= 981 Gal)** equivale a la fuerza de gravedad de la Tierra."
+        "Elige un escenario real o mueve el epicentro y la magnitud para simular en milisegundos cómo nacen las ondas bajo "
+        "tierra y sacuden los **1,893 distritos del Perú** según su distancia y tipo de suelo."
     )
 
     pcols = st.columns(len(PRESET_SCENARIOS))
@@ -1420,11 +1705,7 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
     ev_lon = c2.slider("Longitud del epicentro (°W)", -82.0, -68.5, float(st.session_state["sim_lon"]), 0.05)
     ev_depth = c3.slider("Profundidad focal (km)", 5.0, 350.0, float(st.session_state["sim_depth"]), 1.0)
     ev_mw = c4.slider("Magnitud del terremoto (Mw)", 4.0, 9.0, float(st.session_state["sim_mw"]), 0.1)
-    use_nl = c5.toggle(
-        "Amortiguamiento no lineal de suelos blandos",
-        value=True,
-        help="En megaterremotos (>150 Gal en roca), los suelos blandos absorben parte de la sacudida (Seyhan & Stewart 2014).",
-    )
+    use_nl = c5.toggle("Amortiguamiento no lineal de suelos blandos", value=True, help="En megaterremotos (>150 Gal en roca), los suelos blandos absorben parte de la sacudida (Seyhan & Stewart 2014).")
 
     res_df, meta = run_live_simulation(assets, ev_lat, ev_lon, ev_depth, ev_mw, use_nonlinear_damping=use_nl)
 
@@ -1439,17 +1720,17 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
         <div class="district-spotlight" style="--accent:{m_col};">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div>
-              <strong style="font-size:1.10rem;">{drow['distrito']} ({drow['provincia']}, {drow['departamento']})</strong>
-              <span style="color:var(--text-muted);font-size:0.86rem;"> · Distancia al epicentro: <strong>{drow['dist_epicentral_km']:.0f} km</strong></span>
+              <strong style="font-size:1.08rem;">{drow['distrito']} ({drow['provincia']}, {drow['departamento']})</strong>
+              <span style="color:var(--text-muted);font-size:0.86rem;"> · Distancia: <strong>{drow['dist_epicentral_km']:.0f} km</strong> · Llegada onda S: <strong>{drow['dist_hypocentral_km']/WAVE_VS_KM_S:.1f} s</strong></span>
             </div>
             <div>{render_badge(f"Mercalli {m_rom} ({m_mag_rng}) — {m_short}", m_col)}</div>
           </div>
-          <p style="margin:0.42rem 0 0.62rem 0;color:var(--text-secondary);font-size:0.91rem;">
+          <p style="margin:0.40rem 0 0.58rem 0;color:var(--text-secondary);font-size:0.90rem;">
             <strong>Impacto cotidiano esperado:</strong> {m_desc}
           </p>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;font-size:0.86rem;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;font-size:0.85rem;">
             <div><strong>Sacudimiento real:</strong> {drow['pga_site_pct_g']:.1f}% g ({drow['pga_site_gal']:.0f} Gal)</div>
-            <div><strong>Suelo normal vs. este sismo:</strong> {drow['site_amp_normal']:.2f}× normal → <strong>{drow['site_amp_eff']:.2f}× efectivo</strong></div>
+            <div><strong>Suelo normal vs. este sismo:</strong> {drow['site_amp_normal']:.2f}× → <strong>{drow['site_amp_eff']:.2f}× efectivo</strong></div>
             <div><strong>Zonas críticas INGEMMET:</strong> {int(drow['n_zonas_criticas_activas'])} activas ({int(drow['n_peligros_total'])} peligros)</div>
             <div><strong>Clasificación oficial FONDES:</strong> {drow['nivel_riesgo_multipeligro_sigrid']}</div>
           </div>
@@ -1467,8 +1748,33 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
     k5.markdown(render_kpi_card("Zonas Críticas Expuestas", f"{meta['exposed_zonas_criticas_mmi7']:,}", "Huaicos/derrumbes en MMI ≥ VII", "#7C3AED"), unsafe_allow_html=True)
 
     st.markdown("")
-    map_col, tbl_col = st.columns([1.0, 1.2])
-    with map_col:
+    view_mode = st.radio(
+        "Modo de visualización del simulador",
+        [
+            "🌐 Vista 3D Animada (Hipocentro Profundo + Ondas + Impacto en Distritos)",
+            "🗺️ Vista 2D Cartográfica (Mapa Detallado)",
+        ],
+        index=0,
+        horizontal=True,
+    )
+
+    if "Vista 3D" in view_mode:
+        inei = _cached_inei_boundaries()
+        fig_wave = _build_3d_animated_wave_figure(res_df, ev_lat, ev_lon, ev_depth, ev_mw, inei, theme_mode)
+        st.plotly_chart(fig_wave, width="stretch", config=PLOTLY_CFG)
+        st.markdown(
+            render_map_legend(
+                [
+                    ("#DC2626", "Esfera roja bajo tierra", f"Hipocentro real (-{ev_depth:.0f} km) unido con línea punteada al epicentro en superficie"),
+                    ("#F59E0B", "Anillo y domo expansivo", "Frente de onda sísmica viajando a ~3.8 km/s desde 5 s hasta 120 s"),
+                    ("#EA580C", "Columnas verticales hacia arriba", "Altura proporcional al sacudimiento real (%g / Gal) con efecto de suelo blando"),
+                    ("#1C1917", "Contorno en z = 0 km", "Mapa oficial del Perú (INEI) proyectado sobre la superficie"),
+                ],
+                note="Observa cómo el sismo nace a decenas de kilómetros bajo tierra (punto rojo) y sus ondas viajan a ~3.8 km/s hasta sacudir la superficie según el tipo de suelo de cada distrito. Usa ▶ Reproducir Onda o el ícono de expansión arriba a la derecha para pantalla completa.",
+            ),
+            unsafe_allow_html=True,
+        )
+    else:
         vis = res_df[res_df["pga_site_gal"] >= 1.5].copy()
         fig_map = go.Figure()
         fig_map.add_trace(
@@ -1476,20 +1782,12 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
                 lat=vis["dist_lat"],
                 lon=vis["dist_lon"],
                 mode="markers",
-                marker=dict(
-                    size=np.clip(vis["mmi_est"] * 1.9, 5, 18),
-                    color=vis["mmi_est"],
-                    colorscale="YlOrRd",
-                    cmin=3.0,
-                    cmax=9.5,
-                    colorbar=dict(title=dict(text="Mercalli (MMI)", side="right"), thickness=14),
-                    opacity=0.82,
-                ),
+                marker=dict(size=np.clip(vis["mmi_est"] * 1.9, 5, 18), color=vis["mmi_est"], colorscale="YlOrRd", cmin=3.0, cmax=9.5, colorbar=dict(title=dict(text="Mercalli (MMI)", side="right"), thickness=14), opacity=0.82),
                 text=[
                     f"<b>{r['distrito']} ({r['departamento']})</b><br>"
                     f"Intensidad: <b>Mercalli {r['mercalli_romano']} (eq. {r['mercalli_mag_eq']}) — {r['nivel_impacto']}</b><br>"
                     f"Sacudimiento: {r['pga_site_pct_g']:.1f}% g ({r['pga_site_gal']:.0f} Gal)<br>"
-                    f"Suelo efectivo: {r['site_amp_eff']:.2f}× (normal {r['site_amp_normal']:.2f}×) | Dist.: {r['dist_epicentral_km']:.0f} km"
+                    f"Suelo: {r['site_amp_normal']:.2f}× normal → {r['site_amp_eff']:.2f}× efectivo | Dist.: {r['dist_epicentral_km']:.0f} km"
                     for _, r in vis.iterrows()
                 ],
                 hoverinfo="text",
@@ -1509,12 +1807,8 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
         )
         fig_map.update_layout(
             **plotly_theme_kwargs(theme_mode),
-            map=dict(
-                style="carto-darkmatter" if theme_mode == THEME_DARK else "open-street-map",
-                center=dict(lat=ev_lat, lon=ev_lon),
-                zoom=5.5,
-            ),
-            height=475,
+            map=dict(style="carto-darkmatter" if theme_mode == THEME_DARK else "open-street-map", center=dict(lat=ev_lat, lon=ev_lon), zoom=5.5),
+            height=490,
             margin=dict(l=0, r=0, t=8, b=0),
             showlegend=False,
         )
@@ -1532,65 +1826,67 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
             unsafe_allow_html=True,
         )
 
-    with tbl_col:
-        st.markdown("**Top 20 Distritos con Mayor Sacudimiento Esperado**")
-        top20 = res_df.sort_values("pga_site_gal", ascending=False).head(20).copy()
-        tbl_top20 = pd.DataFrame(
-            {
-                "Distrito": top20["distrito"],
-                "Provincia / Dpto.": top20["provincia"] + " / " + top20["departamento"],
-                "En Roca": [f"{v/9.81:.0f}% g ({v:.0f} Gal)" for v in top20["pga_rock_gal"]],
-                "Real c/ Suelo": [f"{v/9.81:.0f}% g ({v:.0f} Gal)" for v in top20["pga_site_gal"]],
-                "Suelo (Norm. → Efect.)": [f"{n:.2f}× → {e:.2f}×" for n, e in zip(top20["site_amp_normal"], top20["site_amp_eff"])],
-                "Mercalli + Rango Mw": [f"{rom} ({eq})" for rom, eq in zip(top20["mercalli_romano"], top20["mercalli_mag_eq"])],
-                "Impacto": top20["nivel_impacto"],
-            }
-        )
-        st.markdown(render_centered_table(tbl_top20, badge_cols={"Impacto"}, max_height_px=400), unsafe_allow_html=True)
-        st.markdown(
-            render_table_legend(
-                [
-                    ("En Roca vs. Real c/ Suelo", "Sacudimiento si el distrito fuera roca sólida vs. sacudimiento real incorporando su tipo de suelo (100% g = 981 Gal)."),
-                    ("Suelo (Norm. → Efect.)", "Amplificación medida en sismos cotidianos vs. factor efectivo tras amortiguamiento no lineal en este escenario."),
-                    ("Mercalli + Rango Mw", "Intensidad local estimada y rango aproximado de Magnitud Mw equivalente en epicentro."),
-                ]
-            ),
-            unsafe_allow_html=True,
-        )
-        export_df = res_df.sort_values("pga_site_gal", ascending=False)[
-            ["ubigeo", "departamento", "provincia", "distrito", "dist_epicentral_km", "pga_rock_gal", "pga_site_gal", "pga_site_pct_g", "site_amp_normal", "site_amp_eff", "mercalli_romano", "mercalli_mag_eq", "nivel_impacto", "n_zonas_criticas_activas"]
-        ].rename(
-            columns={
-                "ubigeo": "UBIGEO",
-                "departamento": "Departamento",
-                "provincia": "Provincia",
-                "distrito": "Distrito",
-                "dist_epicentral_km": "Distancia_Epicentral_km",
-                "pga_rock_gal": "Aceleracion_Roca_Gal",
-                "pga_site_gal": "Aceleracion_Real_Suelo_Gal",
-                "pga_site_pct_g": "Aceleracion_Porcentaje_Gravedad",
-                "site_amp_normal": "Factor_Suelo_Sismos_Normales",
-                "site_amp_eff": "Factor_Suelo_Efectivo_NoLineal",
-                "mercalli_romano": "Intensidad_Mercalli",
-                "mercalli_mag_eq": "Rango_Magnitud_Equivalente_Mw",
-                "nivel_impacto": "Nivel_Impacto",
-                "n_zonas_criticas_activas": "Zonas_Criticas_GEOCATMIN",
-            }
-        )
-        st.download_button(
-            "⬇️ Descargar simulación completa de los 1,893 distritos (CSV)",
-            data=export_df.to_csv(index=False).encode("utf-8"),
-            file_name=f"simulacion_sismo_peru_Mw{ev_mw:.1f}.csv",
-            mime="text/csv",
-            width="stretch",
-        )
+    st.markdown("#### Top 20 Distritos con Mayor Sacudimiento Esperado")
+    top20 = res_df.sort_values("pga_site_gal", ascending=False).head(20).copy()
+    tbl_top20 = pd.DataFrame(
+        {
+            "Distrito": top20["distrito"],
+            "Provincia / Dpto.": top20["provincia"] + " / " + top20["departamento"],
+            "Llegada Onda S": [f"{d / WAVE_VS_KM_S:.1f} s" for d in top20["dist_hypocentral_km"]],
+            "En Roca": [f"{v/9.81:.0f}% g ({v:.0f} Gal)" for v in top20["pga_rock_gal"]],
+            "Real c/ Suelo": [f"{v/9.81:.0f}% g ({v:.0f} Gal)" for v in top20["pga_site_gal"]],
+            "Suelo (Norm. → Efect.)": [f"{n:.2f}× → {e:.2f}×" for n, e in zip(top20["site_amp_normal"], top20["site_amp_eff"])],
+            "Mercalli + Rango Mw": [f"{rom} ({eq})" for rom, eq in zip(top20["mercalli_romano"], top20["mercalli_mag_eq"])],
+            "Impacto": top20["nivel_impacto"],
+        }
+    )
+    st.markdown(render_centered_table(tbl_top20, badge_cols={"Impacto"}, max_height_px=420), unsafe_allow_html=True)
+    st.markdown(
+        render_table_legend(
+            [
+                ("Llegada Onda S", "Segundos aproximados desde el inicio de la ruptura hasta que llega la onda destructiva S (Vs ≈ 3.8 km/s)."),
+                ("En Roca vs. Real c/ Suelo", "Sacudimiento sobre roca firme vs. sacudimiento real incorporando tu tipo de suelo (100% g = 981 Gal)."),
+                ("Suelo (Norm. → Efect.)", "Amplificación en sismos cotidianos vs. factor efectivo tras amortiguamiento no lineal en este escenario."),
+                ("Mercalli + Rango Mw", "Intensidad local estimada y rango aproximado de Magnitud Mw equivalente en epicentro."),
+            ]
+        ),
+        unsafe_allow_html=True,
+    )
+
+    export_df = res_df.sort_values("pga_site_gal", ascending=False)[
+        ["ubigeo", "departamento", "provincia", "distrito", "dist_epicentral_km", "pga_rock_gal", "pga_site_gal", "pga_site_pct_g", "site_amp_normal", "site_amp_eff", "mercalli_romano", "mercalli_mag_eq", "nivel_impacto", "n_zonas_criticas_activas"]
+    ].rename(
+        columns={
+            "ubigeo": "UBIGEO",
+            "departamento": "Departamento",
+            "provincia": "Provincia",
+            "distrito": "Distrito",
+            "dist_epicentral_km": "Distancia_Epicentral_km",
+            "pga_rock_gal": "Aceleracion_Roca_Gal",
+            "pga_site_gal": "Aceleracion_Real_Suelo_Gal",
+            "pga_site_pct_g": "Aceleracion_Porcentaje_Gravedad",
+            "site_amp_normal": "Factor_Suelo_Sismos_Normales",
+            "site_amp_eff": "Factor_Suelo_Efectivo_NoLineal",
+            "mercalli_romano": "Intensidad_Mercalli",
+            "mercalli_mag_eq": "Rango_Magnitud_Equivalente_Mw",
+            "nivel_impacto": "Nivel_Impacto",
+            "n_zonas_criticas_activas": "Zonas_Criticas_GEOCATMIN",
+        }
+    )
+    st.download_button(
+        "⬇️ Descargar simulación completa de los 1,893 distritos (CSV)",
+        data=export_df.to_csv(index=False).encode("utf-8"),
+        file_name=f"simulacion_sismo_peru_Mw{ev_mw:.1f}.csv",
+        mime="text/csv",
+        width="stretch",
+    )
 
 
 def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
     st.markdown("### 📜 Historia Sísmica del Perú (1552–2026) y Corte 3D de la Placa de Nazca")
     st.write(
-        "Explora 474 años de sismos documentados por el IGP y gira el modelo 3D —con el mapa oficial del Perú sobre "
-        "la superficie (`0 km`)— para ver cómo la placa de Nazca se hunde bajo la cordillera y la selva."
+        "Explora 474 años de sismos del IGP y gira el modelo 3D —con el mapa del Perú en superficie (`0 km`) y "
+        "**esferas proporcionales a la magnitud con aura luminosa en terremotos M ≥ 7.0**."
     )
 
     df_cat = data["df_cat"]
@@ -1632,14 +1928,7 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
                 x=maj["anio"],
                 y=maj["mag"],
                 mode="markers",
-                marker=dict(
-                    size=np.clip((maj["mag"] - 5.8) * 6.0, 6, 22),
-                    color=maj["mag"],
-                    colorscale="YlOrRd",
-                    cmin=6.5,
-                    cmax=9.0,
-                    line=dict(color="#1C1917", width=0.7),
-                ),
+                marker=dict(size=np.clip((maj["mag"] - 5.8) * 6.0, 6, 22), color=maj["mag"], colorscale="YlOrRd", cmin=6.5, cmax=9.0, line=dict(color="#1C1917", width=0.7)),
                 text=[
                     f"<b>Año {int(r['anio'])}</b> · Magnitud Mw {r['mag']:.1f}<br>Origen: {r['regimen_es']}<br>Profundidad: {r['depth_km']:.0f} km"
                     if pd.notna(r["depth_km"])
@@ -1654,39 +1943,24 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
         ann_fg = "#F8FAFC" if theme_mode == THEME_DARK else "#1C1917"
         for yr_m, mag_m, txt_m in HISTORICAL_MILESTONES:
             if yr_range[0] <= yr_m <= yr_range[1] and mag_m >= min_mag:
-                fig_tl.add_annotation(
-                    x=yr_m,
-                    y=mag_m,
-                    text=txt_m,
-                    showarrow=True,
-                    arrowhead=2,
-                    ax=0,
-                    ay=-30 if yr_m not in (1940, 1974, 2007) else 28,
-                    font=dict(size=10, color=ann_fg),
-                    bgcolor=ann_bg,
-                    bordercolor="#64748B",
-                )
-    fig_tl.update_layout(
-        **plotly_theme_kwargs(theme_mode),
-        height=385,
-        title="Línea de Tiempo de Grandes Terremotos del Perú (Magnitud ≥ 6.5)",
-        xaxis_title="Año",
-        yaxis_title="Magnitud (Mw)",
-        margin=dict(l=40, r=20, t=50, b=40),
-    )
+                fig_tl.add_annotation(x=yr_m, y=mag_m, text=txt_m, showarrow=True, arrowhead=2, ax=0, ay=-30 if yr_m not in (1940, 1974, 2007) else 28, font=dict(size=10, color=ann_fg), bgcolor=ann_bg, bordercolor="#64748B")
+    fig_tl.update_layout(**plotly_theme_kwargs(theme_mode), height=385, title="Línea de Tiempo de Grandes Terremotos del Perú (Magnitud ≥ 6.5)", xaxis_title="Año", yaxis_title="Magnitud (Mw)", margin=dict(l=40, r=20, t=50, b=40))
     st.plotly_chart(fig_tl, width="stretch", config=PLOTLY_CFG)
 
-    # 3D Wadati-Benioff Cutaway WITH Peru INEI contour at z=0 km and SW->NE camera
-    st.markdown("#### Corte 3D de la Placa de Nazca bajo el Perú (Geometría Wadati–Benioff)")
+    st.markdown("#### Corte 3D de la Placa de Nazca bajo el Perú (Esferas Proporcionales a Magnitud + Aura en M ≥ 7.0)")
     st.info(
         "🧭 **¿Por qué hay volcanes en Arequipa y Tacna, pero no en Lima o Piura?** "
-        "Mira el mapa del Perú dibujado en la superficie (`0 km`): al **Norte y Centro** (arriba de -15°S), la placa de Nazca "
-        "entra casi horizontal (**11°–12°**), bloqueando el vulcanismo. Al **Sur de Ica/Nasca**, se hunde bruscamente (**30.1°**) "
-        "hasta 269 km de profundidad, fundiendo roca y alimentando los volcanes del sur."
+        "Al **Norte y Centro** (arriba de -15°S), la placa de Nazca entra casi horizontal (**11°–12°**), bloqueando el vulcanismo. "
+        "Al **Sur de Ica/Nasca**, se hunde bruscamente (**30.1°**) hasta 269 km, alimentando los volcanes del sur. "
+        "Las esferas más grandes con halo luminoso destacan los terremotos mayores (**M ≥ 7.0**)."
     )
-    sub_3d = sub[(sub["depth_km"].notna()) & (sub["depth_km"] <= 350.0)].copy()
-    if len(sub_3d) > 3500:
-        sub_3d = sub_3d.sample(3500, random_state=42)
+    sub_3d_all = sub[(sub["depth_km"].notna()) & (sub["depth_km"] <= 350.0)].copy()
+    major_3d = sub_3d_all[sub_3d_all["mag"] >= 6.5]
+    small_3d = sub_3d_all[sub_3d_all["mag"] < 6.5]
+    if len(small_3d) > 3200:
+        small_3d = small_3d.sample(3200, random_state=42)
+    sub_3d = pd.concat([small_3d, major_3d], ignore_index=True)
+
     color_map_reg = {
         "Subducción Costera": "#DC2626",
         "Falla Cortical Andina": "#F59E0B",
@@ -1695,7 +1969,6 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
     }
     fig_3d = go.Figure()
 
-    # Overlay Peru INEI departmental outline on z = 0 km surface plane
     if inei["peru_3d_x"]:
         fig_3d.add_trace(
             go.Scatter3d(
@@ -1713,6 +1986,7 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
         r_df = sub_3d[sub_3d["regimen_es"] == reg_lbl]
         if r_df.empty:
             continue
+        sizes = np.clip((r_df["mag"].to_numpy(dtype="float64") - 3.9) ** 1.85 * 1.45, 2.2, 16.5)
         fig_3d.add_trace(
             go.Scatter3d(
                 x=r_df["lon"],
@@ -1720,14 +1994,31 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
                 z=-r_df["depth_km"],
                 mode="markers",
                 name=reg_lbl,
-                marker=dict(size=2.8, color=col_hex, opacity=0.72),
-                text=[f"Año {int(a)} | Mw {m:.1f} | Prof. {d:.0f} km" for a, m, d in zip(r_df["anio"], r_df["mag"], r_df["depth_km"])],
+                marker=dict(size=sizes, color=col_hex, opacity=0.74, line=dict(width=0)),
+                text=[f"<b>Año {int(a)}</b> · Mw {m:.1f}<br>Prof.: {d:.0f} km · {reg_lbl}" for a, m, d in zip(r_df["anio"], r_df["mag"], r_df["depth_km"])],
                 hoverinfo="text",
             )
         )
+
+    aura_df = sub_3d[sub_3d["mag"] >= 7.0]
+    if not aura_df.empty:
+        aura_sizes = np.clip((aura_df["mag"].to_numpy(dtype="float64") - 3.9) ** 1.85 * 1.45, 8.0, 16.5) * 2.15
+        fig_3d.add_trace(
+            go.Scatter3d(
+                x=aura_df["lon"],
+                y=aura_df["lat"],
+                z=-aura_df["depth_km"],
+                mode="markers",
+                name="Aura Terremotos Mayores (M ≥ 7.0)",
+                marker=dict(size=aura_sizes, color="#F97316", opacity=0.24, line=dict(color="#DC2626", width=1.2)),
+                text=[f"<b>GRAN TERREMOTO · Año {int(a)}</b><br>Magnitud: <b>Mw {m:.1f}</b><br>Profundidad: {d:.0f} km ({reg})" for a, m, d, reg in zip(aura_df["anio"], aura_df["mag"], aura_df["depth_km"], aura_df["regimen_es"])],
+                hoverinfo="text",
+            )
+        )
+
     fig_3d.update_layout(
         **plotly_theme_kwargs(theme_mode),
-        height=560,
+        height=575,
         scene=dict(
             xaxis_title="Longitud (°W — Mar → Selva)",
             yaxis_title="Latitud (°S — Sur → Norte)",
@@ -1742,10 +2033,11 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
     st.markdown(
         render_map_legend(
             [
-                ("#DC2626", "Rojo — Subducción Costera", "Choque superficial (<60 km) frente al mar"),
+                ("#DC2626", "Rojo — Subducción Costera", "Choque superficial (<60 km) frente al mar; tamaño proporcional a Mw"),
                 ("#F59E0B", "Ámbar — Falla Cortical Andina", "Sismos superficiales (<60 km) dentro de la cordillera"),
-                ("#14B8A6", "Verde azulado — Losa Intermedia", "Interior de la placa de Nazca (60 a 350 km bajo tierra)"),
-                ("#1C1917", "Línea superficial (0 km)", "Contorno oficial del Perú (INEI) proyectado sobre la superficie"),
+                ("#14B8A6", "Verde azulado — Losa Intermedia", "Interior de la placa de Nazca (60–350 km bajo tierra)"),
+                ("#F97316", "Halo/Aura translúcida", "Destaca todos los terremotos mayores (M ≥ 7.0) por energía y profundidad"),
+                ("#1C1917", "Contorno en 0 km", "Mapa oficial del Perú (INEI) proyectado sobre la superficie"),
             ],
             note="💡 Usa el ícono de expansión en la esquina superior derecha del gráfico 3D para verlo en pantalla completa y arrastra con el mouse para rotarlo.",
         ),
@@ -1771,7 +2063,7 @@ def _render_sec5_history_and_3d(data: dict[str, Any], theme_mode: str) -> None:
                 [
                     ("Fecha (UTC)", "Fecha universal coordinada del terremoto según el catálogo oficial del IGP."),
                     ("Magnitud (Mw)", "Energía total del terremoto homogeneizada a la escala de momento."),
-                    ("Profundidad", "Kilómetros bajo la superficie donde inició la ruptura; los menores a 60 km son los más sentidos."),
+                    ("Profundidad", "Kilómetros bajo la superficie donde inició la ruptura; los menores a 60 km se sienten más fuerte."),
                     ("Catálogo", "Histórico (1552–1959, crónicas e isosistas) vs. Instrumental (1960–2026, red de sismógrafos)."),
                 ]
             ),
@@ -1783,17 +2075,13 @@ def _render_sec6_gaps(data: dict[str, Any], theme_mode: str) -> None:
     st.markdown("### 🌊 Radar de Silencios Sísmicos en la Costa del Perú")
     st.write(
         "Mediante **10,000 simulaciones Monte Carlo**, estimamos cuánta energía elástica se ha acumulado en cada tramo del litoral "
-        "desde su último megaterremoto y la probabilidad condicional de una gran ruptura (Mw ≥ 8.0) en los próximos 30 y 50 años."
+        "desde su último megaterremoto y la probabilidad condicional de una gran ruptura (Mw ≥ 8.0) en 30 y 50 años."
     )
 
     df_gaps = data["df_gaps"].copy()
     c1, c2 = st.columns([1.2, 1.2])
     vista = c1.radio("Nivel de detalle", ["5 Grandes Bloques Costeros", "30 Tramos Detallados del Litoral (cada ~60 km)"], horizontal=True)
-    modelo_bpt = c2.radio(
-        "Supuesto de recurrencia (BPT)",
-        ["Conservador — irregularidad normal (α = 0.5)", "Cuasi-periódico — ciclos más regulares (α = 0.3)"],
-        horizontal=True,
-    )
+    modelo_bpt = c2.radio("Supuesto de recurrencia (BPT)", ["Conservador — irregularidad normal (α = 0.5)", "Cuasi-periódico — ciclos más regulares (α = 0.3)"], horizontal=True)
     p30_col = "bpt_p30_a05" if "0.5" in modelo_bpt else "bpt_p30_a03"
     p50_col = "bpt_p50_a05" if "0.5" in modelo_bpt else "bpt_p50_a03"
 
@@ -1809,17 +2097,10 @@ def _render_sec6_gaps(data: dict[str, Any], theme_mode: str) -> None:
                 go.Bar(
                     x=sub["nombre_es"],
                     y=sub["mw_pot_p50"],
-                    error_y=dict(
-                        type="data",
-                        symmetric=False,
-                        array=sub["mw_pot_p90"] - sub["mw_pot_p50"],
-                        arrayminus=sub["mw_pot_p50"] - np.maximum(sub["mw_pot_p10"], 6.5),
-                        color="#F8FAFC" if theme_mode == THEME_DARK else "#1C1917",
-                    ),
+                    error_y=dict(type="data", symmetric=False, array=sub["mw_pot_p90"] - sub["mw_pot_p50"], arrayminus=sub["mw_pot_p50"] - np.maximum(sub["mw_pot_p10"], 6.5), color="#F8FAFC" if theme_mode == THEME_DARK else "#1C1917"),
                     marker_color="#B91C1C",
                     text=[f"Mw {v:.2f}" for v in sub["mw_pot_p50"]],
                     textposition="outside",
-                    name="Magnitud potencial mediana",
                 )
             )
             fig_mw.update_yaxes(range=[7.5, 9.05], title_text="Magnitud potencial acumulada (Mw)")
@@ -1840,37 +2121,14 @@ def _render_sec6_gaps(data: dict[str, Any], theme_mode: str) -> None:
 
         fig_seg = go.Figure()
         fig_seg.add_trace(go.Scatter(x=sub["mw_pot_p90"], y=sub["lat_center"], mode="lines", line=dict(width=0), showlegend=False, hoverinfo="skip"))
-        fig_seg.add_trace(
-            go.Scatter(
-                x=p10_floor,
-                y=sub["lat_center"],
-                mode="lines",
-                fill="tonextx",
-                fillcolor="rgba(185,28,28,0.22)",
-                line=dict(width=0),
-                name="Rango de incertidumbre (P10–P90)",
-            )
-        )
+        fig_seg.add_trace(go.Scatter(x=p10_floor, y=sub["lat_center"], mode="lines", fill="tonextx", fillcolor="rgba(185,28,28,0.22)", line=dict(width=0), name="Rango P10–P90"))
         seg_hover = [
-            (
-                f"<b>{r['coastal_zone']}</b><br>Mediana: Mw {r['mw_pot_p50']:.2f}<br>"
-                + ("Rango: Sin déficit mayor (ruptura reciente)" if float(r["mw_pot_p10"]) < 6.5 else f"Rango: Mw {float(r['mw_pot_p10']):.2f}")
-                + f" a Mw {r['mw_pot_p90']:.2f}<br>"
-                + f"Prob. 30 años: {r[p30_col]:.1f}% | Prob. 50 años: {r[p50_col]:.1f}%"
-            )
+            f"<b>{r['coastal_zone']}</b><br>Mediana: Mw {r['mw_pot_p50']:.2f}<br>"
+            + ("Rango: Sin déficit mayor (ruptura reciente)" if float(r["mw_pot_p10"]) < 6.5 else f"Rango: Mw {float(r['mw_pot_p10']):.2f}")
+            + f" a Mw {r['mw_pot_p90']:.2f}<br>Prob. 30 años: {r[p30_col]:.1f}% | 50 años: {r[p50_col]:.1f}%"
             for _, r in sub.iterrows()
         ]
-        fig_seg.add_trace(
-            go.Scatter(
-                x=sub["mw_pot_p50"],
-                y=sub["lat_center"],
-                mode="lines+markers",
-                name="Magnitud potencial mediana",
-                line=dict(color="#B91C1C", width=2.5),
-                text=seg_hover,
-                hoverinfo="text",
-            )
-        )
+        fig_seg.add_trace(go.Scatter(x=sub["mw_pot_p50"], y=sub["lat_center"], mode="lines+markers", name="Magnitud potencial mediana", line=dict(color="#B91C1C", width=2.5), text=seg_hover, hoverinfo="text"))
         fig_seg.update_xaxes(title_text="Magnitud potencial acumulada (Mw, piso visual 6.5)", range=[6.4, 8.85])
         fig_seg.update_yaxes(title_text="Latitud del litoral peruano (°S)")
         fig_seg.update_layout(**plotly_theme_kwargs(theme_mode), height=460, title="Perfil de Energía Acumulada de Norte a Sur (-3.5°S a -18.5°S)")
@@ -1882,10 +2140,7 @@ def _render_sec6_gaps(data: dict[str, Any], theme_mode: str) -> None:
             "Último Gran Terremoto": [f"Año {int(round(y))}" if pd.notna(y) else "Sin registro desde 1552" for y in sub["last_major_rupture_year"]],
             "Años Acumulando": [f"{int(round(y))} años" for y in sub["years_since_major_rupture"]],
             "Magnitud Potencial": [f"Mw {v:.2f}" for v in sub["mw_pot_p50"]],
-            "Rango P10 – P90": [
-                f"Sin déficit mayor – Mw {hi:.2f}" if lo < 6.5 else f"Mw {lo:.2f} – {hi:.2f}"
-                for lo, hi in zip(sub["mw_pot_p10"], sub["mw_pot_p90"])
-            ],
+            "Rango P10 – P90": [f"Sin déficit mayor – Mw {hi:.2f}" if lo < 6.5 else f"Mw {lo:.2f} – {hi:.2f}" for lo, hi in zip(sub["mw_pot_p10"], sub["mw_pot_p90"])],
             "Prob. 30 Años": [f"{v:.1f}%" for v in sub[p30_col]],
             "Prob. 50 Años": [f"{v:.1f}%" for v in sub[p50_col]],
             "Actividad Reciente (/100 km)": [f"{v:.1f}" for v in sub["modern_density_per_100km"]],
@@ -1895,28 +2150,42 @@ def _render_sec6_gaps(data: dict[str, Any], theme_mode: str) -> None:
     st.markdown(
         render_table_legend(
             [
-                ("Magnitud Potencial (Mw)", "Tamaño aproximado del terremoto que se liberaría si toda la energía acumulada en ese tramo saliera en una sola ruptura."),
-                ("Rango P10 – P90", "Intervalo de confianza del 80% obtenido tras 10,000 simulaciones Monte Carlo (refleja la incertidumbre física del acoplamiento de placas)."),
-                ("Prob. 30 y 50 Años (BPT)", "Probabilidad condicional de que ocurra una gran ruptura (Mw ≥ 8.0) dado el tiempo ya transcurrido sin terremoto."),
-                ("Actividad Reciente (/100 km)", "Sismos moderados M≥4.7 entre 2000 y 2026 por cada 100 km de costa; valores bajos en zonas de alto déficit confirman silencio sísmico."),
+                ("Magnitud Potencial (Mw)", "Tamaño aproximado del terremoto si toda la energía acumulada en ese tramo saliera en una sola ruptura."),
+                ("Rango P10 – P90", "Intervalo de confianza del 80% obtenido tras 10,000 simulaciones Monte Carlo."),
+                ("Prob. 30 y 50 Años (BPT)", "Probabilidad condicional de gran ruptura (Mw ≥ 8.0) dado el tiempo ya transcurrido sin megaterremoto."),
+                ("Actividad Reciente (/100 km)", "Sismos moderados M≥4.7 entre 2000 y 2026 por cada 100 km de costa; valores bajos en alto déficit confirman silencio sísmico."),
             ]
         ),
         unsafe_allow_html=True,
     )
 
 
-def _render_sec7_low_hazard(assets: dict[str, Any], theme_mode: str) -> None:
-    st.markdown("### 🛡️ Zonas de Menor Peligro Sísmico del Perú (Análisis Territorial)")
-    st.write(
-        "No todo el Perú tiene el mismo nivel de amenaza sísmica. Aquí analizamos los departamentos y distritos más "
-        "tranquilos sísmicamente —principalmente en la llanura amazónica alejada de la fosa marina— **contrastándolos "
-        "con sus peligros geológicos e hidrometeorológicos** para mantener rigor multi-amenaza."
+def _render_sec7_hazard_extremes(assets: dict[str, Any], theme_mode: str) -> None:
+    st.markdown("### 🛡️ Zonas de Menor y Mayor Peligro Sísmico del Perú (Análisis Territorial)")
+    st.markdown(
+        """
+        <div class="school-callout">
+          <strong>¿Cómo se calcula el Índice Sísmico (0–100)?</strong> Es un puntaje comparativo entre todos los distritos del Perú
+          (<strong>0 = mínimo nacional</strong>, <strong>100 = máximo nacional</strong>; <em>no es un porcentaje de probabilidad</em>) que pondera:
+          <strong>45%</strong> sacudimiento máximo con efecto de suelo local + <strong>30%</strong> cercanía a una laguna costera (probabilidad BPT a 30 años)
+          + <strong>25%</strong> tasa anual calibrada de sismos sensibles H3.
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    df_u = assets["df_u"].copy()
-    low_df = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Muy Bajo", "Bajo"])].copy()
-    lowest_dist = df_u.sort_values("seismic_hazard_index_0_100", ascending=True).iloc[0]
+    mode_lbl = st.radio(
+        "Elige qué extremo del país deseas analizar",
+        [
+            "🟢 Ver Zonas de Menor Peligro Sísmico (Más Tranquilas)",
+            "🔴 Ver Zonas de Mayor Peligro Sísmico (Más Expuestas)",
+        ],
+        index=0,
+        horizontal=True,
+    )
+    is_low = "Menor" in mode_lbl
 
+    df_u = assets["df_u"].copy()
     dep_agg = (
         df_u.groupby("departamento", as_index=False)
         .agg(
@@ -1926,55 +2195,61 @@ def _render_sec7_low_hazard(assets: dict[str, Any], theme_mode: str) -> None:
             peligros_geo=("n_peligros_total", "sum"),
             zonas_crit=("n_zonas_criticas_activas", "sum"),
         )
-        .sort_values("mean_idx", ascending=True)
-    )
-    lowest_dep = dep_agg.iloc[0]
-    pct_low = len(low_df) / len(df_u) * 100.0
-
-    k1, k2, k3, k4 = st.columns(4)
-    k1.markdown(
-        render_kpi_card(
-            "Distrito Más Tranquilo",
-            f"{lowest_dist['distrito']}",
-            f"{lowest_dist['departamento']} · Índice {lowest_dist['seismic_hazard_index_0_100']:.1f}/100 ({lowest_dist['pga_escenario_max_gal']:.1f} Gal)",
-            "#0F766E",
-        ),
-        unsafe_allow_html=True,
-    )
-    k2.markdown(
-        render_kpi_card(
-            "Dpto. Menor Peligro Sísmico",
-            f"{lowest_dep['departamento']}",
-            f"Promedio {lowest_dep['mean_idx']:.1f}/100 ({int(lowest_dep['n_dist'])} distritos)",
-            "#0284C7",
-        ),
-        unsafe_allow_html=True,
-    )
-    k3.markdown(
-        render_kpi_card(
-            "Distritos Muy Bajo / Bajo",
-            f"{len(low_df):,} distritos",
-            f"{pct_low:.1f}% del territorio nacional (142 Muy Bajo + 565 Bajo)",
-            "#0D9488",
-        ),
-        unsafe_allow_html=True,
-    )
-    k4.markdown(
-        render_kpi_card(
-            "Otros Peligros en Estas Zonas",
-            f"{int(low_df['n_peligros_total'].sum()):,} puntos",
-            f"{int(low_df['n_zonas_criticas_activas'].sum()):,} zonas críticas INGEMMET (huaicos/inundaciones)",
-            "#7C3AED",
-            "Menor peligro sísmico NO significa ausencia de otros desastres naturales como inundaciones, erosión fluvial o deslizamientos.",
-        ),
-        unsafe_allow_html=True,
+        .sort_values("mean_idx", ascending=is_low)
     )
 
-    st.info(
-        "⚖️ **Mirada multi-amenaza con rigor:** Aunque **Madre de Dios** y **Loreto** tienen los índices sísmicos más bajos "
-        "del Perú (lejos de la costa), muchos de sus distritos figuran en **FONDES Alto o Muy Alto** debido a **inundaciones "
-        "amazónicas, erosión fluvial y deslizamientos** en la selva alta (como San Martín con 3,029 peligros geológicos)."
-    )
+    if is_low:
+        subset = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Muy Bajo", "Bajo"])].copy()
+        ranked_all = df_u.sort_values("seismic_hazard_index_0_100", ascending=True).copy()
+        ext_dist = ranked_all.iloc[0]
+        ext_dep = dep_agg.iloc[0]
+
+        k1, k2, k3, k4 = st.columns(4)
+        k1.markdown(render_kpi_card("Distrito Más Tranquilo", f"{ext_dist['distrito']}", f"{ext_dist['departamento']} · Índice {ext_dist['seismic_hazard_index_0_100']:.1f}/100 ({ext_dist['pga_escenario_max_gal']:.1f} Gal)", "#0F766E"), unsafe_allow_html=True)
+        k2.markdown(render_kpi_card("Dpto. Menor Peligro Sísmico", f"{ext_dep['departamento']}", f"Promedio {ext_dep['mean_idx']:.1f}/100 ({int(ext_dep['n_dist'])} distritos)", "#0284C7"), unsafe_allow_html=True)
+        k3.markdown(render_kpi_card("Distritos Muy Bajo / Bajo", f"{len(subset):,} distritos", f"{len(subset)/len(df_u)*100:.1f}% del país (142 Muy Bajo + 565 Bajo)", "#0D9488"), unsafe_allow_html=True)
+        k4.markdown(render_kpi_card("Otros Peligros en Estas Zonas", f"{int(subset['n_peligros_total'].sum()):,} puntos", f"{int(subset['n_zonas_criticas_activas'].sum()):,} zonas críticas (huaicos/inundaciones)", "#7C3AED"), unsafe_allow_html=True)
+
+        st.info(
+            "⚖️ **Mirada multi-amenaza:** Aunque **Madre de Dios** (`8.1/100`) y **Loreto** (`14.1/100`) tienen los índices sísmicos "
+            "más bajos del Perú, varios de sus distritos figuran en **FONDES Alto o Muy Alto** por inundaciones amazónicas, erosión fluvial y deslizamientos."
+        )
+        bar_col = "#0F766E"
+        chart_title = "Top 15 Departamentos con Menor Peligro Sísmico Promedio (vs. Peligros Geológicos)"
+        map_title = "**Mapa de los 707 Distritos en Peligro Sísmico Muy Bajo y Bajo**"
+        map_legend_items = [
+            ("#0F766E", "Verde petróleo — Muy Bajo (142 distritos)", "Principalmente Amazonía oriental y fronteras alejadas de la costa"),
+            ("#0284C7", "Azul — Bajo (565 distritos)", "Sierra oriental, altiplano y selva alta con menor sacudimiento en megaterremotos"),
+        ]
+        tbl_title = "#### Top 25 Distritos con Menor Peligro Sísmico del Perú"
+        dl_label = "📥 Descargar ranking completo de los 1,893 distritos ordenados de menor a mayor peligro (CSV)"
+        dl_name = "ranking_menor_a_mayor_peligro_sismico_peru_1893_distritos.csv"
+    else:
+        subset = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Alto", "Muy Alto"])].copy()
+        ranked_all = df_u.sort_values("seismic_hazard_index_0_100", ascending=False).copy()
+        ext_dist = ranked_all.iloc[0]
+        ext_dep = dep_agg.iloc[0]
+
+        k1, k2, k3, k4 = st.columns(4)
+        k1.markdown(render_kpi_card("Distrito Más Expuesto", f"{ext_dist['distrito']}", f"{ext_dist['departamento']} · Índice {ext_dist['seismic_hazard_index_0_100']:.1f}/100 ({ext_dist['pga_escenario_max_gal']:.0f} Gal)", "#991B1B"), unsafe_allow_html=True)
+        k2.markdown(render_kpi_card("Dpto. Mayor Peligro Sísmico", f"{ext_dep['departamento']}", f"Promedio {ext_dep['mean_idx']:.1f}/100 ({int(ext_dep['n_dist'])} distritos)", "#B91C1C"), unsafe_allow_html=True)
+        k3.markdown(render_kpi_card("Distritos Alto / Muy Alto", f"{len(subset):,} distritos", f"{len(subset)/len(df_u)*100:.1f}% del país (104 Muy Alto + 322 Alto)", "#C2410C"), unsafe_allow_html=True)
+        k4.markdown(render_kpi_card("Zonas Críticas Expuestas", f"{int(subset['n_zonas_criticas_activas'].sum()):,} sectores", f"{int(subset['n_peligros_total'].sum()):,} peligros geológicos en zonas de alto peligro", "#7C3AED"), unsafe_allow_html=True)
+
+        st.warning(
+            "🚨 **Concentración costera:** **Callao (`93.9/100`)**, **Lima (`77.9/100`)**, **Tacna (`72.6/100`)** y **Moquegua (`68.7/100`)** "
+            "encabezan el peligro sísmico nacional por su cercanía a las brechas de 1746 y 1868 sumada a la amplificación de suelos blandos."
+        )
+        bar_col = "#B91C1C"
+        chart_title = "Top 15 Departamentos con Mayor Peligro Sísmico Promedio (vs. Peligros Geológicos)"
+        map_title = "**Mapa de los 426 Distritos en Peligro Sísmico Alto y Muy Alto**"
+        map_legend_items = [
+            ("#991B1B", "Rojo oscuro — Muy Alto (104 distritos)", "Costa central (Lima–Callao–Ica) y extremo sur (Moquegua–Tacna)"),
+            ("#EA580C", "Naranja — Alto (322 distritos)", "Franja costera y estribaciones andinas occidentales con fuerte exposición"),
+        ]
+        tbl_title = "#### Top 25 Distritos con Mayor Peligro Sísmico del Perú"
+        dl_label = "📥 Descargar ranking completo de los 1,893 distritos ordenados de mayor a menor peligro (CSV)"
+        dl_name = "ranking_mayor_a_menor_peligro_sismico_peru_1893_distritos.csv"
 
     c_chart, c_map = st.columns([1.05, 1.05])
     with c_chart:
@@ -1985,51 +2260,36 @@ def _render_sec7_low_hazard(assets: dict[str, Any], theme_mode: str) -> None:
                 y=top15_dep["departamento"],
                 x=top15_dep["mean_idx"],
                 orientation="h",
-                marker_color="#0F766E",
+                marker_color=bar_col,
                 text=[f"{idx:.1f}/100 · {int(pg):,} peligros geo." for idx, pg in zip(top15_dep["mean_idx"], top15_dep["peligros_geo"])],
                 textposition="outside",
                 hovertext=[
-                    f"<b>{r['departamento']}</b><br>"
-                    f"Índice Sísmico promedio: <b>{r['mean_idx']:.1f} / 100</b><br>"
-                    f"Sacudimiento máx. promedio: {r['mean_pga']:.1f} Gal ({r['mean_pga']/9.81:.1f}% g)<br>"
-                    f"Peligros geológicos INGEMMET: <b>{int(r['peligros_geo']):,}</b> ({int(r['zonas_crit'])} zonas críticas)"
+                    f"<b>{r['departamento']}</b><br>Índice Sísmico prom.: <b>{r['mean_idx']:.1f}/100</b><br>"
+                    f"Sacudimiento prom.: {r['mean_pga']:.1f} Gal ({r['mean_pga']/9.81:.1f}% g)<br>"
+                    f"Peligros geológicos: <b>{int(r['peligros_geo']):,}</b> ({int(r['zonas_crit'])} zonas críticas)"
                     for _, r in top15_dep.iterrows()
                 ],
                 hoverinfo="text",
             )
         )
-        fig_dep.update_xaxes(range=[0, 72], title_text="Índice Sísmico Promedio (0 = mínimo, 100 = máximo)")
-        fig_dep.update_layout(
-            **plotly_theme_kwargs(theme_mode),
-            height=485,
-            title="Top 15 Departamentos con Menor Peligro Sísmico Promedio (vs. Peligros Geológicos)",
-            margin=dict(l=10, r=40, t=48, b=40),
-        )
+        fig_dep.update_xaxes(range=[0, 118 if not is_low else 72], title_text="Índice Sísmico Promedio (0 = mínimo, 100 = máximo)")
+        fig_dep.update_layout(**plotly_theme_kwargs(theme_mode), height=485, title=chart_title, margin=dict(l=10, r=45, t=48, b=40))
         st.plotly_chart(fig_dep, width="stretch", config=PLOTLY_CFG)
         st.caption("💡 Usa el ícono de expansión en la esquina superior derecha del gráfico para verlo en pantalla completa.")
 
     with c_map:
-        st.markdown("**Mapa de los 707 Distritos en Peligro Sísmico Muy Bajo y Bajo**")
-        low_map_html = _build_low_hazard_folium_html(theme_mode)
-        st.iframe(low_map_html, height=420, width="stretch")
-        st.markdown(
-            render_map_legend(
-                [
-                    ("#0F766E", "Verde petróleo — Muy Bajo (142 distritos)", "Principalmente Amazonía oriental y fronteras alejadas de la costa"),
-                    ("#0284C7", "Azul — Bajo (565 distritos)", "Sierra oriental, altiplano y selva alta con menor sacudimiento en megaterremotos"),
-                ]
-            ),
-            unsafe_allow_html=True,
-        )
+        st.markdown(map_title)
+        map_html = _build_hazard_extremes_folium_html("low" if is_low else "high", theme_mode)
+        st.iframe(map_html, height=420, width="stretch")
+        st.markdown(render_map_legend(map_legend_items), unsafe_allow_html=True)
 
-    st.markdown("#### Top 25 Distritos con Menor Peligro Sísmico del Perú")
+    st.markdown(tbl_title)
     dep_opts = ["Todo el Perú"] + sorted(df_u["departamento"].unique().tolist())
-    sel_d_low = st.selectbox("Filtrar ranking por departamento (opcional)", dep_opts, index=0)
-    ranked_all = df_u.sort_values("seismic_hazard_index_0_100", ascending=True).copy()
-    sub_low = ranked_all if sel_d_low == "Todo el Perú" else ranked_all[ranked_all["departamento"] == sel_d_low]
-    top25 = sub_low.head(25)
+    sel_d = st.selectbox("Filtrar ranking por departamento (opcional)", dep_opts, index=0)
+    sub_tbl = ranked_all if sel_d == "Todo el Perú" else ranked_all[ranked_all["departamento"] == sel_d]
+    top25 = sub_tbl.head(25)
 
-    tbl_low = pd.DataFrame(
+    tbl_ext = pd.DataFrame(
         {
             "Distrito": top25["distrito"],
             "Provincia / Dpto.": top25["provincia"] + " / " + top25["departamento"],
@@ -2044,24 +2304,21 @@ def _render_sec7_low_hazard(assets: dict[str, Any], theme_mode: str) -> None:
             "Clasificación FONDES": top25["nivel_riesgo_multipeligro_sigrid"],
         }
     )
-    st.markdown(
-        render_centered_table(tbl_low, badge_cols={"Nivel Sísmico", "Clasificación FONDES"}, max_height_px=450),
-        unsafe_allow_html=True,
-    )
+    st.markdown(render_centered_table(tbl_ext, badge_cols={"Nivel Sísmico", "Clasificación FONDES"}, max_height_px=450), unsafe_allow_html=True)
     st.markdown(
         render_table_legend(
             [
-                ("Índice Sísmico (0–100)", "Puntaje relativo de amenaza sísmica física (0 = mínimo del país, 100 = máximo); no es un porcentaje."),
-                ("Sacudimiento Máx. (%g y Gal)", "Aceleración máxima esperada entre los 3 escenarios nacionales; debajo de 1% g (<10 Gal) suele ser imperceptible o muy débil."),
-                ("Mercalli + Rango Mw", "Intensidad estimada en el distrito y rango de Magnitud Mw equivalente en epicentro."),
+                ("Índice Sísmico (0–100)", "45% sacudimiento con suelo + 30% laguna costera BPT (30 años) + 25% tasa sísmica anual H3; no es porcentaje."),
+                ("Sacudimiento Máx. (%g y Gal)", "Aceleración máxima esperada entre los 3 escenarios nacionales (100% g = 981 Gal)."),
+                ("Mercalli + Rango Mw", "Intensidad estimada en el distrito y rango aproximado de Magnitud Mw equivalente en epicentro."),
                 ("Peligros Geológicos (Flujos / Caídas)", "Puntos registrados por INGEMMET de huaicos/flujos de lodo y derrumbes/caídas de rocas."),
-                ("Clasificación FONDES", "Nivel oficial multi-peligro de CENEPRED/SIGRID (incluye lluvias, inundaciones y heladas, por eso puede ser Alto aun con bajo peligro sísmico)."),
+                ("Clasificación FONDES", "Nivel oficial multi-peligro de CENEPRED/SIGRID (incluye lluvias, inundaciones y heladas)."),
             ]
         ),
         unsafe_allow_html=True,
     )
 
-    export_low = ranked_all[
+    export_ext = ranked_all[
         [
             "ubigeo", "departamento", "provincia", "distrito",
             "seismic_hazard_index_0_100", "nivel_peligro_sismico_puro",
@@ -2086,22 +2343,15 @@ def _render_sec7_low_hazard(assets: dict[str, Any], theme_mode: str) -> None:
             "nivel_riesgo_multipeligro_sigrid": "Clasificacion_Oficial_FONDES",
         }
     )
-    st.download_button(
-        "📥 Descargar ranking completo de los 1,893 distritos ordenados de menor a mayor peligro (CSV)",
-        data=export_low.to_csv(index=False).encode("utf-8"),
-        file_name="ranking_menor_a_mayor_peligro_sismico_peru_1893_distritos.csv",
-        mime="text/csv",
-        width="stretch",
-    )
+    st.download_button(dl_label, data=export_ext.to_csv(index=False).encode("utf-8"), file_name=dl_name, mime="text/csv", width="stretch")
 
 
 def _render_sec8_audit(assets: dict[str, Any], theme_mode: str) -> None:
     st.markdown("### 🏛️ Auditoría Territorial: Peligro Sísmico Real vs. Clasificación Oficial (FONDES / SIGRID)")
     st.info(
         "🏛️ **¿Qué es FONDES / SIGRID y por qué encontramos una brecha?** "
-        "El padrón FONDES usa el índice multi-peligro de SIGRID para priorizar fondos de prevención. Al promediar lluvias, "
-        "inundaciones y huaicos, **150 distritos con Peligro Sísmico Alto o Muy Alto (35.2% del total)** aparecen clasificados "
-        "como *'Muy Bajo'* o *'Bajo'* — incluyendo **21 de los 50 distritos de Lima y Callao**."
+        "Al promediar lluvias, inundaciones y huaicos, **150 distritos con Peligro Sísmico Alto o Muy Alto (35.2% del total)** "
+        "aparecen clasificados como *'Muy Bajo'* o *'Bajo'* en el padrón oficial — incluyendo **21 de los 50 distritos de Lima y Callao**."
     )
 
     df_u = assets["df_u"].copy()
@@ -2117,7 +2367,7 @@ def _render_sec8_audit(assets: dict[str, Any], theme_mode: str) -> None:
     if is_gap:
         st.warning(
             f"⚠️ **Alerta de Subestimación Oficial:** **{r['distrito']}** tiene Peligro Sísmico Puro **{nivel_seis}** "
-            f"(Índice `{r['seismic_hazard_index_0_100']:.1f}/100`, sacudimiento estimado de **{r['pga_escenario_max_gal']/9.81:.0f}% g / {r['pga_escenario_max_gal']:.0f} Gal**), "
+            f"(Índice `{r['seismic_hazard_index_0_100']:.1f}/100`, **{r['pga_escenario_max_gal']/9.81:.0f}% g / {r['pga_escenario_max_gal']:.0f} Gal**), "
             f"pero figura como **{nivel_fondes}** en el listado oficial FONDES / SIGRID."
         )
 
@@ -2135,32 +2385,12 @@ def _render_sec8_audit(assets: dict[str, Any], theme_mode: str) -> None:
     with left:
         order = ["Muy Bajo", "Bajo", "Medio", "Alto", "Muy Alto"]
         ct = pd.crosstab(df_u["nivel_peligro_sismico_puro"], df_u["nivel_riesgo_multipeligro_sigrid"]).reindex(index=order, columns=order, fill_value=0)
-        fig_hm = go.Figure(
-            data=go.Heatmap(
-                z=ct.to_numpy(),
-                x=order,
-                y=order,
-                text=ct.to_numpy().astype(str),
-                texttemplate="%{text}",
-                colorscale="YlOrRd",
-                showscale=False,
-            )
-        )
-        fig_hm.update_layout(
-            **plotly_theme_kwargs(theme_mode),
-            height=405,
-            title="Cruce de los 1,893 Distritos: Sísmico Real vs. FONDES",
-            xaxis_title="Clasificación Oficial FONDES / SIGRID",
-            yaxis_title="Peligro Sísmico Puro (Esta Plataforma)",
-            margin=dict(l=60, r=20, t=50, b=50),
-        )
+        fig_hm = go.Figure(data=go.Heatmap(z=ct.to_numpy(), x=order, y=order, text=ct.to_numpy().astype(str), texttemplate="%{text}", colorscale="YlOrRd", showscale=False))
+        fig_hm.update_layout(**plotly_theme_kwargs(theme_mode), height=405, title="Cruce de los 1,893 Distritos: Sísmico Real vs. FONDES", xaxis_title="Clasificación Oficial FONDES / SIGRID", yaxis_title="Peligro Sísmico Puro (Esta Plataforma)", margin=dict(l=60, r=20, t=50, b=50))
         st.plotly_chart(fig_hm, width="stretch", config=PLOTLY_CFG)
 
     with right:
-        under = df_u[
-            df_u["nivel_peligro_sismico_puro"].isin(["Alto", "Muy Alto"])
-            & df_u["nivel_riesgo_multipeligro_sigrid"].isin(["Muy Bajo", "Bajo"])
-        ].sort_values("seismic_hazard_index_0_100", ascending=False)
+        under = df_u[df_u["nivel_peligro_sismico_puro"].isin(["Alto", "Muy Alto"]) & df_u["nivel_riesgo_multipeligro_sigrid"].isin(["Muy Bajo", "Bajo"])].sort_values("seismic_hazard_index_0_100", ascending=False)
         st.markdown(f"**{len(under)} Distritos con Peligro Sísmico Alto/Muy Alto Subestimados en FONDES**")
         tbl_u = pd.DataFrame(
             {
@@ -2205,12 +2435,7 @@ def _render_sec8_audit(assets: dict[str, Any], theme_mode: str) -> None:
             "Zonas_Criticas_Activas_GEOCATMIN": df_u["n_zonas_criticas_activas"],
         }
     )
-    st.download_button(
-        "⬇️ Descargar base territorial completa de los 1,893 distritos (CSV en español)",
-        data=export_all.to_csv(index=False).encode("utf-8"),
-        file_name="auditoria_peligro_sismico_peru_1893_distritos.csv",
-        mime="text/csv",
-    )
+    st.download_button("⬇️ Descargar base territorial completa de los 1,893 distritos (CSV en español)", data=export_all.to_csv(index=False).encode("utf-8"), file_name="auditoria_peligro_sismico_peru_1893_distritos.csv", mime="text/csv")
 
 
 def _render_sec9_documentation() -> None:
@@ -2218,6 +2443,21 @@ def _render_sec9_documentation() -> None:
     st.write(
         "Transparencia metodológica total para auditores, jurados técnicos y ciudadanos: fechas exactas de corte, "
         "auditoría ETL, formulaciones geofísicas, validación anti-leakage y limitaciones científicas explícitas."
+    )
+
+    st.markdown(
+        """
+        <div class="school-callout" style="border-left-color:#0284C7;">
+          <h4 style="margin:0 0 0.45rem 0;color:var(--accent-title);">🧭 Traductor Ciudadano: ¿Qué tan confiables son estos cálculos?</h4>
+          <ul style="margin:0;padding-left:1.2rem;line-height:1.55;">
+            <li><strong>94.75% de bondad de ajuste del catálogo (GFT):</strong> Significa que los 12,390 sismos completos del IGP desde 1960 siguen casi a la perfección la ley física universal de Gutenberg–Richter (el estándar científico exige al menos 90%).</li>
+            <li><strong>80.7% de precisión explicada en sacudimiento del suelo (R² = 0.807):</strong> Probamos el simulador ocultándole terremotos enteros que nunca había visto (<em>GroupKFold</em> sobre 956 sismos reales de ACELDAT) para asegurarnos de que no «haga trampa» memorizando eventos.</li>
+            <li><strong>0.853 de capacidad de discriminación (ROC-AUC) en pronóstico por zonas:</strong> Evaluado año por año hacia el futuro entre <strong>2018 y 2025</strong> (sin mirar datos futuros), distingue con alta precisión qué zonas tienen mayor probabilidad relativa de registrar sismos sensibles.</li>
+            <li><strong>Regla de honestidad científica:</strong> <em>Probabilidad estadística</em> (por ejemplo, «25% en 12 meses») indica qué tan frecuente es un evento en esa zona; <strong>nunca es una predicción exacta de fecha ni hora</strong>.</li>
+          </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     k1, k2, k3, k4 = st.columns(4)
@@ -2242,13 +2482,7 @@ def _render_sec9_documentation() -> None:
     nav_col, dl_col = st.columns([1.45, 0.55])
     sel_chap = nav_col.selectbox("📑 Índice navegable de capítulos técnicos", list(chapters.keys()))
     dl_col.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
-    dl_col.download_button(
-        "⬇️ Descargar Documentación (.md)",
-        data=md_text.encode("utf-8"),
-        file_name="DOCUMENTACION_TECNICA_COMPLETA_PERU_SISMOS.md",
-        mime="text/markdown",
-        width="stretch",
-    )
+    dl_col.download_button("⬇️ Descargar Documentación (.md)", data=md_text.encode("utf-8"), file_name="DOCUMENTACION_TECNICA_COMPLETA_PERU_SISMOS.md", mime="text/markdown", width="stretch")
 
     st.markdown("---")
     if sel_chap == "📖 Documento Completo (Todos los Capítulos)":
@@ -2267,6 +2501,7 @@ def main() -> None:
         initial_sidebar_state="expanded",
     )
 
+    st.session_state.setdefault("theme_mode", THEME_LIGHT)
     assets = _cached_sim_assets()
     data = _cached_datasets()
 
@@ -2280,12 +2515,11 @@ def main() -> None:
             """,
             unsafe_allow_html=True,
         )
-        theme_mode = st.radio(
-            "🎨 Tema Visual",
-            [THEME_LIGHT, THEME_DARK],
-            index=0,
-            horizontal=True,
-        )
+        toggle_label = "🌙 Cambiar a Modo Oscuro" if st.session_state["theme_mode"] == THEME_LIGHT else "☀️ Cambiar a Modo Claro"
+        if st.button(toggle_label, key="btn_theme_toggle", width="stretch"):
+            st.session_state["theme_mode"] = THEME_DARK if st.session_state["theme_mode"] == THEME_LIGHT else THEME_LIGHT
+            st.rerun()
+
         section = st.radio(
             "Navegación Principal",
             NAV_SECTIONS,
@@ -2309,6 +2543,7 @@ def main() -> None:
             unsafe_allow_html=True,
         )
 
+    theme_mode = str(st.session_state["theme_mode"])
     st.markdown(inject_custom_css(theme_mode), unsafe_allow_html=True)
     _render_citizen_header()
 
@@ -2325,7 +2560,7 @@ def main() -> None:
     elif section == NAV_SECTIONS[5]:
         _render_sec6_gaps(data, theme_mode)
     elif section == NAV_SECTIONS[6]:
-        _render_sec7_low_hazard(assets, theme_mode)
+        _render_sec7_hazard_extremes(assets, theme_mode)
     elif section == NAV_SECTIONS[7]:
         _render_sec8_audit(assets, theme_mode)
     else:

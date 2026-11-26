@@ -294,7 +294,63 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
       }}
       .stApp {{
         background-color: var(--bg-app);
+        background-image: radial-gradient({"rgba(148, 163, 184, 0.14)" if is_dark else "rgba(120, 113, 108, 0.16)"} 1px, transparent 1px);
+        background-size: 22px 22px;
         color: var(--text-primary);
+      }}
+      .tech-pill {{
+        display: inline-block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 0.14rem 0.52rem;
+        border-radius: 5px;
+        border: 1.5px solid var(--pill-accent, #0F766E);
+        background: var(--bg-surface-alt);
+        color: var(--text-primary);
+        vertical-align: middle;
+        white-space: nowrap;
+        margin: 0.08rem 0.14rem;
+      }}
+      .step-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 0.85rem;
+        margin: 0.65rem 0 0.95rem 0;
+      }}
+      .step-card {{
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border-strong);
+        border-top: 5px solid var(--step-accent, #B91C1C);
+        border-radius: 9px;
+        padding: 0.95rem 1.05rem;
+        box-shadow: 3px 3px 0 {"rgba(15, 23, 42, 0.55)" if is_dark else "rgba(28, 25, 23, 0.08)"};
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+        line-height: 1.48;
+      }}
+      .step-num {{
+        display: inline-block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #FFFFFF !important;
+        background: var(--step-accent, #B91C1C);
+        padding: 0.16rem 0.54rem;
+        border-radius: 4px;
+        margin-bottom: 0.45rem;
+      }}
+      .step-card h4 {{
+        margin: 0.15rem 0 0.42rem 0;
+        font-size: 0.98rem;
+        font-weight: 800;
+        color: var(--text-primary) !important;
+      }}
+      .step-card p {{
+        margin: 0 0 0.45rem 0;
+        color: var(--text-secondary) !important;
       }}
       header[data-testid="stHeader"] {{
         background-color: {v['bg_header']};
@@ -370,12 +426,12 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
       }}
       .civic-hero {{
         background: {v['hero_grad']};
-        border: 1px solid var(--border-color);
+        border: 1.5px solid var(--border-strong);
         border-left: 6px solid #B91C1C;
         border-radius: 10px;
         padding: 1.08rem 1.35rem;
         margin-bottom: 0.88rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow: 3px 3px 0 {"rgba(15, 23, 42, 0.55)" if is_dark else "rgba(28, 25, 23, 0.07)"};
       }}
       .civic-hero h1 {{
         font-size: 1.62rem;
@@ -392,12 +448,12 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
       }}
       .kpi-card {{
         background: var(--bg-surface);
-        border: 1px solid var(--border-color);
+        border: 1.5px solid var(--border-color);
         border-top: 4px solid var(--accent, #B91C1C);
         border-radius: 9px;
         padding: 0.80rem 0.92rem;
         min-height: 106px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: 2px 2px 0 {"rgba(15, 23, 42, 0.50)" if is_dark else "rgba(28, 25, 23, 0.06)"};
       }}
       .kpi-title {{
         font-size: 0.75rem;
@@ -422,12 +478,13 @@ def inject_custom_css(theme_mode: str = THEME_LIGHT) -> str:
       }}
       .guide-card {{
         background: var(--bg-surface);
-        border: 1px solid var(--border-color);
+        border: 1.5px solid var(--border-color);
         border-top: 4px solid var(--accent, #B91C1C);
         border-radius: 9px;
         padding: 0.92rem 1.02rem;
         height: 100%;
         margin-bottom: 0.6rem;
+        box-shadow: 2px 2px 0 {"rgba(15, 23, 42, 0.45)" if is_dark else "rgba(28, 25, 23, 0.06)"};
       }}
       .guide-card h4 {{
         margin: 0 0 0.36rem 0;

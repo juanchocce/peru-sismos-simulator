@@ -93,8 +93,10 @@ DOCS_COMPLETE_MD = DOCS_DIR / "DOCUMENTACION_TECNICA_COMPLETA.md"
 
 NAZCA_TRENCH_BOUNDS = {"NZ\\SA", "NZ\\AP", "NZ\\ND"}
 PLOTLY_CFG = {"displayModeBar": True, "displaylogo": False}
+WAVE_VP_KM_S = 6.5
 WAVE_VS_KM_S = 3.8
-WAVE_FRAME_TIMES_S = [5, 10, 15, 22, 30, 40, 52, 65, 80, 95, 110, 120]
+WAVE_FRAME_TIMES_S = [5, 10, 18, 26, 36, 48, 60, 74, 88, 100]
+ASSET_CACHE_VERSION = "v5f"
 
 # Pedagogically ordered from easiest citizen guide to deepest technical rigor (9 sections)
 NAV_SECTIONS = [
@@ -365,6 +367,27 @@ def run_live_simulation(
     return res_df, meta
 
 
+def _nearest_trench_lonlat(assets: dict[str, Any], dist_lat: float, dist_lon: float) -> tuple[float, float, float]:
+    """Return nearest PB2002 trench vertex (lon, lat, epicentral_dist_km) with stale-cache fallback."""
+    d_xyz = latlon_to_unit_xyz(np.array([dist_lat], dtype="float64"), np.array([dist_lon], dtype="float64"))
+    chord_dist, t_idx = assets["trench_tree"].query(d_xyz, k=1)
+    idx_int = int(t_idx[0])
+    # Exact great-circle distance from unit-sphere chord length
+    arc_rad = 2.0 * np.arcsin(np.clip(float(chord_dist[0]) / 2.0, 0.0, 1.0))
+    epi_km = float(arc_rad * 6371.0)
+
+    trench_pts = assets.get("trench_pts")
+    if trench_pts is not None and len(trench_pts) > idx_int:
+        ev_lon, ev_lat = float(trench_pts[idx_int][0]), float(trench_pts[idx_int][1])
+        return ev_lon, ev_lat, epi_km
+
+    # Defensive fallback: recover (lon, lat) directly from unit-sphere XYZ stored inside cKDTree
+    xyz_pt = np.asarray(assets["trench_tree"].data[idx_int], dtype="float64")
+    ev_lat = float(np.degrees(np.arcsin(np.clip(xyz_pt[2], -1.0, 1.0))))
+    ev_lon = float(np.degrees(np.arctan2(xyz_pt[1], xyz_pt[0])))
+    return ev_lon, ev_lat, epi_km
+
+
 def _build_3d_animated_wave_figure(
     res_df: pd.DataFrame,
     ev_lat: float,
@@ -374,122 +397,112 @@ def _build_3d_animated_wave_figure(
     inei: dict[str, Any],
     theme_mode: str,
 ) -> go.Figure:
-    """Build 12-frame Plotly 3D animated seismic wave propagation model (Vs ≈ 3.8 km/s)."""
+    """Build clean 10-frame Plotly 3D subsoil + P/S surface wave model (zero vertical bars)."""
     cos_lat = max(float(np.cos(np.radians(ev_lat))), 0.25)
     km_per_deg_lat = 111.0
     km_per_deg_lon = 111.0 * cos_lat
 
-    vis = res_df[res_df["pga_site_gal"] >= 2.0].sort_values("pga_site_gal", ascending=False).head(260).copy()
+    vis = res_df[res_df["pga_site_gal"] >= 1.8].sort_values("pga_site_gal", ascending=False).head(320).copy()
     if vis.empty:
-        vis = res_df.sort_values("pga_site_gal", ascending=False).head(80).copy()
+        vis = res_df.sort_values("pga_site_gal", ascending=False).head(100).copy()
 
-    vis["t_arrival_s"] = vis["dist_hypocentral_km"] / WAVE_VS_KM_S
-    vis["col_height_z"] = np.clip((vis["pga_site_gal"] / 981.0) * 145.0, 5.0, 165.0)
+    vis["t_arrival_p_s"] = vis["dist_hypocentral_km"] / WAVE_VP_KM_S
+    vis["t_arrival_s_s"] = vis["dist_hypocentral_km"] / WAVE_VS_KM_S
 
-    def _wavefront_lines(t_sec: float) -> tuple[list[float | None], list[float | None], list[float | None]]:
-        r_km = WAVE_VS_KM_S * t_sec
-        wx: list[float | None] = []
-        wy: list[float | None] = []
-        wz: list[float | None] = []
+    def _surface_ring(r_km: float, z_plane: float) -> tuple[list[float | None], list[float | None], list[float | None]]:
+        if r_km <= ev_depth_km:
+            return [ev_lon], [ev_lat], [z_plane]
+        r_surf = float(np.sqrt(max(r_km ** 2 - ev_depth_km ** 2, 0.0)))
+        ang = np.linspace(0.0, 2.0 * np.pi, 64)
+        rx = [float(ev_lon + (r_surf * np.cos(a)) / km_per_deg_lon) for a in ang]
+        ry = [float(ev_lat + (r_surf * np.sin(a)) / km_per_deg_lat) for a in ang]
+        rz = [z_plane] * len(ang)
+        return rx, ry, rz
 
-        if r_km > ev_depth_km:
-            r_surf = float(np.sqrt(max(r_km ** 2 - ev_depth_km ** 2, 0.0)))
-            ang = np.linspace(0.0, 2.0 * np.pi, 52)
-            for a in ang:
-                wx.append(ev_lon + (r_surf * np.cos(a)) / km_per_deg_lon)
-                wy.append(ev_lat + (r_surf * np.sin(a)) / km_per_deg_lat)
-                wz.append(0.4)
-            wx.append(None)
-            wy.append(None)
-            wz.append(None)
+    def _subsoil_dome_mesh(r_km: float) -> go.Mesh3d:
+        """Build a lightweight semi-transparent spherical wave dome in subsoil (z <= 0)."""
+        r_eff = max(r_km, 8.0)
+        # Upper hemisphere from hypocenter up to surface z = 0
+        sin_max = min(ev_depth_km / r_eff, 1.0)
+        phi_max = float(np.arcsin(np.clip(sin_max, -1.0, 1.0)))
+        n_lat, n_lon = 7, 20
+        phis = np.linspace(-np.pi / 2.0, phi_max, n_lat)
+        thetas = np.linspace(0.0, 2.0 * np.pi, n_lon, endpoint=False)
 
-        phi = np.linspace(-np.pi / 2.0, np.pi / 2.0, 28)
-        for az_deg in (0.0, 45.0, 90.0, 135.0):
-            az = np.radians(az_deg)
-            seg_started = False
-            for p in phi:
-                z_val = -ev_depth_km + r_km * np.sin(p)
-                if z_val <= 0.0:
-                    rad_h = r_km * np.cos(p)
-                    wx.append(ev_lon + (rad_h * np.cos(az)) / km_per_deg_lon)
-                    wy.append(ev_lat + (rad_h * np.sin(az)) / km_per_deg_lat)
-                    wz.append(z_val)
-                    seg_started = True
-                elif seg_started:
-                    wx.append(None)
-                    wy.append(None)
-                    wz.append(None)
-                    seg_started = False
-            wx.append(None)
-            wy.append(None)
-            wz.append(None)
+        vx, vy, vz = [], [], []
+        for p in phis:
+            z_val = min(-ev_depth_km + r_eff * float(np.sin(p)), 0.0)
+            rad_h = r_eff * float(np.cos(p))
+            for th in thetas:
+                vx.append(float(ev_lon + (rad_h * np.cos(th)) / km_per_deg_lon))
+                vy.append(float(ev_lat + (rad_h * np.sin(th)) / km_per_deg_lat))
+                vz.append(float(z_val))
 
-        ang_u = np.linspace(0.0, 2.0 * np.pi, 36)
-        for a in ang_u:
-            wx.append(ev_lon + (r_km * np.cos(a)) / km_per_deg_lon)
-            wy.append(ev_lat + (r_km * np.sin(a)) / km_per_deg_lat)
-            wz.append(-ev_depth_km)
-        wx.append(None)
-        wy.append(None)
-        wz.append(None)
-        return wx, wy, wz
+        ii, jj, kk = [], [], []
+        for r_i in range(n_lat - 1):
+            for c_i in range(n_lon):
+                c_next = (c_i + 1) % n_lon
+                a = r_i * n_lon + c_i
+                b = r_i * n_lon + c_next
+                c = (r_i + 1) * n_lon + c_i
+                d = (r_i + 1) * n_lon + c_next
+                ii.extend([a, b])
+                jj.extend([b, d])
+                kk.extend([c, c])
 
-    def _reached_columns_and_spheres(t_sec: float) -> tuple[go.Scatter3d, go.Scatter3d]:
-        reached = vis[vis["t_arrival_s"] <= t_sec]
-        cx: list[float | None] = []
-        cy: list[float | None] = []
-        cz: list[float | None] = []
+        return go.Mesh3d(
+            x=vx,
+            y=vy,
+            z=vz,
+            i=ii,
+            j=jj,
+            k=kk,
+            color="#EF4444",
+            opacity=0.18,
+            name="Domo de onda subterránea",
+            hoverinfo="skip",
+            showlegend=True,
+        )
+
+    def _surface_districts_trace(t_sec: float) -> go.Scatter3d:
+        """Render district markers resting directly on z = 0 (zero vertical bars)."""
+        reached = vis[vis["t_arrival_s_s"] <= t_sec]
         if not reached.empty:
-            for lo, la, hz in zip(reached["dist_lon"], reached["dist_lat"], reached["col_height_z"]):
-                cx.extend([float(lo), float(lo), None])
-                cy.extend([float(la), float(la), None])
-                cz.extend([0.0, float(hz), None])
-            sp_x = reached["dist_lon"].tolist()
-            sp_y = reached["dist_lat"].tolist()
-            sp_z = reached["col_height_z"].tolist()
-            sp_c = reached["mmi_est"].tolist()
-            sp_s = np.clip(reached["mmi_est"] * 1.45, 4.5, 13.5).tolist()
-            sp_txt = [
+            sx = reached["dist_lon"].tolist()
+            sy = reached["dist_lat"].tolist()
+            sz = [0.0] * len(reached)
+            sc = reached["mmi_est"].tolist()
+            ss = np.clip(4.8 + np.sqrt(np.maximum(reached["pga_site_pct_g"].to_numpy(dtype="float64"), 0.0)) * 1.25, 4.5, 16.0).tolist()
+            stxt = [
                 f"<b>{r['distrito']} ({r['departamento']})</b><br>"
-                f"Llegada de onda S: <b>{r['t_arrival_s']:.1f} s</b><br>"
+                f"Llegada Onda P: <b>{r['t_arrival_p_s']:.1f} s</b> · Onda S: <b>{r['t_arrival_s_s']:.1f} s</b><br>"
                 f"Sacudimiento real: <b>{r['pga_site_pct_g']:.1f}% g ({r['pga_site_gal']:.0f} Gal)</b><br>"
                 f"Intensidad: <b>Mercalli {r['mercalli_romano']} (eq. {r['mercalli_mag_eq']}) — {r['nivel_impacto']}</b><br>"
                 f"Suelo: {r['site_amp_normal']:.2f}× normal → {r['site_amp_eff']:.2f}× efectivo"
                 for _, r in reached.iterrows()
             ]
         else:
-            cx, cy, cz = [ev_lon], [ev_lat], [0.0]
-            sp_x, sp_y, sp_z, sp_c, sp_s, sp_txt = [ev_lon], [ev_lat], [0.0], [3.0], [1.0], ["Onda aún viajando bajo tierra..."]
+            sx, sy, sz, sc, ss, stxt = [ev_lon], [ev_lat], [0.0], [3.0], [1.0], ["Onda S aún viajando hacia la superficie..."]
 
-        col_trace = go.Scatter3d(
-            x=cx,
-            y=cy,
-            z=cz,
-            mode="lines",
-            name="Columnas de sacudimiento (suelo)",
-            line=dict(color="#EA580C", width=3.2),
-            hoverinfo="skip",
-        )
-        sphere_trace = go.Scatter3d(
-            x=sp_x,
-            y=sp_y,
-            z=sp_z,
+        return go.Scatter3d(
+            x=sx,
+            y=sy,
+            z=sz,
             mode="markers",
-            name="Impacto distrital (Mercalli)",
+            name="Distritos alcanzados (z = 0 km)",
             marker=dict(
-                size=sp_s,
-                color=sp_c,
+                size=ss,
+                color=sc,
                 colorscale="YlOrRd",
                 cmin=3.0,
                 cmax=9.5,
-                colorbar=dict(title=dict(text="Mercalli", side="right"), thickness=13, len=0.65),
-                opacity=0.92,
+                colorbar=dict(title=dict(text="Mercalli", side="right"), thickness=13, len=0.62, y=0.52),
+                opacity=0.90,
                 line=dict(color="#1C1917", width=0.5),
             ),
-            text=sp_txt,
+            text=stxt,
             hoverinfo="text",
         )
-        return col_trace, sphere_trace
 
     outline_col = "#E2E8F0" if theme_mode == THEME_DARK else "#292524"
     trace_peru = go.Scatter3d(
@@ -497,7 +510,7 @@ def _build_3d_animated_wave_figure(
         y=inei["peru_3d_y"],
         z=inei["peru_3d_z"],
         mode="lines",
-        name="Superficie del Perú (0 km)",
+        name="Contorno Perú (0 km)",
         line=dict(color=outline_col, width=2.0),
         hoverinfo="skip",
     )
@@ -506,8 +519,8 @@ def _build_3d_animated_wave_figure(
         y=[ev_lat, ev_lat],
         z=[-ev_depth_km, 0.0],
         mode="lines+markers",
-        name=f"Hipocentro (-{ev_depth_km:.0f} km) → Epicentro",
-        line=dict(color="#EF4444", width=4.0, dash="dot"),
+        name=f"Hipocentro (-{ev_depth_km:.0f} km)",
+        line=dict(color="#DC2626", width=4.0, dash="dot"),
         marker=dict(size=[13, 8], color=["#DC2626", "#F97316"], symbol=["circle", "diamond"]),
         text=[
             f"<b>Hipocentro real</b><br>Magnitud: Mw {ev_mw:.1f}<br>Profundidad: {ev_depth_km:.0f} km bajo tierra",
@@ -517,62 +530,90 @@ def _build_3d_animated_wave_figure(
     )
 
     frames: list[go.Frame] = []
-    init_traces: list[go.Scatter3d] | None = None
-    init_idx = 5  # t = 40 s
+    init_traces: list[Any] | None = None
+    init_idx = 4  # t = 36 s so P-ring, S-ring, dome & lit surface districts are immediately visible
+
+    p_col = "#38BDF8" if theme_mode == THEME_DARK else "#0284C7"
+    s_col = "#F43F5E" if theme_mode == THEME_DARK else "#BE123C"
 
     for f_idx, t_sec in enumerate(WAVE_FRAME_TIMES_S):
-        wx, wy, wz = _wavefront_lines(float(t_sec))
-        tr_wave = go.Scatter3d(
-            x=wx,
-            y=wy,
-            z=wz,
+        px_r, py_r, pz_r = _surface_ring(WAVE_VP_KM_S * float(t_sec), 0.35)
+        sx_r, sy_r, sz_r = _surface_ring(WAVE_VS_KM_S * float(t_sec), 0.55)
+
+        tr_dome = _subsoil_dome_mesh(WAVE_VS_KM_S * float(t_sec))
+        tr_wave_p = go.Scatter3d(
+            x=px_r,
+            y=py_r,
+            z=pz_r,
             mode="lines",
-            name="Frente de onda sísmica (3.8 km/s)",
-            line=dict(color="#F59E0B" if theme_mode == THEME_DARK else "#DC2626", width=3.0),
+            name="Onda P (6.5 km/s — aviso)",
+            line=dict(color=p_col, width=3.2, dash="dot"),
             hoverinfo="skip",
         )
-        tr_cols, tr_spheres = _reached_columns_and_spheres(float(t_sec))
-        n_hit = int((vis["t_arrival_s"] <= t_sec).sum())
+        tr_wave_s = go.Scatter3d(
+            x=sx_r,
+            y=sy_r,
+            z=sz_r,
+            mode="lines",
+            name="Onda S (3.8 km/s — sacudida)",
+            line=dict(color=s_col, width=4.2),
+            hoverinfo="skip",
+        )
+        tr_dists = _surface_districts_trace(float(t_sec))
+
+        n_hit = int((vis["t_arrival_s_s"] <= t_sec).sum())
         frame = go.Frame(
             name=f"{t_sec}s",
-            data=[tr_wave, tr_cols, tr_spheres],
-            traces=[2, 3, 4],
+            data=[tr_dome, tr_wave_p, tr_wave_s, tr_dists],
+            traces=[2, 3, 4, 5],
             layout=go.Layout(
-                title=f"Propagación 3D de Ondas Sísmicas (Mw {ev_mw:.1f}, Prof. {ev_depth_km:.0f} km) — t = {t_sec} s · Radio {WAVE_VS_KM_S * t_sec:.0f} km · {n_hit} distritos alcanzados"
+                title=dict(
+                    text=f"Ondas P y S en Subsuelo y Superficie (Mw {ev_mw:.1f}, Prof. {ev_depth_km:.0f} km) — t = {t_sec} s · {n_hit} distritos alcanzados",
+                    x=0.5,
+                    xanchor="center",
+                    y=0.97,
+                    font=dict(size=14),
+                )
             ),
         )
         frames.append(frame)
         if f_idx == init_idx:
-            init_traces = [trace_peru, trace_hypo, tr_wave, tr_cols, tr_spheres]
+            init_traces = [trace_peru, trace_hypo, tr_dome, tr_wave_p, tr_wave_s, tr_dists]
 
     assert init_traces is not None
     t_init = WAVE_FRAME_TIMES_S[init_idx]
-    n_hit_init = int((vis["t_arrival_s"] <= t_init).sum())
+    n_hit_init = int((vis["t_arrival_s_s"] <= t_init).sum())
 
-    z_min = min(-max(ev_depth_km + 55.0, 120.0), -120.0)
+    z_min = min(-max(ev_depth_km + 60.0, 120.0), -120.0)
     fig = go.Figure(data=init_traces, frames=frames)
     fig.update_layout(
         **plotly_theme_kwargs(theme_mode),
-        height=560,
-        title=f"Propagación 3D de Ondas Sísmicas (Mw {ev_mw:.1f}, Prof. {ev_depth_km:.0f} km) — t = {t_init} s · Radio {WAVE_VS_KM_S * t_init:.0f} km · {n_hit_init} distritos alcanzados",
+        height=610,
+        title=dict(
+            text=f"Ondas P y S en Subsuelo y Superficie (Mw {ev_mw:.1f}, Prof. {ev_depth_km:.0f} km) — t = {t_init} s · {n_hit_init} distritos alcanzados",
+            x=0.5,
+            xanchor="center",
+            y=0.97,
+            font=dict(size=14),
+        ),
         scene=dict(
             xaxis_title="Longitud (°W)",
             yaxis_title="Latitud (°S)",
-            zaxis_title="Profundidad (-km) / Sacudimiento (+)",
+            zaxis_title="Profundidad subterránea (km)",
             xaxis=dict(range=[-82.2, -68.2]),
             yaxis=dict(range=[-18.8, -0.2]),
-            zaxis=dict(range=[z_min, 175.0]),
-            aspectratio=dict(x=1.0, y=1.25, z=0.62),
-            camera=dict(eye=dict(x=-1.55, y=-1.30, z=0.85)),
+            zaxis=dict(range=[z_min, 8.0]),
+            aspectratio=dict(x=1.0, y=1.28, z=0.48),
+            camera=dict(eye=dict(x=-1.52, y=-1.32, z=0.92)),
         ),
-        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="center", x=0.5),
-        margin=dict(l=0, r=0, t=58, b=0),
+        legend=dict(orientation="h", yanchor="top", y=-0.06, xanchor="center", x=0.5),
+        margin=dict(l=0, r=0, t=70, b=10),
         updatemenus=[
             dict(
                 type="buttons",
                 direction="left",
-                x=0.02,
-                y=0.04,
+                x=0.01,
+                y=0.06,
                 xanchor="left",
                 yanchor="bottom",
                 bgcolor="#1E293B" if theme_mode == THEME_DARK else "#F3EDE4",
@@ -584,7 +625,7 @@ def _build_3d_animated_wave_figure(
                         args=[
                             None,
                             {
-                                "frame": {"duration": 520, "redraw": True},
+                                "frame": {"duration": 550, "redraw": True},
                                 "transition": {"duration": 180},
                                 "fromcurrent": False,
                                 "mode": "immediate",
@@ -602,9 +643,9 @@ def _build_3d_animated_wave_figure(
         sliders=[
             dict(
                 active=init_idx,
-                x=0.25,
-                y=0.03,
-                len=0.72,
+                x=0.24,
+                y=0.05,
+                len=0.73,
                 currentvalue={"prefix": "Tiempo transcurrido: ", "visible": True, "font": {"size": 12}},
                 steps=[
                     dict(
@@ -620,8 +661,12 @@ def _build_3d_animated_wave_figure(
     return fig
 
 
+load_assets = load_simulation_assets
+
+
 @st.cache_resource(show_spinner="Cargando motores geofísicos y de inteligencia artificial...")
-def _cached_sim_assets() -> dict[str, Any]:
+def _cached_sim_assets(cache_version: str = ASSET_CACHE_VERSION) -> dict[str, Any]:
+    _ = cache_version
     return load_simulation_assets()
 
 
@@ -1093,6 +1138,62 @@ def _render_sec1_seismic_school(data: dict[str, Any], theme_mode: str) -> None:
     )
 
     st.markdown("---")
+    st.markdown("#### 🧠 ¿Cómo nace un terremoto y por qué aún no se puede predecir la fecha exacta?")
+    st.markdown(
+        """
+        <div class="step-grid">
+          <div class="step-card" style="--step-accent:#B91C1C;">
+            <span class="step-num">Paso 1 · Acumulación</span>
+            <h4>La regla de madera que se dobla</h4>
+            <p>
+              Frente al Perú, la placa oceánica de Nazca empuja a Sudamérica a
+              <span class="tech-pill" style="--pill-accent:#B91C1C;">6 – 8 cm/año</span>.
+              Como una regla doblada entre las manos, la roca se deforma durante décadas o siglos hasta quebrarse a unos
+              <span class="tech-pill" style="--pill-accent:#991B1B;">~30 km bajo el mar</span>.
+            </p>
+            <p>
+              <strong>¿Por qué no sabemos el día exacto?</strong> Hoy vigilamos milímetro a milímetro cuánto se dobla la costa usando
+              <strong>estaciones GPS/GNSS continuas</strong>, <strong>radares satelitales InSAR</strong> y <strong>sensores sísmicos profundos</strong>;
+              eso nos permite medir <em>cuánta energía hay acumulada</em>, pero no ver el microsegundo exacto en que cederá la roca.
+            </p>
+          </div>
+          <div class="step-card" style="--step-accent:#0284C7;">
+            <span class="step-num">Paso 2 · Propagación</span>
+            <h4>Onda P vs. Onda S: segundos que salvan vidas</h4>
+            <p>
+              Al romperse la falla salen dos ondas principales desde el foco subterráneo:
+            </p>
+            <p>
+              <span class="tech-pill" style="--pill-accent:#0284C7;">Onda P · ~6.5 km/s</span>
+              Es la <strong>onda primaria rápida</strong>: viaja primero como un golpe vertical leve. Los sistemas de alerta temprana la detectan antes de que llegue el movimiento fuerte.
+            </p>
+            <p>
+              <span class="tech-pill" style="--pill-accent:#BE123C;">Onda S · ~3.8 km/s</span>
+              Es la <strong>onda secundaria destructiva</strong>: llega segundos después moviendo el suelo de lado a lado con mucha mayor energía.
+            </p>
+          </div>
+          <div class="step-card" style="--step-accent:#D97706;">
+            <span class="step-num">Paso 3 · Amplificación Local</span>
+            <h4>El «Efecto Gelatina» de los suelos blandos</h4>
+            <p>
+              Cuando la Onda S llega a tu barrio, la roca dura vibra poco, pero los sedimentos sueltos, arenas o rellenos
+              amplifican el movimiento como gelatina sobre un plato.
+            </p>
+            <p>
+              <strong>Mediciones reales del IGP en Lima (vs. roca firme):</strong><br>
+              <span class="tech-pill" style="--pill-accent:#0F766E;">Morro Solar 1.00×</span>
+              <span class="tech-pill" style="--pill-accent:#D97706;">La Molina 1.42×</span>
+              <span class="tech-pill" style="--pill-accent:#D97706;">Los Olivos 1.45×</span>
+              <span class="tech-pill" style="--pill-accent:#EA580C;">Callao 1.55×</span>
+              <span class="tech-pill" style="--pill-accent:#B91C1C;">Puente Piedra 2.17×</span>
+            </p>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("---")
     st.markdown("#### 2. Comparador Interactivo: ¿Por qué un sismo de 7 no es «un poquito» más fuerte que uno de 6?")
     st.markdown(
         """
@@ -1467,11 +1568,10 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
             9.0,
             7.5,
             0.1,
-            help="Simula un sismo superficial (25 km) ubicado en la fosa marina más cercana a tu distrito.",
+            help="Simula un sismo de subducción (25 km de profundidad) ubicado en el punto más cercano de la fosa marina PB2002.",
         )
-        d_xyz = latlon_to_unit_xyz(np.array([float(r["dist_lat"])]), np.array([float(r["dist_lon"])]))
-        _, t_idx = assets["trench_tree"].query(d_xyz, k=1)
-        ev_lon_c, ev_lat_c = assets["trench_pts"][int(t_idx[0])]
+        ev_lon_c, ev_lat_c, epi_trench_km = _nearest_trench_lonlat(assets, float(r["dist_lat"]), float(r["dist_lon"]))
+        hypo_trench_km = float(np.sqrt(epi_trench_km ** 2 + 25.0 ** 2))
         sim_one = simulate_hybrid_nonlinear_pga(
             target_lats=np.array([float(r["dist_lat"])]),
             target_lons=np.array([float(r["dist_lon"])]),
@@ -1492,7 +1592,8 @@ def _render_sec3_district_consultant(assets: dict[str, Any], data: dict[str, Any
             slab_model=assets["slab_model"],
             use_nonlinear_damping=True,
         )
-        active_scen_lbl = f"Simulación personalizada Mw {custom_mw:.1f} (frente a la fosa más cercana)"
+        reg_custom = REGIME_SHORT_ES.get(str(sim_one["resolved_regime"]), str(sim_one["resolved_regime"]))
+        active_scen_lbl = f"Simulación personalizada Mw {custom_mw:.1f} ({reg_custom} · {hypo_trench_km:.0f} km hipoc.)"
         active_site_gal = float(sim_one["pga_site_gal"][0])
         active_rock_gal = float(sim_one["pga_rock_gal"][0])
         active_mmi = float(sim_one["mmi_site"][0])
@@ -1721,7 +1822,7 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div>
               <strong style="font-size:1.08rem;">{drow['distrito']} ({drow['provincia']}, {drow['departamento']})</strong>
-              <span style="color:var(--text-muted);font-size:0.86rem;"> · Distancia: <strong>{drow['dist_epicentral_km']:.0f} km</strong> · Llegada onda S: <strong>{drow['dist_hypocentral_km']/WAVE_VS_KM_S:.1f} s</strong></span>
+              <span style="color:var(--text-muted);font-size:0.86rem;"> · Distancia: <strong>{drow['dist_epicentral_km']:.0f} km</strong> · Onda P: <strong>{drow['dist_hypocentral_km']/WAVE_VP_KM_S:.1f} s</strong> · Onda S: <strong>{drow['dist_hypocentral_km']/WAVE_VS_KM_S:.1f} s</strong></span>
             </div>
             <div>{render_badge(f"Mercalli {m_rom} ({m_mag_rng}) — {m_short}", m_col)}</div>
           </div>
@@ -1751,7 +1852,7 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
     view_mode = st.radio(
         "Modo de visualización del simulador",
         [
-            "🌐 Vista 3D Animada (Hipocentro Profundo + Ondas + Impacto en Distritos)",
+            "🌐 Vista 3D Subsuelo + Ondas",
             "🗺️ Vista 2D Cartográfica (Mapa Detallado)",
         ],
         index=0,
@@ -1765,12 +1866,12 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
         st.markdown(
             render_map_legend(
                 [
-                    ("#DC2626", "Esfera roja bajo tierra", f"Hipocentro real (-{ev_depth:.0f} km) unido con línea punteada al epicentro en superficie"),
-                    ("#F59E0B", "Anillo y domo expansivo", "Frente de onda sísmica viajando a ~3.8 km/s desde 5 s hasta 120 s"),
-                    ("#EA580C", "Columnas verticales hacia arriba", "Altura proporcional al sacudimiento real (%g / Gal) con efecto de suelo blando"),
-                    ("#1C1917", "Contorno en z = 0 km", "Mapa oficial del Perú (INEI) proyectado sobre la superficie"),
+                    ("#DC2626", "Esfera roja bajo tierra + domo translúcido", f"Hipocentro real (-{ev_depth:.0f} km) y frente subterráneo subiendo hacia la superficie"),
+                    ("#0284C7", "Anillo cian punteado — Onda P (6.5 km/s)", "Onda primaria rápida que avisa primero (base de los sistemas de alerta temprana)"),
+                    ("#BE123C", "Anillo carmesí sólido — Onda S (3.8 km/s)", "Onda secundaria destructiva que va encendiendo los distritos sobre la superficie (z = 0)"),
+                    ("#EA580C", "Puntos en superficie (z = 0 km)", "Color según Intensidad Mercalli y tamaño proporcional al sacudimiento real (%g)"),
                 ],
-                note="Observa cómo el sismo nace a decenas de kilómetros bajo tierra (punto rojo) y sus ondas viajan a ~3.8 km/s hasta sacudir la superficie según el tipo de suelo de cada distrito. Usa ▶ Reproducir Onda o el ícono de expansión arriba a la derecha para pantalla completa.",
+                note="Observa el nacimiento del terremoto bajo tierra y los dos anillos concéntricos (Onda P rápida y Onda S destructiva) expandiéndose sobre el Perú. Usa ▶ Reproducir Onda o el ícono de expansión arriba a la derecha para pantalla completa.",
             ),
             unsafe_allow_html=True,
         )
@@ -1832,7 +1933,7 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
         {
             "Distrito": top20["distrito"],
             "Provincia / Dpto.": top20["provincia"] + " / " + top20["departamento"],
-            "Llegada Onda S": [f"{d / WAVE_VS_KM_S:.1f} s" for d in top20["dist_hypocentral_km"]],
+            "Llegada Onda P / S": [f"{d / WAVE_VP_KM_S:.0f} s / {d / WAVE_VS_KM_S:.0f} s" for d in top20["dist_hypocentral_km"]],
             "En Roca": [f"{v/9.81:.0f}% g ({v:.0f} Gal)" for v in top20["pga_rock_gal"]],
             "Real c/ Suelo": [f"{v/9.81:.0f}% g ({v:.0f} Gal)" for v in top20["pga_site_gal"]],
             "Suelo (Norm. → Efect.)": [f"{n:.2f}× → {e:.2f}×" for n, e in zip(top20["site_amp_normal"], top20["site_amp_eff"])],
@@ -1844,7 +1945,7 @@ def _render_sec4_simulator(assets: dict[str, Any], theme_mode: str) -> None:
     st.markdown(
         render_table_legend(
             [
-                ("Llegada Onda S", "Segundos aproximados desde el inicio de la ruptura hasta que llega la onda destructiva S (Vs ≈ 3.8 km/s)."),
+                ("Llegada Onda P / S", "Segundos aproximados desde la ruptura hasta la Onda P de aviso (~6.5 km/s) y la Onda S destructiva (~3.8 km/s)."),
                 ("En Roca vs. Real c/ Suelo", "Sacudimiento sobre roca firme vs. sacudimiento real incorporando tu tipo de suelo (100% g = 981 Gal)."),
                 ("Suelo (Norm. → Efect.)", "Amplificación en sismos cotidianos vs. factor efectivo tras amortiguamiento no lineal en este escenario."),
                 ("Mercalli + Rango Mw", "Intensidad local estimada y rango aproximado de Magnitud Mw equivalente en epicentro."),

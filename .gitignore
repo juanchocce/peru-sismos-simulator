@@ -28,6 +28,7 @@ AGENTS.md
 docs/PLAYBOOK_*.md
 docs/APP_BLUEPRINT_ESTRUCTURA.md
 docs/*PHASE*_REPORT.md
+_backup_privado_terremotos/
 
 # Immutable external sources & heavy raw extractions (except PB2002 GeoJSON needed by app)
 base_informativa/

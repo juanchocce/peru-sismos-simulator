@@ -1,6 +1,6 @@
-# MODEL CARDS — Sistema Sismotectónico y de Riesgo Sísmico del Perú (Fase 3)
+# MODEL CARDS — Sistema Sismotectónico y de Riesgo Sísmico del Perú
 
-Este documento resume el alcance operativo, arquitectura, supuestos geofísicos, validación anti-leakage y limitaciones explícitas de los 3 modelos entrenados en Fase 3.
+Este documento resume el alcance operativo, arquitectura, supuestos geofísicos, validación anti-leakage y limitaciones explícitas de los 3 modelos entrenados del sistema.
 
 ---
 

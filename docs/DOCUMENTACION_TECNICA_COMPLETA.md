@@ -1,6 +1,6 @@
 # Documentación Técnica Completa y Rigor Estadístico — Observatorio Sísmico y Multi-Amenaza del Perú
 
-> **Versión:** Fase 5C (`peru-sismos-simulator`)  
+> **Plataforma:** Observatorio Sísmico y Multi-Amenaza del Perú (`peru-sismos-simulator`)  
 > **Alcance territorial:** 1,893 distritos oficiales del Perú (100% cobertura UBIGEO de 6 dígitos) y 8,205 celdas hexagonales Uber H3 (`res=5`, WGS84 `EPSG:4326`).  
 > **Principio rector:** Cero fugas de información (*zero data leakage*), trazabilidad íntegra desde fuentes inmutables (`base_informativa/` en solo lectura) hasta predicciones calibradas, y comunicación científica honesta en español claro.
 
@@ -19,7 +19,7 @@ Todas las series temporales internas se almacenan en formato **UTC ISO-8601 con 
 | `FONDES_relacion_distritos_nov26.pdf` | CENEPRED / SIGRID — Padrón FONDES | Vigencia corte `05/11/2026` | Vigencia corte `05/11/2026` | 1,893 distritos | 1,893 distritos (100% UBIGEO) | Marco oficial distrital y auditoría de subestimación sísmica frente a clasificación multi-peligro |
 | `geocatmin_datos.zip` (`Peligros_Geologicos` y `Zonas_Criticas`) | INGEMMET — GEOCATMIN | Inventario histórico vigente | Corte descarga 2026 | 37,023 peligros / 2,177 zonas críticas | 35,673 peligros / 2,177 zonas críticas asignados a UBIGEO | Amenazas secundarias (huaicos, deslizamientos, caída de rocas) e índice multi-amenaza |
 | `tectonicplates-master.zip` (PB2002) | Bird (2003) — Modelo Global de Placas | Modelo tectónico de referencia | Vigente | 3 segmentos de fosa (`NZ\SA`, `NZ\AP`, `NZ\ND`) | 6,455 vértices densificados (2 km) | Geometría 3D de fosa peruano-chilena, velocidad de convergencia y edad de placa oceánica |
-| Servicios WFS INEI (`ig_departamento`, `ig_provincia`, `ig_distrito`) | INEI — GeoServidor Interoperabilidad | Cartografía oficial vigente | Descarga Fase 5C (`2026-11-24 UTC`) | 25 dptos. / 196 prov. / 1,890 dist. | Polígonos simplificados (`0.002°`, `EPSG:4326`, 6.49 MB total) | Visualización cartográfica oficial en mapa nacional y consultor distrital |
+| Servicios WFS INEI (`ig_departamento`, `ig_provincia`, `ig_distrito`) | INEI — GeoServidor Interoperabilidad | Cartografía oficial vigente | Descarga WFS (`2026-11-24 UTC`) | 25 dptos. / 196 prov. / 1,890 dist. | Polígonos simplificados (`0.002°`, `EPSG:4326`, 6.49 MB total) | Visualización cartográfica oficial en mapa nacional y consultor distrital |
 
 > **Nota de claridad ciudadana sobre las fechas de corte:** Todos los cálculos de probabilidad y mapas reflejan el estado exacto de la sismicidad peruana hasta el **22 de noviembre de 2026** (último corte del catálogo instrumental IGP) y las mediciones de aceleración de suelos hasta el **28 de diciembre de 2025** (ACELDAT).
 
@@ -27,7 +27,7 @@ Todas las series temporales internas se almacenan en formato **UTC ISO-8601 con 
 
 ## 2. Auditoría de Calidad, Anomalías Detectadas y Armonización (ETL)
 
-Durante las Fases 0, 1 y 2 se inspeccionó programáticamente cada archivo crudo sin asumir nombres de columnas ni formatos. A continuación se documentan las **6 anomalías críticas** descubiertas y su remediación exacta:
+Durante la auditoría inicial y el pipeline ETL se inspeccionó programáticamente cada archivo crudo sin asumir nombres de columnas ni formatos. A continuación se documentan las **6 anomalías críticas** descubiertas y su remediación exacta:
 
 1. **Codificación y delimitador en ACELDAT (`cp1252` + `;` + 10 columnas fantasma):**
    - El CSV oficial de ACELDAT viene en codificación `Windows-1252` separado por punto y coma, contiene **10 columnas vacías `Unnamed:*`** y pierde los ceros iniciales en `UBIGEO` y `HORA_EVENTO`.
@@ -95,7 +95,7 @@ Todo sismo del catálogo instrumental (`25,878`) se estratifica en **4 regímene
   - Los términos empíricos de amplificación de suelo por estación ($\delta S_{2S}$, con regularización Bayesiana *shrinkage* hacia cero en estaciones con pocos registros) se estiman **exclusivamente dentro de cada fold de entrenamiento** (*out-of-fold*).
 - **Extrapolación física para megaterremotos ($M_w \ge 8.0$):** Los árboles de decisión saturan por encima del máximo histórico observado en ACELDAT (`Mw 7.5`). Para escenarios extremos se aplica una corrección híbrida usando la pendiente física de magnitud del modelo paramétrico Huber ($c_{1,\text{Huber}} = 0.6201$):
   $$\log_{10}(\text{PGA}_{\text{roca,híbrido}}) = \log_{10}\!\left(\text{PGA}_{\text{LGBM}}(\min(M_w, 7.5), \dots)\right) + 0.6201 \cdot \max(0, M_w - 7.5)$$
-- **Amortiguamiento geotécnico no lineal de suelos blandos (Fase 5A, tipo Seyhan & Stewart 2014):** Cuando el sacudimiento en roca supera `150 Gal`, los suelos blandos degradan su módulo de corte y disipan energía, evitando picos lineales irreales:
+- **Amortiguamiento geotécnico no lineal de suelos blandos (tipo Seyhan & Stewart 2014):** Cuando el sacudimiento en roca supera `150 Gal`, los suelos blandos degradan su módulo de corte y disipan energía, evitando picos lineales irreales:
   $$\delta S_{2S,\text{eff}} = \delta S_{2S} \cdot \frac{1}{1 + \left(\dfrac{\text{PGA}_{\text{roca}}}{400\text{ Gal}}\right)^{1.2}}$$
   En sismos débiles/moderados preserva intacta la amplificación observada (ej. Puente Piedra `2.17×` respecto a Morro Solar `1.00×`), mientras que en un megaterremoto Lima $M_w 8.6$ modera las aceleraciones hacia rangos geotécnicamente realistas (`550–610 Gal`).
 
@@ -151,4 +151,4 @@ El litoral peruano (`-3.5°S` a `-18.5°S`) se divide en **30 segmentos costeros
 2. **Cobertura heterogénea de estaciones ACELDAT:** `223` de los `1,893` distritos cuentan con factor empírico de sitio directo medido por acelerógrafos IGP (`277` estaciones). En los distritos sin estación propia, el simulador aplica un término de sitio neutro ($\delta S_{2S} = 0$, equivalente a condición promedio de referencia) hasta incorporar mediciones locales de $V_{S30}$ o microzonificación CISMID.
 3. **Extrapolación en megaterremotos ($M_w \ge 8.0$):** La red ACELDAT 2019–2025 no contiene aún registros de un evento costero $M_w \ge 8.0$; por ello, la respuesta en megaterremotos combina inferencia empírica ML hasta $M_w 7.5$ con física analítica (pendiente Huber + amortiguamiento no lineal Seyhan & Stewart 2014).
 4. **Incertidumbre del catálogo histórico pre-instrumental (1552–1959):** Las magnitudes y epicentros coloniales/republicanos provienen de crónicas históricas e isosistas, presentando mayor incertidumbre espacial que la era instrumental moderna (`1960–2026`).
-5. **Peligro sísmico vs. riesgo socioeconómico:** El índice sísmico puro cuantifica la **amenaza física** (sacudimiento, laguna costera, tasa sísmica) y los peligros geológicos GEOCATMIN; las columnas reservadas `ext_*` permiten acoplar en futuras fases vulnerabilidad estructural (viviendas de adobe/quincha del Censo INEI), exposición poblacional e infraestructura crítica.
+5. **Peligro sísmico vs. riesgo socioeconómico:** El índice sísmico puro cuantifica la **amenaza física** (sacudimiento, laguna costera, tasa sísmica) y los peligros geológicos GEOCATMIN; las columnas reservadas `ext_*` permiten acoplar en futuras extensiones vulnerabilidad estructural (viviendas de adobe/quincha del Censo INEI), exposición poblacional e infraestructura crítica.

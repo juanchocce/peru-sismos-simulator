@@ -1,14 +1,14 @@
 # ARCHITECTURE.md — Arquitectura End-to-End del Sistema Sismotectónico y Multi-Amenaza Territorial del Perú
 
-Este documento describe la arquitectura completa de ingeniería de datos, modelado geofísico/ML y contrato extensible multi-amenaza implementada en el repositorio (`Fase 0 → Fase 4`).
+Este documento describe la arquitectura completa de ingeniería de datos, modelado geofísico/ML y contrato extensible multi-amenaza implementada en el repositorio.
 
 ---
 
-## 1. Diagrama de Flujo de Datos End-to-End (`Fase 0 → Fase 4`)
+## 1. Diagrama de Flujo de Datos End-to-End
 
 ```mermaid
 flowchart TD
-    subgraph F0["Fase 0: Fuentes Inmutables (base_informativa/ — SOLO LECTURA)"]
+    subgraph F0["1. Fuentes Originales (Solo Lectura)"]
         IGP_H["IGP Historico 1552-1959 (.xlsx)"]
         IGP_I["IGP Instrumental 1960-2026 (.xlsx)"]
         ACEL["IGP ACELDAT 2019-2025 (.csv cp1252)"]
@@ -18,7 +18,7 @@ flowchart TD
         USGS_API["USGS FDSN Event API (M>=4.5)"]
     end
 
-    subgraph F1["Fase 1: ETL, Cruces y Features Tectonicas 3D (src/ingestion + src/features)"]
+    subgraph F1["2. ETL, Cruces y Features Tectonicas 3D (src/ingestion + src/features)"]
         ETL_IGP["etl_catalogs_igp.py"]
         ETL_AC["etl_aceldat.py (+5h UTC-5)"]
         ETL_USGS["fetch_usgs_enrichment.py"]
@@ -26,7 +26,7 @@ flowchart TD
         TECT["tectonic_features.py (cKDTree 3D NZ\\SA+AP+ND)"]
     end
 
-    subgraph F2["Fase 2: Sismotectonica Cuantitativa y Panel Causal (src/features)"]
+    subgraph F2["3. Sismotectonica Cuantitativa y Panel Causal (src/features)"]
         AUD_AC["audit_aceldat_unmatched.py (swap D/M 2025)"]
         GR["gutenberg_richter.py (Mc, Aki-Utsu b)"]
         WB["wadati_benioff_3d.py (Slab L1 3D)"]
@@ -34,13 +34,13 @@ flowchart TD
         H3P["build_h3_panel.py (H3 Res 5 causal)"]
     end
 
-    subgraph F3["Fase 3: Modelos Core Especializados (src/models)"]
+    subgraph F3["4. Modelos Core Especializados (src/models)"]
         MOD_A["Modelo A: train_gmpe.py (GroupKFold-5 + OOF delta_S2S)"]
         MOD_B["Modelo B: model_seismic_gaps.py (MC N=10k + BPT + HDBSCAN)"]
         MOD_C["Modelo C: train_h3_forecaster.py (Walk-Forward 4 splits + Platt)"]
     end
 
-    subgraph F4["Fase 4: Integracion Multi-Amenaza y Tableros (src/models + src/viz)"]
+    subgraph F4["5. Integracion Multi-Amenaza y Tableros (src/models + src/viz)"]
         INT["integrate_multihazard_ubigeo.py (ShakeMap Hibrido Mw>=8.0)"]
         VIZ["build_executive_dashboard.py"]
         OUT_U["territorial_multihazard_ubigeo.parquet (1,893 distritos)"]
@@ -111,29 +111,33 @@ Tanto `territorial_multihazard_ubigeo.parquet` como `territorial_multihazard_h3.
 ## 5. Orden Reproducible de Ejecución Completa
 
 ```bash
-# Fase 0: Auditoria y extraccion limpia a data/raw/
+# 1. Auditoria y extraccion limpia a data/raw/
 python src/ingestion/audit_base_informativa.py
 
-# Fase 1: ETL, cruces y features sismotectonicas 3D
+# 2. ETL, cruces y features sismotectonicas 3D
 python src/ingestion/etl_catalogs_igp.py
 python src/ingestion/etl_aceldat.py
 python src/ingestion/fetch_usgs_enrichment.py
 python src/ingestion/etl_fondes_geocatmin.py
 python src/features/tectonic_features.py
 
-# Fase 2: EDA cuantitativo, slab 3D, lagunas y panel H3 causal
+# 3. EDA cuantitativo, slab 3D, lagunas y panel H3 causal
 python src/features/audit_aceldat_unmatched.py
 python src/features/wadati_benioff_3d.py
 python src/features/gutenberg_richter.py
 python src/features/seismic_gaps.py
 python src/features/build_h3_panel.py
 
-# Fase 3: Modelado core especializado (A, B, C)
+# 4. Modelado core especializado (A, B, C)
 python src/models/train_gmpe.py
 python src/models/model_seismic_gaps.py
 python src/models/train_h3_forecaster.py
 
-# Fase 4: Integracion territorial multi-amenaza y tableros ejecutivos
+# 5. Integracion territorial multi-amenaza, limites INEI y tableros ejecutivos
 python src/models/integrate_multihazard_ubigeo.py
+python src/ingestion/fetch_inei_boundaries.py
 python src/viz/build_executive_dashboard.py
+
+# 6. Aplicacion Web Interactiva
+python -m streamlit run app/streamlit_app.py
 ```

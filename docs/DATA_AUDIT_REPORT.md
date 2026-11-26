@@ -1,4 +1,4 @@
-# DATA AUDIT REPORT — Fase 0 (`base_informativa/`)
+# DATA AUDIT REPORT — Auditoría Técnica de Fuentes (`base_informativa/`)
 
 > Auditoría generada programáticamente por [`src/ingestion/audit_base_informativa.py`](../src/ingestion/audit_base_informativa.py) sobre copias de solo lectura. Datos crudos extraídos de ZIPs en `data/raw/geocatmin/` y `data/raw/tectonic_plates/`.
 
@@ -127,7 +127,7 @@ Contiene **50 archivos internos** (GeoJSON, ESRI Shapefiles, `original/` ASCII, 
 
 | Archivo | Tamaño (MB) | Páginas | Texto Seleccionable | Tablas (muestra 3 págs.) | Hallazgo / Uso |
 | :--- | ---: | ---: | :--- | ---: | :--- |
-| **`FONDES_relacion_distritos_nov26.pdf`** | 0.5084 | 32 | **Sí (32/32 págs., 154,159 chars)** | 3 tablas detectadas | **Totalmente extraíble con `pdfplumber`:** contiene `UBIGEO` de 6 dígitos (ej. `010101`), `DEPARTAMENTO`, `PROVINCIA`, `DISTRITO` y `NIVEL DE PELIGRO Y/O RIESGO SIGRID`. Listo para parser tabular en Fase posterior. |
+| **`FONDES_relacion_distritos_nov26.pdf`** | 0.5084 | 32 | **Sí (32/32 págs., 154,159 chars)** | 3 tablas detectadas | **Totalmente extraíble con `pdfplumber`:** contiene `UBIGEO` de 6 dígitos (ej. `010101`), `DEPARTAMENTO`, `PROVINCIA`, `DISTRITO` y `NIVEL DE PELIGRO Y/O RIESGO SIGRID`. Listo para parser tabular estructurado. |
 | `reporte red acelerometrica 20260825_20261122.pdf` | 1.4619 | 10 | Sí (4,028 chars) | 3 | Reporte IGP/ACELDAT de ejemplo (sismo `22/11/2026`, M5, 145 km prof., Junín). Útil para validar formato de reportes CENSIS. |
 | `Amb-27.pdf` | 1.5046 | 34 | Sí (4,825 chars) | 0 | Marco teórico Tavera & Buforn (regímenes sísmicos de Perú y transición ~15°S). |
 | `R01_RIESGO_SISMICO_LIMA_A0-ultimo.pdf` | 5.4988 | 1 | Sí (3,315 chars) | 2 | Cartografía A0 de riesgo sísmico en Lima Metropolitana (coordenadas UTM detectables). |
